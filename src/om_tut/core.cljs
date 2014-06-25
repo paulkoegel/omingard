@@ -14,9 +14,7 @@
   (flatten
     (map
       (fn [suit] [suit, suit])
-     ["hearts", "diamonds", "spades", " clubs"])))
-
-suits
+      ["hearts", "diamonds", "spades", " clubs"])))
 
 (defn card-map [suit]
   (map
@@ -33,21 +31,64 @@ suits
 
 (shuffled-stack)
 
+;; mockup with map
+(def my-map {:stack (shuffled-stack),
+            :columns (map (fn [_] []) (range 1 10))})
+
+
+(pop [1,2,3])
+
+(pop (:stack my-map))
+
+(let [card-to-move (last (:stack my-map))]
+
+)
+
+(nth [1 2 3] 1)
+
+(conj [1 2 3] 4)
+
+(defn deploy-card-to-column [a-map column-index]
+  (let [card-to-move (last (:stack my-map))]
+       [new-stack (pop (:stack my-map))]
+       [new-columns (map-indexed (fn [i column] (if ) ) (:columns my-map))]
+
+)
+  (pop (:stack a-map))
+  )
+
+(defn deploy-cards [a-map]
+  ())
+
+
 
 (map (fn [_] {}) (range 1 10))
 
 (def app-state
   (atom
     {:stack (shuffled-stack)
-     :piles (map (fn [_] []) (range 1 9))
-     :columns (map (fn [_] []) (range 1 10))
+     :piles (mapv (fn [_] []) (range 1 9))
+     :columns (mapv (fn [_] []) (range 1 10))
     }))
 
 (@app-state :stack)
 
 app-state
 
-defn
+(defn serve-card-to-column [state column]
+  (let [card (peek (:stack state))]
+    (-> state
+        (update-in [:stack] pop)
+        (update-in [:columns column] conj card)))
+)
+
+(swap! app-state serve-card-to-column 1)
+
+(count (:stack @app-state))
+
+(defn deploy-cards []
+  (map (fn [] nil) [1, 2, 3, 4, 5, 4, 3, 2, 1]
+  ))
 
 (swap! app-state deploy-cards)
 
