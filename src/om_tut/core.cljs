@@ -50,8 +50,11 @@
      :columns (mapv (fn [_] []) (range 1 (+ columns# 1)))
     }))
 
-(defn serve-card-to-column [state column]
-  (let [card (peek (:stack state))]
+(defn serve-card-to-column [state column & [open?]]
+  (let [card (peek (:stack state))
+        card (if (and open? card)
+              (assoc card :open true)
+              card)]
     (if card
       (-> state
           (update-in [:stack] pop)
@@ -59,11 +62,24 @@
       ;; do nothing if stack is empty
       state)))
 
+;; (serve-card-to-column @app-state 0 true)
+
+
+;; DISCARD CARDS - - - - - - - - - -
+;; only a column's last card is discardable - idea: clicking on the highest sorted card on a pile discards all sorted cards below it automatically as well.
+(defn discard-card [state column-index]
+  (let [card (last (-> state :columns column-index))]
+    (if (discardable? state column-index)
+      (-> state
+          (update-in [:columns column-index] pop)
+      )
+      ;; do nothing if the card cannot be discarded
+      state)))
 
 (defn serve-cards-to-column [state column n]
   (reduce
-    (fn [state _]
-      (serve-card-to-column state column))
+    (fn [state val]
+      (serve-card-to-column state column (if (= (- n 1) val) true false)))
     state
     (range n)))
 
@@ -84,16 +100,20 @@
 ;; set up initial state of the game
 (swap! app-state serve-cards)
 
-(defn hit-me [state]
+;; when there are no more moves, serve new cards to columns
+(defn serve-new-cards [state]
   (reduce
     (fn [state i]
       (serve-card-to-column state i))
     state
     (range columns#)))
 
-(hit-me @app-state)
+(serve-new-cards @app-state)
 
-(swap! app-state hit-me)
+(swap! app-state serve-new-cards)
+
+
+
 
 ;; OM TUTORIAL LEFT OVERS = = = / / - - \ \ _ _ / / - - \ \ ^ ^ 0 0 p p b b ! !
 
