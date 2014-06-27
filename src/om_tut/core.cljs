@@ -8,13 +8,27 @@
 
 (enable-console-print!)
 
-;; generate a stack of cards
+(def columns# 9)
+(def piles# 8)
 
+
+;; F Y I = = = = = = = = = =
+;; x product of suits and values
+(for [suit ["hearts", "diamonds", "spades", "clubs"]
+      i (range 13)]
+     [i suit])
+
+(mapcat (fn [suit]
+          (map (fn [el] [el suit] ) (range 13)))
+        ["hearts", "diamonds", "spades", "clubs"])
+
+;; / E N D   F Y I ===
+
+;; generate a stack of cards
 (def suits
-  (flatten
-    (map
-      (fn [suit] [suit, suit])
-      ["hearts", "diamonds", "spades", " clubs"])))
+  (mapcat
+    (fn [suit] [suit, suit])
+    ["hearts", "diamonds", "spades", " clubs"]))
 
 (defn card-map [suit]
   (map
@@ -27,18 +41,24 @@
 (defn shuffled-stack []
   (shuffle (vec (flatten (suit-map suits)))))
 
+
+;; initialise app state
 (def app-state
   (atom
     {:stack (shuffled-stack)
-     :piles (mapv (fn [_] []) (range 1 9))
-     :columns (mapv (fn [_] []) (range 1 10))
+     :piles (mapv (fn [_] []) (range 1 (+ piles# 1)))
+     :columns (mapv (fn [_] []) (range 1 (+ columns# 1)))
     }))
 
 (defn serve-card-to-column [state column]
   (let [card (peek (:stack state))]
-    (-> state
-        (update-in [:stack] pop)
-        (update-in [:columns column] conj card))))
+    (if card
+      (-> state
+          (update-in [:stack] pop)
+          (update-in [:columns column] conj card))
+      ;; do nothing if stack is empty
+      state)))
+
 
 (defn serve-cards-to-column [state column n]
   (reduce
@@ -47,34 +67,36 @@
     state
     (range n)))
 
-(serve-cards-to-column @app-state 1 5)
-
-@app-state
-
-
-(map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])
-
-;;(map vector (range) [1, 2, 3, 4, 5, 4, 3, 2, 1])
+;; demos:
+;; (serve-cards-to-column @app-state 1 5)
+;; (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])
+;; (map vector (range) [1, 2, 3, 4, 5, 4, 3, 2, 1])
 
 (defn serve-cards [state]
   (reduce
-   (fn [state [idx n]]
-     (serve-cards-to-column state idx n))
-   state
-   (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])))
+    (fn [state [idx n]]
+      (serve-cards-to-column state idx n))
+    state
+    (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])))
 
 (serve-cards @app-state)
 
-  (map-indexed [i el]
-    (fn []
-      (dotimes [_ el]
-        (serve-card-to-column i)))
-    [1, 2, 3, 4, 5, 4, 3, 2, 1]))
-    ;;[1, 2, 3, 4, 5, 4, 3, 2, 1]))
-
-
-
+;; set up initial state of the game
 (swap! app-state serve-cards)
+
+(defn hit-me [state]
+  (reduce
+    (fn [state i]
+      (serve-card-to-column state i))
+    state
+    (range columns#)))
+
+(hit-me @app-state)
+
+(swap! app-state hit-me)
+
+;; OM TUTORIAL LEFT OVERS = = = / / - - \ \ _ _ / / - - \ \ ^ ^ 0 0 p p b b ! !
+
 
 (defn middle-name [{:keys [middle middle-initial]}]
   (cond
