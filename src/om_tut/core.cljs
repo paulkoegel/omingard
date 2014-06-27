@@ -24,45 +24,8 @@
 
 (defn suit-map [suits] (map card-map suits))
 
-(suit-map suits)
-
 (defn shuffled-stack []
-  (shuffle (into [] (flatten (suit-map suits)))))
-
-(shuffled-stack)
-
-;; mockup with map
-(def my-map {:stack (shuffled-stack),
-            :columns (map (fn [_] []) (range 1 10))})
-
-
-(pop [1,2,3])
-
-(pop (:stack my-map))
-
-(let [card-to-move (last (:stack my-map))]
-
-)
-
-(nth [1 2 3] 1)
-
-(conj [1 2 3] 4)
-
-(defn deploy-card-to-column [a-map column-index]
-  (let [card-to-move (last (:stack my-map))]
-       [new-stack (pop (:stack my-map))]
-       [new-columns (map-indexed (fn [i column] (if ) ) (:columns my-map))]
-
-)
-  (pop (:stack a-map))
-  )
-
-(defn deploy-cards [a-map]
-  ())
-
-
-
-(map (fn [_] {}) (range 1 10))
+  (shuffle (vec (flatten (suit-map suits)))))
 
 (def app-state
   (atom
@@ -71,26 +34,47 @@
      :columns (mapv (fn [_] []) (range 1 10))
     }))
 
-(@app-state :stack)
-
-app-state
-
 (defn serve-card-to-column [state column]
   (let [card (peek (:stack state))]
     (-> state
         (update-in [:stack] pop)
-        (update-in [:columns column] conj card)))
-)
+        (update-in [:columns column] conj card))))
 
-(swap! app-state serve-card-to-column 1)
+(defn serve-cards-to-column [state column n]
+  (reduce
+    (fn [state _]
+      (serve-card-to-column state column))
+    state
+    (range n)))
 
-(count (:stack @app-state))
+(serve-cards-to-column @app-state 1 5)
 
-(defn deploy-cards []
-  (map (fn [] nil) [1, 2, 3, 4, 5, 4, 3, 2, 1]
-  ))
+@app-state
 
-(swap! app-state deploy-cards)
+
+(map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])
+
+;;(map vector (range) [1, 2, 3, 4, 5, 4, 3, 2, 1])
+
+(defn serve-cards [state]
+  (reduce
+   (fn [state [idx n]]
+     (serve-cards-to-column state idx n))
+   state
+   (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])))
+
+(serve-cards @app-state)
+
+  (map-indexed [i el]
+    (fn []
+      (dotimes [_ el]
+        (serve-card-to-column i)))
+    [1, 2, 3, 4, 5, 4, 3, 2, 1]))
+    ;;[1, 2, 3, 4, 5, 4, 3, 2, 1]))
+
+
+
+(swap! app-state serve-cards)
 
 (defn middle-name [{:keys [middle middle-initial]}]
   (cond
