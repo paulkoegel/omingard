@@ -8,16 +8,18 @@
 
 (enable-console-print!)
 
+;; GLOBAL CONSTANTS
 (def columns# 9)
 (def piles# 8)
 
 
-;; F Y I = = = = = = = = = =
+;; SANDBOX - F Y I = = = = = = = = = =
 ;; x product of suits and values
 (for [suit ["hearts", "diamonds", "spades", "clubs"]
       i (range 13)]
      [i suit])
 
+;; alternative:
 (mapcat (fn [suit]
           (map (fn [el] [el suit] ) (range 13)))
         ["hearts", "diamonds", "spades", "clubs"])
@@ -41,13 +43,12 @@
 (defn shuffled-stack []
   (shuffle (vec (flatten (suit-map suits)))))
 
-
 ;; initialise app state
 (def app-state
   (atom
     {:stack (shuffled-stack)
-     :piles (mapv (fn [_] []) (range 1 (+ piles# 1)))
-     :columns (mapv (fn [_] []) (range 1 (+ columns# 1)))
+     :piles (mapv (fn [_] []) (range piles#))
+     :columns (mapv (fn [_] []) (range columns#))
     }))
 
 (defn serve-card-to-column [state column & [open?]]
