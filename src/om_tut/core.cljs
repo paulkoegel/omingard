@@ -63,20 +63,6 @@
       ;; do nothing if stack is empty
       state)))
 
-;; (serve-card-to-column @app-state 0 true)
-
-
-;; DISCARD CARDS - - - - - - - - - -
-;; only a column's last card is discardable - idea: clicking on the highest sorted card on a pile discards all sorted cards below it automatically as well.
-(defn discard-card [state column-index]
-  (let [card (last (-> state :columns column-index))]
-    (if (discardable? state column-index)
-      (-> state
-          (update-in [:columns column-index] pop)
-      )
-      ;; do nothing if the card cannot be discarded
-      state)))
-
 (defn serve-cards-to-column [state column n]
   (reduce
     (fn [state val]
@@ -96,7 +82,7 @@
     state
     (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])))
 
-(serve-cards @app-state)
+;;(serve-cards @app-state) ;; non-destructive
 
 ;; set up initial state of the game
 (swap! app-state serve-cards)
@@ -105,7 +91,7 @@
 (defn serve-new-cards [state]
   (reduce
     (fn [state i]
-      (serve-card-to-column state i))
+      (serve-card-to-column state i true))
     state
     (range columns#)))
 
@@ -114,9 +100,22 @@
 (swap! app-state serve-new-cards)
 
 
+;; DISCARD CARDS - - - - - - - - - -
+;; only a column's last card is discardable
+;; idea for improvement: clicking on the highest sorted card on
+;; a pile discards all sorted cards below it automatically as well.
+(defn discard-card [state column-index]
+  (let [card (last (-> state :columns column-index))]
+    (if (discardable? state column-index)
+      (-> state
+          (update-in [:columns column-index] pop)
+      )
+      ;; do nothing if the card cannot be discarded
+      state)))
 
 
-;; OM TUTORIAL LEFT OVERS = = = / / - - \ \ _ _ / / - - \ \ ^ ^ 0 0 p p b b ! !
+
+;; OM TUTORIAL LEFTOVERS = = = / / - - \ \ _ _ / / - - \ \ ^ ^ 0 0 p p b b ! !
 
 
 (defn middle-name [{:keys [middle middle-initial]}]
