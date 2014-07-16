@@ -1,0 +1,11 @@
+# Omingard
+Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-backbone) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).
+
+### Setup
+Checkout this repository with:
+
+    git clone git@github.com:paulwittmann/omingard.git`
+
+Watch for ClojureScript changes and compile them to JavaScript with:
+
+    lein cljsbuild auto
