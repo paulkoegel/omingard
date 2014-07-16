@@ -8,9 +8,10 @@
 
 (enable-console-print!)
 
+(doc mapv)
+
 ;; GLOBAL CONSTANTS
 (def columns# 9)
-(def piles# 8)
 
 
 ;; SANDBOX - F Y I = = = = = = = = = =
@@ -47,7 +48,7 @@
 (def app-state
   (atom
     {:stack (shuffled-stack)
-     :piles (mapv (fn [_] []) (range piles#))
+     :piles (mapv (fn [suit] {:suit suit :cards []}) suits)
      :columns (mapv (fn [_] []) (range columns#))
     }))
 
@@ -100,19 +101,53 @@
 (swap! app-state serve-new-cards)
 
 
+
 ;; DISCARD CARDS - - - - - - - - - -
+
+(defn discardable? [{piles :piles} state
+                    card]
+  (let [target-pile (pile-index-for-discarding piles card)]
+    (and (:open card) target-pile)))
+
+(pile-index-for-discarding (:piles @app-state {:suit "hearts" :value 1}))
+
+(defn pile-index-for-discarding [piles card]
+  (let [cards-suit (:suit card)
+        cards-value (:value card)
+        target-pile (first (filter #(and (= cards-suit (:suit %)) (= cards-value (:value %))) piles))]
+    (.indexOf piles target-pile)))
+  ;;(->> piles
+  ;;    (filter
+  ;;       (fn)
+  ;;      )))
+
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
 ;; a pile discards all sorted cards below it automatically as well.
 (defn discard-card [state column-index]
-  (let [card (last (-> state :columns column-index))]
-    (if (discardable? state column-index)
+  (let [card (-> state :columns (nth column-index) last)
+        target-pile (pile-for-card state card)]
+    (if (discardable? card)
       (-> state
-          (update-in [:columns column-index] pop)
-      )
+          (update-in [:columns column-index] pop))
+          (update-in [:piles] )
       ;; do nothing if the card cannot be discarded
       state)))
 
+(discard-card @app-state 0)
+
+;; convenience functions for debugging
+(d-column-ending-cards @app-state)
+
+(defn d-column-ending-cards [{columns :columns} state]
+  (map
+   (fn [column]
+     (let [card (last column)]
+       (str (subs (:suit card) 0 1) (:value card))))
+   columns)
+)
+;; demo:
+(d-column-ending-cards @app-state)
 
 
 ;; OM TUTORIAL LEFTOVERS = = = / / - - \ \ _ _ / / - - \ \ ^ ^ 0 0 p p b b ! !
