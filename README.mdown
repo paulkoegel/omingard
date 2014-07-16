@@ -2,7 +2,7 @@
 Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-backbone) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).
 
 ### Setup
-Checkout this repository with:
+Check out this repository with:
 
     git clone git@github.com:paulwittmann/omingard.git`
 
