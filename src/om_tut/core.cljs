@@ -29,7 +29,7 @@
 (def suits
   (mapcat
     (fn [suit] [suit, suit])
-    ["hearts", "diamonds", "spades", " clubs"]))
+    ["hearts", "diamonds", "spades", "clubs"]))
 
 (defn card-map [suit]
   (map
