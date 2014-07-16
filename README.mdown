@@ -2,10 +2,18 @@
 Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-backbone) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).
 
 ### Setup
-Check out this repository with:
+Check out this repository:
 
     git clone git@github.com:paulwittmann/omingard.git`
 
-Watch for ClojureScript changes and compile them to JavaScript with:
+Watch for ClojureScript changes:
 
     lein cljsbuild auto
+
+Start a web server:
+
+    python -m SimpleHTTPServer
+
+Open `http://localhost:8000`.
+
+Refer to the excellent [Lighttable ClojureScript tutorial](https://github.com/swannodette/lt-cljs-tutorial) for integrating a ClojureScript REPL with an editor.

@@ -8,8 +8,6 @@
 
 (enable-console-print!)
 
-(doc mapv)
-
 ;; GLOBAL CONSTANTS
 (def columns# 9)
 
