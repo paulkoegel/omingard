@@ -259,17 +259,21 @@
 
 (om/root
   (fn [app owner]
-    (dom/div #js {:className "columns-container"}
-      (apply dom/ul #js {:className "xaa"}
-        (map
-          (fn [column]
-            (dom/li #js {:className "m-column"}
-              (str (:suit (first column)))))
+    (apply dom/div #js {:className "columns-container"}
+      (map
+        (fn [column]
+          (apply dom/ul #js {:className "m-column"}
+            (map
+              (fn [card]
+                (dom/li #js {:className "m-card"}
+                  (str (:suit card) " " (:value card))))
+              column)))
+
           ;; )
           ;;(fn [column]
           ;;(apply dom/ul #js {:className "m-column"}
           ;; (map (fn [card] (dom/li nil (str (:suit card) " " (:value card)))) column)))
-          (:columns app)))))
+          (:columns app))))
   app-state
   {:target (. js/document (getElementById "omingard"))})
 
