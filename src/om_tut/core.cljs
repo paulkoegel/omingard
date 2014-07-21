@@ -259,9 +259,17 @@
 
 (om/root
   (fn [app owner]
-    #_(dom/ul #js {:className "hulk"})
-    (apply dom/ul #js {:className "animals"}
-      (map (fn [card] (dom/li nil (str (:suit card) " " (:value card)))) (:stack app))))
+    (dom/div #js {:className "columns-container"}
+      (apply dom/ul #js {:className "xaa"}
+        (map
+          (fn [column]
+            (dom/li #js {:className "m-column"}
+              (str (:suit (first column)))))
+          ;; )
+          ;;(fn [column]
+          ;;(apply dom/ul #js {:className "m-column"}
+          ;; (map (fn [card] (dom/li nil (str (:suit card) " " (:value card)))) column)))
+          (:columns app)))))
   app-state
   {:target (. js/document (getElementById "omingard"))})
 
