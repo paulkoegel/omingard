@@ -16,23 +16,9 @@
     :red
     :black))
 
-;; SANDBOX - F Y I = = = = = = = = = =
-;; x product of suits and values
-(for [suit [:hearts, :diamonds, :spades, :clubs]
-      i (range 13)]
-     [i suit])
-
-;; alternative:
-(mapcat (fn [suit]
-          (map (fn [el] [el suit] ) (range 13)))
-        [:hearts, :diamonds, :spades, :clubs])
-
-;; / E N D   F Y I ===
 
 ;; generate a stack of cards
-
-(def suits
-  (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
+(def suits (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
 
 (defn card-map [suit]
   (map
@@ -104,18 +90,17 @@
 
 ;; DISCARD CARDS - - - - - - - - - -
 
-(defn discardable? [{piles :piles} state
+#_(defn discardable? [{piles :piles} state
                     card]
   (let [target-pile (pile-index-for-discarding piles card)]
     (and (:open card) target-pile)))
 
-(pile-index-for-discarding ((:piles @app-state) {:suit :hearts :value 1}))
+;; (pile-index-for-discarding ((:piles @app-state) {:suit :hearts :value 1}))
 
-(.indexOf (apply array [1 2 3]) 2)
+;;(.indexOf (apply array [1 2 3]) 2)
 
-(array 1 2 3)
 
-(defn pile-index-for-discarding [piles card]
+#_(defn pile-index-for-discarding [piles card]
   (let [cards-suit (:suit card)
         cards-value (:value card)
         target-pile (first (filter #(and (= cards-suit (:suit %)) (= cards-value (:value %))) piles))]
@@ -128,7 +113,7 @@
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
 ;; a pile discards all sorted cards below it automatically as well.
-(defn discard-card [state column-index]
+#_(defn discard-card [state column-index]
   (let [card (-> state :columns (nth column-index) last)
         target-pile (pile-for-card state card)]
     (if (discardable? card)
@@ -138,10 +123,9 @@
       ;; do nothing if the card cannot be discarded
       state)))
 
-(discard-card @app-state 0)
+#_(discard-card @app-state 0)
 
 ;; convenience functions for debugging
-(d-column-ending-cards @app-state)
 
 (defn d-column-ending-cards [{columns :columns} state]
   (map
@@ -266,5 +250,33 @@
           (dom/input #js {:type "text" :ref "new-contact"})
           (dom/button #js {:onClick #(add-contact app owner)} "Add contact"))))))
 
-(om/root registry-view app-state
-  {:target (. js/document (getElementById "registry"))})
+#_(defn omingard-view [app owner]
+  (reify
+    om/IRenderState
+    (render-state [this])
+  ))
+
+
+(om/root
+  (fn [app owner]
+    #_(dom/ul #js {:className "hulk"})
+    (apply dom/ul #js {:className "animals"}
+      (map (fn [card] (dom/li nil (str (:suit card) " " (:value card)))) (:stack app))))
+  app-state
+  {:target (. js/document (getElementById "omingard"))})
+
+
+
+
+;; SANDBOX - F Y I = = = = = = = = = =
+;; x product of suits and values
+(for [suit [:hearts, :diamonds, :spades, :clubs]
+      i (range 13)]
+     [i suit])
+
+;; alternative:
+(mapcat (fn [suit]
+          (map (fn [el] [el suit] ) (range 13)))
+        [:hearts, :diamonds, :spades, :clubs])
+
+;; / E N D   F Y I ===
