@@ -11,25 +11,28 @@
 ;; GLOBAL CONSTANTS
 (def columns# 9)
 
+(defn colour [{suit :suit} card]
+  (if (contains? [:heart :diamonds] suit)
+    :red
+    :black))
 
 ;; SANDBOX - F Y I = = = = = = = = = =
 ;; x product of suits and values
-(for [suit ["hearts", "diamonds", "spades", "clubs"]
+(for [suit [:hearts, :diamonds, :spades, :clubs]
       i (range 13)]
      [i suit])
 
 ;; alternative:
 (mapcat (fn [suit]
           (map (fn [el] [el suit] ) (range 13)))
-        ["hearts", "diamonds", "spades", "clubs"])
+        [:hearts, :diamonds, :spades, :clubs])
 
 ;; / E N D   F Y I ===
 
 ;; generate a stack of cards
+
 (def suits
-  (mapcat
-    (fn [suit] [suit, suit])
-    ["hearts", "diamonds", "spades", "clubs"]))
+  (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
 
 (defn card-map [suit]
   (map
@@ -46,7 +49,7 @@
 (def app-state
   (atom
     {:stack (shuffled-stack)
-     :piles (mapv (fn [suit] {:suit suit :cards []}) suits)
+     :piles (mapv (fn [suit] {suit []}) suits)
      :columns (mapv (fn [_] []) (range columns#))
     }))
 
@@ -99,7 +102,6 @@
 (swap! app-state serve-new-cards)
 
 
-
 ;; DISCARD CARDS - - - - - - - - - -
 
 (defn discardable? [{piles :piles} state
@@ -107,13 +109,17 @@
   (let [target-pile (pile-index-for-discarding piles card)]
     (and (:open card) target-pile)))
 
-(pile-index-for-discarding (:piles @app-state {:suit "hearts" :value 1}))
+(pile-index-for-discarding ((:piles @app-state) {:suit :hearts :value 1}))
+
+(.indexOf (apply array [1 2 3]) 2)
+
+(array 1 2 3)
 
 (defn pile-index-for-discarding [piles card]
   (let [cards-suit (:suit card)
         cards-value (:value card)
         target-pile (first (filter #(and (= cards-suit (:suit %)) (= cards-value (:value %))) piles))]
-    (.indexOf piles target-pile)))
+    (.indexOf (apply array piles) target-pile)))
   ;;(->> piles
   ;;    (filter
   ;;       (fn)
