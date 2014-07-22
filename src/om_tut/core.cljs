@@ -39,22 +39,25 @@
      :columns (mapv (fn [_] []) (range columns#))
     }))
 
-(defn serve-card-to-column [state column & [open?]]
+(defn serve-card-to-column [state column-index & [open?]]
   (let [card (peek (:stack state))
         card (if (and open? card)
               (assoc card :open true)
               card)]
+    (js/console.log "serve-card-to-column" column-index open?)
     (if card
       (-> state
           (update-in [:stack] pop)
-          (update-in [:columns column] conj card))
-      ;; do nothing if stack is empty
-      state)))
+          (update-in [:columns column-index] conj card))
+      state ;; do nothing if stack is empty
+      )))
 
-(defn serve-cards-to-column [state column n]
+(defn serve-cards-to-column [state column-index n]
+  (js/console.log "serve-cards-to-column" column-index n)
   (reduce
-    (fn [state val]
-      (serve-card-to-column state column (if (= (- n 1) val) true false)))
+    (fn [memo val]
+      (js/console.log "inside reduce" val)
+      (serve-card-to-column memo column-index (if (= (- n 1) val) true false)))
     state
     (range n)))
 
@@ -75,6 +78,10 @@
 ;; set up initial state of the game
 (swap! app-state serve-cards)
 
+#_(swap! app-state serve-cards-to-column 0 3)
+
+#_(swap! app-state serve-card-to-column 0)
+
 ;; when there are no more moves, serve new cards to columns
 (defn serve-new-cards [state]
   (reduce
@@ -83,9 +90,9 @@
     state
     (range columns#)))
 
-(serve-new-cards @app-state)
+#_(serve-new-cards @app-state)
 
-(swap! app-state serve-new-cards)
+#_(swap! app-state serve-new-cards)
 
 
 ;; DISCARD CARDS - - - - - - - - - -
