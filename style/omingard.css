@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box; /* http://www.paulirish.com/2012/box-sizing-border-box-ftw */
+}
+
+.m-column {
+  float: left;
+  width: 100px;
+  padding: 0;
+  list-style: none;
+  margin-right: 30px;
+}
+
+.m-card {
+  background: #ddd;
+  margin: 2px 0;
+  padding: 5px;
+  color: white;
+  text-align: center;
+  border-radius: 3px;
+}
+
+.m-card .black {
+  color: black;
+}
+
+.m-card .red {
+  color: red;
+}
+
+.m-card.open {
+  background-color: #fafafa;
+}
