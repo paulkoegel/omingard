@@ -131,18 +131,6 @@
 
 #_(discard-card @app-state 0)
 
-;; convenience functions for debugging
-
-(defn d-column-ending-cards [{columns :columns} state]
-  (map
-   (fn [column]
-     (let [card (last column)]
-       (str (subs (:suit card) 0 1) (:value card))))
-   columns)
-)
-;; demo:
-(d-column-ending-cards @app-state)
-
 
 ;; OM TUTORIAL LEFTOVERS = = = / / - - \ \ _ _ / / - - \ \ ^ ^ 0 0 p p b b ! !
 
@@ -168,8 +156,8 @@
       (dom/li nil
         (dom/div nil (display-name professor))
         (dom/label nil "Classes")
-        (apply dom/ul nil
-          (map #(dom/li nil %) (:classes professor)))))))
+        (apply dom/ul #js {:className "m-column"}
+          (map #(dom/li #js {:className "m-card"} %) (:classes professor)))))))
 
 (defmulti entry-view (fn [person _] (:type person)))
 
@@ -263,6 +251,13 @@
   ))
 
 
+(defn symbol-for-suit [suit]
+  (case suit
+    :spades "♠"
+    :hearts "♥"
+    :diamonds "♦"
+    :clubs "♣"))
+
 (om/root
   (fn [app owner]
     (apply dom/div #js {:className "columns-container"}
@@ -271,8 +266,9 @@
           (apply dom/ul #js {:className "m-column"}
             (map
               (fn [card]
-                (dom/li #js {:className "m-card"}
-                  (str (:suit card) " " (:value card))))
+                (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))}
+                  (dom/span #js {:className (name (colour card))}
+                    (str (symbol-for-suit (:suit card)) " " (:value card)))))
               column)))
 
           ;; )
