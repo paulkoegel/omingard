@@ -12,10 +12,9 @@
 (def columns# 9)
 
 (defn colour [{suit :suit} card]
-  (if (contains? [:heart :diamonds] suit)
+  (if (some #{suit} [:hearts :diamonds])
     :red
     :black))
-
 
 ;; generate a stack of cards
 (def suits (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
