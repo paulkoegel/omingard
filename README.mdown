@@ -21,4 +21,4 @@ Refer to the excellent [Lighttable ClojureScript tutorial](https://github.com/sw
 ### Status
 
 Current screenshot:
-![http://monosnap.com/image/Ta5RJTWbaFoN01P2sVjpfPHM1qNscS.png](http://monosnap.com/image/Ta5RJTWbaFoN01P2sVjpfPHM1qNscS.png)
+![screenshot](https://www.dropbox.com/s/rbep9vsz5ehh253/omingard.png)
