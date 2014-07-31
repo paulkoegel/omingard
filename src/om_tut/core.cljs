@@ -120,13 +120,6 @@
 #_(discard-card @app-state 0)
 
 
-#_(defn omingard-view [app owner]
-  (reify
-    om/IRenderState
-    (render-state [this])
-  ))
-
-
 (defn symbol-for-suit [suit]
   (case suit
     :spades "♠"
@@ -139,40 +132,37 @@
   (js/console.log owner)
   (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
 
-#_(defn column-view [app owner]
+(defn card-view [card owner]
   (reify
     om/IRender
     (render [this]
-      (dom/div nil
-        (dom/h2 nil "Contact list")
-        (dom/button #js {:onClick #(sort-by-last-name app owner)}
-          "Sort by last name")
-        (apply dom/ul nil
-          (om/build-all contact-view (:contacts app)
-            {:init-state {:delete delete}}))
-        (dom/div nil
-          (dom/input #js {:type "text" :ref "new-contact"})
-          (dom/button #js {:onClick #(add-contact app owner)} "Add contact"))))))
+      (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))
+                   :onClick #(start-drag card owner)}
+        (dom/span #js {:className (name (colour card))}
+          (str (symbol-for-suit (:suit card)) " " (:value card)))))))
+
+(defn column-view [column owner]
+  (reify
+    om/IRender
+    (render [this]
+      (apply dom/ul #js {:className "m-column"}
+        (om/build-all card-view column)))))
+
+(defn columns-view [app owner]
+  (reify
+    om/IRender
+    (render [this]
+      (apply dom/ul #js {:className "m-columns"}
+        (om/build-all column-view (:columns app))))))
+
+(defn omingard-view [app owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div #js {:className "omingard-wrapper"}
+        (om/build columns-view app)))))
 
 (om/root
-  (fn [app owner]
-    (apply dom/div #js {:className "columns-container"}
-      (map
-        (fn [column]
-          (apply dom/ul #js {:className "m-column"}
-            (map
-              (fn [card]
-                (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))
-                             :onClick #(start-drag app owner)
-                            }
-                  (dom/span #js {:className (name (colour card))}
-                    (str (symbol-for-suit (:suit card)) " " (:value card)))))
-              column)))
-
-          ;; )
-          ;;(fn [column]
-          ;;(apply dom/ul #js {:className "m-column"}
-          ;; (map (fn [card] (dom/li nil (str (:suit card) " " (:value card)))) column)))
-          (:columns app))))
+  omingard-view
   app-state
   {:target (. js/document (getElementById "omingard"))})
