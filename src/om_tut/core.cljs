@@ -36,6 +36,7 @@
     {:stack (shuffled-stack)
      :piles (mapv (fn [suit] {suit []}) suits)
      :columns (mapv (fn [_] []) (range columns#))
+     :currently_dragging [] ;; tuple of clolum-index, card-index !?!
     }))
 
 (defn serve-card-to-column [state column-index & [open?]]
@@ -60,11 +61,6 @@
     state
     (range n)))
 
-;; demos:
-;; (serve-cards-to-column @app-state 1 5)
-;; (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])
-;; (map vector (range) [1, 2, 3, 4, 5, 4, 3, 2, 1])
-
 (defn serve-cards [state]
   (reduce
     (fn [state [idx n]]
@@ -72,14 +68,8 @@
     state
     (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])))
 
-;;(serve-cards @app-state) ;; non-destructive
-
 ;; set up initial state of the game
 (swap! app-state serve-cards)
-
-#_(swap! app-state serve-cards-to-column 0 3)
-
-#_(swap! app-state serve-card-to-column 0)
 
 ;; when there are no more moves, serve new cards to columns
 (defn serve-new-cards [state]
@@ -88,8 +78,6 @@
       (serve-card-to-column state i true))
     state
     (range columns#)))
-
-#_(serve-new-cards @app-state)
 
 #_(swap! app-state serve-new-cards)
 
@@ -132,118 +120,6 @@
 #_(discard-card @app-state 0)
 
 
-;; OM TUTORIAL LEFTOVERS = = = / / - - \ \ _ _ / / - - \ \ ^ ^ 0 0 p p b b ! !
-
-
-(defn middle-name [{:keys [middle middle-initial]}]
-  (cond
-    middle (str " " middle)
-    middle-initial (str " " middle-initial ".")))
-
-(defn display-name [{:keys [first last] :as contact}]
-  (str last ", " first (middle-name contact)))
-
-(defn student-view [student owner]
-  (reify
-    om/IRender
-    (render [_]
-      (dom/li nil (display-name student)))))
-
-(defn professor-view [professor owner]
-  (reify
-    om/IRender
-    (render [_]
-      (dom/li nil
-        (dom/div nil (display-name professor))
-        (dom/label nil "Classes")
-        (apply dom/ul #js {:className "m-column"}
-          (map #(dom/li #js {:className "m-card"} %) (:classes professor)))))))
-
-(defmulti entry-view (fn [person _] (:type person)))
-
-(defmethod entry-view :student
-  [person owner] (student-view person owner))
-
-(defmethod entry-view :professor
-  [person owner] (professor-view person owner))
-
-;; add details of a professor's classes (from app) to all professor maps - not permanently, of course.
-(defn people [app]
-  (->> (:people app)
-    (mapv (fn [x]
-      (if (:classes x)
-        (update-in x [:classes]
-          (fn [cs] (mapv (:classes app) cs)))
-         x)))))
-
-(defn registry-view [app owner]
-  (reify
-    om/IRenderState
-    (render-state [_ state]
-      (dom/div #js {:id "registry"}
-        (dom/h2 nil "Registry")
-        (apply dom/ul nil
-          (om/build-all entry-view (people app)))))))
-
-(defn parse-contact [contact-str]
-  (let [[first middle last :as parts] (string/split contact-str #"\s+")
-        [first last middle] (if (nil? last) [first middle] [first last middle])
-        middle (when middle (string/replace middle "." ""))
-        c (if middle (count middle) 0)]
-    (when (>= (count parts) 2)
-      (cond-> {:first first :last last}
-        (== c 1) (assoc :middle-initial middle)
-        (>= c 2) (assoc :middle middle)))))
-
-;; (parse-contact "Gerald J. Sussman")
-
-(defn sort-by-last-name [app _]
-  (om/transact! app :contacts #(vec (sort (fn [{a :last}, {b :last}] #_(js/console.log a b) (< (string/lower-case a) (string/lower-case b))) %))))
-
-(defn add-contact [app owner]
-  (let [new-contact (-> (om/get-node owner "new-contact")
-                        .-value
-                        parse-contact)]
-    (when new-contact
-      (do
-        (om/transact! app :contacts #(conj % new-contact))
-        (set! (.-value (om/get-node owner "new-contact")) nil) ; reset the input
-        ))))
-
-(defn contact-view [contact owner]
-  (reify
-    om/IRenderState
-    (render-state [this {:keys [delete]}]
-      (dom/li nil
-        (dom/span nil (display-name contact))
-        (dom/button #js {:onClick (fn [e] (put! delete @contact))} "Delete")))))
-
-(defn contacts-view [app owner]
-  (reify
-    om/IInitState
-      (init-state [_]
-        {:delete (chan)})
-    om/IWillMount
-      (will-mount [_]
-        (let [delete (om/get-state owner :delete)]
-          (go (loop []
-            (let [contact (<! delete)]
-              (om/transact! app :contacts
-                (fn [xs] (vec (remove #(= contact %) xs))))
-              (recur))))))
-    om/IRenderState
-    (render-state [this {:keys [delete]}]
-      (dom/div nil
-        (dom/h2 nil "Contact list")
-        (dom/button #js {:onClick #(sort-by-last-name app owner)}
-          "Sort by last name")
-        (apply dom/ul nil
-          (om/build-all contact-view (:contacts app)
-            {:init-state {:delete delete}}))
-        (dom/div nil
-          (dom/input #js {:type "text" :ref "new-contact"})
-          (dom/button #js {:onClick #(add-contact app owner)} "Add contact"))))))
-
 #_(defn omingard-view [app owner]
   (reify
     om/IRenderState
@@ -258,6 +134,26 @@
     :diamonds "♦"
     :clubs "♣"))
 
+(defn start-drag [app owner & aaa]
+  (js/console.log app)
+  (js/console.log owner)
+  (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
+
+#_(defn column-view [app owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil
+        (dom/h2 nil "Contact list")
+        (dom/button #js {:onClick #(sort-by-last-name app owner)}
+          "Sort by last name")
+        (apply dom/ul nil
+          (om/build-all contact-view (:contacts app)
+            {:init-state {:delete delete}}))
+        (dom/div nil
+          (dom/input #js {:type "text" :ref "new-contact"})
+          (dom/button #js {:onClick #(add-contact app owner)} "Add contact"))))))
+
 (om/root
   (fn [app owner]
     (apply dom/div #js {:className "columns-container"}
@@ -266,7 +162,9 @@
           (apply dom/ul #js {:className "m-column"}
             (map
               (fn [card]
-                (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))}
+                (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))
+                             :onClick #(start-drag app owner)
+                            }
                   (dom/span #js {:className (name (colour card))}
                     (str (symbol-for-suit (:suit card)) " " (:value card)))))
               column)))
@@ -278,19 +176,3 @@
           (:columns app))))
   app-state
   {:target (. js/document (getElementById "omingard"))})
-
-
-
-
-;; SANDBOX - F Y I = = = = = = = = = =
-;; x product of suits and values
-(for [suit [:hearts, :diamonds, :spades, :clubs]
-      i (range 13)]
-     [i suit])
-
-;; alternative:
-(mapcat (fn [suit]
-          (map (fn [el] [el suit] ) (range 13)))
-        [:hearts, :diamonds, :spades, :clubs])
-
-;; / E N D   F Y I ===
