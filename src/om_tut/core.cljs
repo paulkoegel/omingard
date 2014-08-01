@@ -127,8 +127,8 @@
     :diamonds "♦"
     :clubs "♣"))
 
-(defn start-drag [app owner & aaa]
-  (js/console.log app)
+(defn start-drag [card owner]
+  (js/console.log card)
   (js/console.log owner)
   (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
 
@@ -137,7 +137,8 @@
     om/IRender
     (render [this]
       (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))
-                   :onClick #(start-drag card owner)}
+                   :onClick #(start-drag card owner)
+                   :ref "card"}
         (dom/span #js {:className (name (colour card))}
           (str (symbol-for-suit (:suit card)) " " (:value card)))))))
 
