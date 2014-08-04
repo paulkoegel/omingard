@@ -22,7 +22,7 @@
 
 
 ;; HELPER FUNCTIONS
-(defn colour [{suit :suit}]
+(defn colour [{suit :suit :as card}]
   (if (some #{suit} [:hearts :diamonds])
     :red
     :black))
