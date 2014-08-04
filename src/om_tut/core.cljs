@@ -1,3 +1,11 @@
+;; 1. Let there be cards in a stack: 1 Rummy deck (52 cards - 2-10, jack, queen, king, ace)
+;; 2. shuffle stack.
+;; 3. serve cards to columns
+;; 4. game begins: either move a free open card from one column to another, discard aces
+;;    (and after them 2s etc.) to one of eight discard piles, or serve new open cards (1 per column)
+;; 5. continue until there are no more moves (you lose) or all cards have been discarded to the piles.
+
+
 (ns om-tut.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
@@ -8,27 +16,33 @@
 
 (enable-console-print!)
 
+
 ;; GLOBAL CONSTANTS
 (def columns# 9)
 
+
+;; HELPER FUNCTIONS
 (defn colour [{suit :suit} card]
   (if (some #{suit} [:hearts :diamonds])
     :red
     :black))
 
-;; generate a stack of cards
+
+;; = = = 1 = = = = = = = = = = =
+;; GENERATE A STACK OF CARDS
+;; = = = 1 = = = = = = = = = = =
+
+;; each suit twice
 (def suits (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
 
-(defn card-map [suit]
-  (map
+(defn cards-for-suit [suit]
+  (mapv
     (fn [value]
       {:suit suit :value value})
     (range 1 12)))
 
-(defn suit-map [suits] (map card-map suits))
-
 (defn shuffled-stack []
-  (shuffle (vec (flatten (suit-map suits)))))
+  (shuffle (mapcat cards-for-suit suits)))
 
 ;; initialise app state
 (def app-state
