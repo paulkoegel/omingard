@@ -22,7 +22,7 @@
 
 
 ;; HELPER FUNCTIONS
-(defn colour [{suit :suit} card]
+(defn colour [{suit :suit}]
   (if (some #{suit} [:hearts :diamonds])
     :red
     :black))
@@ -58,7 +58,6 @@
         card (if (and open? card)
               (assoc card :open true)
               card)]
-    (js/console.log "serve-card-to-column" column-index open?)
     (if card
       (-> state
           (update-in [:stack] pop)
@@ -67,10 +66,8 @@
       )))
 
 (defn serve-cards-to-column [state column-index n]
-  (js/console.log "serve-cards-to-column" column-index n)
   (reduce
     (fn [memo val]
-      (js/console.log "inside reduce" val)
       (serve-card-to-column memo column-index (if (= (- n 1) val) true false)))
     state
     (range n)))
@@ -142,8 +139,6 @@
     :clubs "♣"))
 
 (defn start-drag [card owner]
-  (js/console.log card)
-  (js/console.log owner)
   (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
 
 (defn card-view [card owner]
