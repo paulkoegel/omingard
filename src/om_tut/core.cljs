@@ -27,13 +27,45 @@
     :red
     :black))
 
+(defn moveable? [column card]
+  )
+
+;; [app card]
+#_(defn free-pile-for [{piles :piles} card]
+  (first
+    (->> ((:value card) piles) filter
+      (fn [pile]
+        (and (= (:suit pile) (:suit card))
+             (= (count pile) (dec (:value card))))))))
+
+;; dereffing to the max - not applicable in free-pile-for as (:value card) cannot be used for destructuring - can it?
+;; (def state {:piles {:hearts [[] []]}})
+;; (defn x [{{pile :hearts} :piles}] pile)
+;; (x state)
+
+#_(defn discardable? [app card]
+  (if (and (moveable? card) (pile-for card))
+  ))
+
+#_(defn discardable? [{piles :piles} state
+                    card]
+  (let [target-pile (pile-index-for-discarding piles card)]
+    (and (:open card) target-pile)))
+
+;; (pile-index-for-discarding ((:piles @app-state) {:suit :hearts :value 1}))
+
+;;(.indexOf (apply array [1 2 3]) 2)
+
+
 
 ;; = = = 1 = = = = = = = = = = =
 ;; GENERATE A STACK OF CARDS
 ;; = = = 1 = = = = = = = = = = =
 
 ;; each suit twice
-(def suits (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
+(def suits [:hearts :diamonds :spades :clubs])
+
+(def dual-suits (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
 
 (defn cards-for-suit [suit]
   (mapv
@@ -42,16 +74,20 @@
     (range 1 12)))
 
 (defn shuffled-stack []
-  (shuffle (mapcat cards-for-suit suits)))
+  (shuffle (mapcat cards-for-suit dual-suits)))
+
+(defn piles-for-suits [suits]
+  (reduce (fn [memo, suit] (assoc memo suit [[] []])) {} suits))
 
 ;; initialise app state
 (def app-state
   (atom
     {:stack (shuffled-stack)
-     :piles (mapv (fn [suit] {suit []}) suits)
+     :piles (piles-for-suits suits)
      :columns (mapv (fn [_] []) (range columns#))
      :currently_dragging [] ;; tuple of clolum-index, card-index !?!
     }))
+
 
 (defn serve-card-to-column [state column-index & [open?]]
   (let [card (peek (:stack state))
@@ -95,26 +131,6 @@
 
 ;; DISCARD CARDS - - - - - - - - - -
 
-#_(defn discardable? [{piles :piles} state
-                    card]
-  (let [target-pile (pile-index-for-discarding piles card)]
-    (and (:open card) target-pile)))
-
-;; (pile-index-for-discarding ((:piles @app-state) {:suit :hearts :value 1}))
-
-;;(.indexOf (apply array [1 2 3]) 2)
-
-
-#_(defn pile-index-for-discarding [piles card]
-  (let [cards-suit (:suit card)
-        cards-value (:value card)
-        target-pile (first (filter #(and (= cards-suit (:suit %)) (= cards-value (:value %))) piles))]
-    (.indexOf (apply array piles) target-pile)))
-  ;;(->> piles
-  ;;    (filter
-  ;;       (fn)
-  ;;      )))
-
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
 ;; a pile discards all sorted cards below it automatically as well.
@@ -141,12 +157,16 @@
 (defn start-drag [card owner]
   (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
 
+(defn say-hello []
+  (js/console.log "hello"))
+
 (defn card-view [card owner]
   (reify
     om/IRender
     (render [this]
       (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))
                    :onClick #(start-drag card owner)
+                   :onDblClick #(say-hello)
                    :ref "card"}
         (dom/span #js {:className (name (colour card))}
           (str (symbol-for-suit (:suit card)) " " (:value card)))))))
