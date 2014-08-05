@@ -218,8 +218,11 @@
   (reify
     om/IRender
     (render [this]
-      (apply dom/ul #js {:className "m-columns"}
-        (om/build-all column-view (:columns app))))))
+      (dom/div nil
+        (apply dom/ul #js {:className "m-columns"}
+          (om/build-all column-view (:columns app)))
+        (dom/div nil
+          (dom/button #js {:onClick (fn [_] (swap! app-state serve-new-cards) )} "Hit me!"))))))
 
 (defn omingard-view [app owner]
   (reify
