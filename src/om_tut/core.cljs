@@ -28,10 +28,11 @@
     (some #{suit} [:clubs :spades])    :black
     :else nil))
 
-;; replaces values higher than 10 with "J" (jack) etc.
+;; replaces certain values with "J" (jack) etc.
 ;; [card]
 (defn display-value [{value :value}]
   (cond
+    (= value 1) "A"
     (< value 11) value
     (= value 11) "J"
     (= value 12) "Q"
