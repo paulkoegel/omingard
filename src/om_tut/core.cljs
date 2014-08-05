@@ -23,9 +23,19 @@
 
 ;; HELPER FUNCTIONS
 (defn colour [{suit :suit :as card}]
-  (if (some #{suit} [:hearts :diamonds])
-    :red
-    :black))
+  (cond
+    (some #{suit} [:hearts :diamonds]) :red
+    (some #{suit} [:clubs :spades])    :black
+    :else nil))
+
+;; replaces values higher than 10 with "J" (jack) etc.
+;; [card]
+(defn display-value [{value :value}]
+  (cond
+    (< value 11) value
+    (= value 11) "J"
+    (= value 12) "Q"
+    (= value 13) "K"))
 
 (defn moveable? [column card]
   )
@@ -71,7 +81,7 @@
   (mapv
     (fn [value]
       {:suit suit :value value})
-    (range 1 12)))
+    (range 1 14)))
 
 (defn shuffled-stack []
   (shuffle (mapcat cards-for-suit dual-suits)))
@@ -169,7 +179,7 @@
                    :onDblClick #(say-hello)
                    :ref "card"}
         (dom/span #js {:className (name (colour card))}
-          (str (symbol-for-suit (:suit card)) " " (:value card)))))))
+          (str (symbol-for-suit (:suit card)) " " (display-value card)))))))
 
 (defn column-view [column owner]
   (reify
