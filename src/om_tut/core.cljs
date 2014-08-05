@@ -25,21 +25,46 @@
 (defn colour [{suit :suit :as card}]
   (cond
     (some #{suit} [:hearts :diamonds]) :red
-    (some #{suit} [:clubs :spades])    :black
-    :else nil))
+    (some #{suit} [:clubs :spades])    :black))
 
 ;; replaces certain values with "J" (jack) etc.
 ;; [card]
 (defn display-value [{value :value}]
   (cond
     (= value 1) "A"
-    (< value 11) value
+    (< value 11) (str value)
     (= value 11) "J"
     (= value 12) "Q"
     (= value 13) "K"))
 
+(defn open? [card]
+  (:open card))
+
+(defn children-of [column card]
+  (let [children (vec (last (partition-by (fn [el] (= el card)) column)))]
+    (if (= children column)
+      [] ;; card's not included in that column
+      children
+      )))
+
+(defn with-alternating-colors? [cards]
+  (let [colours (map #(colour %) cards)]
+    ;; problem with the reduce function is that it'll return false if the last element
+    ;; of an alternating sequence is `false`.
+    ;; works when cards contains only one card
+    (reduce
+      (fn [memo colour] (if (not= memo colour) colour (reduced false))) ;; `reduced` breaks the iteration
+      (first colours)
+      (rest colours))))
+
+(defn sorted-children? [column card]
+  (let [children (children-of column card)]
+    ;; what if there are no children?
+    (and (= children (sort-by #(:value %) children))
+         (with-alternating-colours? children))))
+
 (defn moveable? [column card]
-  )
+  (and (open? card) (sorted-children? column card)))
 
 ;; [app card]
 #_(defn free-pile-for [{piles :piles} card]
@@ -68,7 +93,6 @@
 ;;(.indexOf (apply array [1 2 3]) 2)
 
 
-
 ;; = = = 1 = = = = = = = = = = =
 ;; GENERATE A STACK OF CARDS
 ;; = = = 1 = = = = = = = = = = =
@@ -76,16 +100,17 @@
 ;; each suit twice
 (def suits [:hearts :diamonds :spades :clubs])
 
-(def dual-suits (mapcat (fn [suit] [suit, suit]) [:hearts :diamonds :spades :clubs]))
-
+;; [suits] where an entry of suits consists of, e.g., [:hearts :hearts]
 (defn cards-for-suit [suit]
-  (mapv
+  (mapcat
     (fn [value]
-      {:suit suit :value value})
+      ;; need to add a deck parameter to distinguish cards with the same value and suit in the same column
+      [{:deck 1 :suit suit :value value}
+       {:deck 2 :suit suit :value value}])
     (range 1 14)))
 
 (defn shuffled-stack []
-  (shuffle (mapcat cards-for-suit dual-suits)))
+  (shuffle (mapcat cards-for-suit suits)))
 
 (defn piles-for-suits [suits]
   (reduce (fn [memo, suit] (assoc memo suit [[] []])) {} suits))
@@ -175,12 +200,12 @@
   (reify
     om/IRender
     (render [this]
-      (dom/li #js {:className (str "m-card" (if (:open card) " open" nil))
+      (dom/li #js {:className (str "m-card" (if (open? card) " open"))
                    :onClick #(start-drag card owner)
                    :onDblClick #(say-hello)
                    :ref "card"}
         (dom/span #js {:className (name (colour card))}
-          (str (symbol-for-suit (:suit card)) " " (display-value card)))))))
+          (str (symbol-for-suit (:suit card)) " " (display-value card) " (" (:deck card) ")"))))))
 
 (defn column-view [column owner]
   (reify
