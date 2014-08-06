@@ -76,28 +76,42 @@
 ;; [app card]
 #_(defn free-pile-for [{piles :piles} card]
   (first
-    (->> ((:value card) piles) filter
-      (fn [pile]
-        (and (= (:suit pile) (:suit card))
-             (= (count pile) (dec (:value card))))))))
+    (->> ((:suit card) piles)
+         filter
+         (fn [pile]
+           (= (count pile) (dec (:value card)))))))
 
-;; dereffing to the max - not applicable in free-pile-for as (:value card) cannot be used for destructuring - can it?
+;; derefing to the max - not applicable in free-pile-for as (:value card) cannot be used for destructuring - can it?
 ;; (def state {:piles {:hearts [[] []]}})
 ;; (defn x [{{pile :hearts} :piles}] pile)
 ;; (x state)
 
-#_(defn discardable? [app card]
-  (if (and (moveable? card) (pile-for card))
+
+;; DISCARD CARDS - - - - - - -
+
+(defn discardable? [app card]
+  ;; TODO: implement real check
+  true
+  #_(if (and (moveable? card) (free-pile-for app card))
   ))
 
-#_(defn discardable? [{piles :piles} state
-                    card]
-  (let [target-pile (pile-index-for-discarding piles card)]
-    (and (:open card) target-pile)))
+;; [app card]
+(defn column-for [{columns :columns} card]
+  (first (filter
+    (fn [column] (some #{card} (:cards column)))
+    columns)))
 
-;; (pile-index-for-discarding ((:piles @app-state) {:suit :hearts :value 1}))
-
-;;(.indexOf (apply array [1 2 3]) 2)
+;; only a column's last card is discardable
+;; idea for improvement: clicking on the highest sorted card on
+;; a pile discards all sorted cards below it automatically as well.
+(defn discard-card [app card]
+  (let [column (column-for app card)]
+    (if (discardable? column card)
+      (-> app
+        (update-in [:columns (:index column) :cards] pop)
+        (update-in [:piles 0] conj card))
+      ;; do nothing if card cannot be discarded
+      app)))
 
 
 ;; = = = 1 = = = = = = = = = = =
@@ -170,24 +184,6 @@
 
 #_(swap! app-state serve-new-cards)
 
-
-;; DISCARD CARDS - - - - - - - - - -
-
-;; only a column's last card is discardable
-;; idea for improvement: clicking on the highest sorted card on
-;; a pile discards all sorted cards below it automatically as well.
-#_(defn discard-card [state column-index]
-  (let [card (-> state :columns (nth column-index) last)
-        target-pile (pile-for-card state card)]
-    (if (discardable? card)
-      (-> state
-          (update-in [:columns column-index] pop))
-          (update-in [:piles] )
-      ;; do nothing if the card cannot be discarded
-      state)))
-
-#_(discard-card @app-state 0)
-
 (defn start-drag [card owner]
   (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
 
@@ -215,25 +211,6 @@
     (render-state [this {:keys [discard-channel]}]
       (apply dom/ul #js {:className "m-columns"}
         (om/build-all column-view columns {:init-state {:discard-channel discard-channel}})))))
-
-;; [app card]
-(defn column-for [{columns :columns} card]
-  (first (filter
-    (fn [column] (some #{card} (:cards column)))
-    columns)))
-
-(defn discardable? [column card]
-  ;; TODO: implement real check
-  true)
-
-(defn discard-card [app card]
-  (let [column (column-for app card)]
-    (if (discardable? column card)
-      (-> app
-        (update-in [:columns (:index column) :cards] pop)
-        (update-in [:piles 0] conj card))
-      ;; do nothing if card cannot be discarded
-      app)))
 
 (defn omingard-view [app owner]
   (reify
