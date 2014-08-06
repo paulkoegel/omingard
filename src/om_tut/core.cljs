@@ -37,6 +37,13 @@
     (= value 12) "Q"
     (= value 13) "K"))
 
+(defn symbol-for-suit [suit]
+  (case suit
+    :spades "♠"
+    :hearts "♥"
+    :diamonds "♦"
+    :clubs "♣"))
+
 (defn open? [card]
   (:open card))
 
@@ -47,7 +54,7 @@
       children
       )))
 
-(defn with-alternating-colors? [cards]
+(defn with-alternating-colours? [cards]
   (let [colours (map #(colour %) cards)]
     ;; problem with the reduce function is that it'll return false if the last element
     ;; of an alternating sequence is `false`.
@@ -120,10 +127,9 @@
   (atom
     {:stack (shuffled-stack)
      :piles (piles-for-suits suits)
-     :columns (mapv (fn [_] []) (range columns#))
+     :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
      :currently_dragging [] ;; tuple of clolum-index, card-index !?!
     }))
-
 
 (defn serve-card-to-column [state column-index & [open?]]
   (let [card (peek (:stack state))
@@ -133,9 +139,9 @@
     (if card
       (-> state
           (update-in [:stack] pop)
-          (update-in [:columns column-index] conj card))
-      state ;; do nothing if stack is empty
-      )))
+          (update-in [:columns column-index :cards] conj card))
+      ;; do nothing if stack is empty
+      state)))
 
 (defn serve-cards-to-column [state column-index n]
   (reduce
@@ -182,52 +188,70 @@
 
 #_(discard-card @app-state 0)
 
-
-(defn symbol-for-suit [suit]
-  (case suit
-    :spades "♠"
-    :hearts "♥"
-    :diamonds "♦"
-    :clubs "♣"))
-
 (defn start-drag [card owner]
   (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
 
-(defn say-hello []
-  (js/console.log "hello"))
-
 (defn card-view [card owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IRenderState
+    (render-state [this {:keys [discard-channel]}]
       (dom/li #js {:className (str "m-card" (if (open? card) " open"))
                    :onClick #(start-drag card owner)
-                   :onDblClick #(say-hello)
+                   :onDoubleClick (fn [e] (put! discard-channel @card))
                    :ref "card"}
         (dom/span #js {:className (name (colour card))}
           (str (symbol-for-suit (:suit card)) " " (display-value card) " (" (:deck card) ")"))))))
 
 (defn column-view [column owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IRenderState
+    (render-state [this {:keys [discard-channel]}]
       (apply dom/ul #js {:className "m-column"}
-        (om/build-all card-view column)))))
+        (om/build-all card-view (:cards column) {:init-state {:discard-channel discard-channel}})))))
 
 (defn columns-view [columns owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IRenderState
+    (render-state [this {:keys [discard-channel]}]
       (apply dom/ul #js {:className "m-columns"}
-        (om/build-all column-view columns)))))
+        (om/build-all column-view columns {:init-state {:discard-channel discard-channel}})))))
+
+;; [app card]
+(defn column-for [{columns :columns} card]
+  (first (filter
+    (fn [column] (some #{card} (:cards column)))
+    columns)))
+
+(defn discardable? [column card]
+  ;; TODO: implement real check
+  true)
+
+(defn discard-card [app card]
+  (let [column (column-for app card)]
+    (if (discardable? column card)
+      (-> app
+        (update-in [:columns (:index column) :cards] pop)
+        (update-in [:piles 0] conj card))
+      ;; do nothing if card cannot be discarded
+      app)))
 
 (defn omingard-view [app owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [_]
+      {:discard-channel (chan)})
+    om/IWillMount
+    (will-mount [_]
+       (let [discard-channel (om/get-state owner :discard-channel)]
+         (go (loop []
+           (let [card (<! discard-channel)]
+             (om/transact! app (fn [xs] (discard-card xs card)))
+             (recur))))))
+    om/IRenderState
+    (render-state [this {:keys [discard-channel]}]
       (dom/div #js {:className "omingard-wrapper"}
-        (om/build columns-view (:columns app))
-        (dom/button #js {:onClick (fn [_] (om/transact! app serve-new-cards) )} "Hit me!")))))
+        (om/build columns-view (:columns app) {:init-state {:discard-channel discard-channel}})
+        (dom/button #js {:onClick (fn [_] (om/transact! app serve-new-cards))} "Hit me!")))))
 
 (om/root
   omingard-view
