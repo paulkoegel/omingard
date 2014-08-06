@@ -214,22 +214,20 @@
       (apply dom/ul #js {:className "m-column"}
         (om/build-all card-view column)))))
 
-(defn columns-view [app owner]
+(defn columns-view [columns owner]
   (reify
     om/IRender
     (render [this]
-      (dom/div nil
-        (apply dom/ul #js {:className "m-columns"}
-          (om/build-all column-view (:columns app)))
-        (dom/div nil
-          (dom/button #js {:onClick (fn [_] (swap! app-state serve-new-cards) )} "Hit me!"))))))
+      (apply dom/ul #js {:className "m-columns"}
+        (om/build-all column-view columns)))))
 
 (defn omingard-view [app owner]
   (reify
     om/IRender
     (render [this]
       (dom/div #js {:className "omingard-wrapper"}
-        (om/build columns-view app)))))
+        (om/build columns-view (:columns app))
+        (dom/button #js {:onClick (fn [_] (om/transact! app serve-new-cards) )} "Hit me!")))))
 
 (om/root
   omingard-view
