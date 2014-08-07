@@ -2,12 +2,17 @@
   box-sizing: border-box; /* http://www.paulirish.com/2012/box-sizing-border-box-ftw */
 }
 
-.m-column {
+.m-column-wrapper {
   float: left;
   width: 100px;
-  padding: 0;
-  list-style: none;
   margin-right: 30px;
+  min-height: 1px;
+  border-top: 1px solid black;
+}
+
+.m-column {
+  list-style: none;
+  padding: 0;
 }
 
 .m-card {

@@ -47,6 +47,9 @@
 (defn open? [card]
   (:open card))
 
+(defn label-for [card]
+  (str (symbol-for-suit (:suit card)) " " (display-value card) " (" (:deck card) ")"))
+
 (defn children-of [column card]
   (let [children (vec (last (partition-by (fn [el] (= el card)) column)))]
     (if (= children column)
@@ -66,34 +69,20 @@
 
 (defn sorted-children? [column card]
   (let [children (children-of column card)]
-    (js/console.log "sorted-children?::children" (clj->js children))
-    (js/console.log "sorted-children?::column" (clj->js column))
-    (js/console.log "sorted-children?::card" (clj->js card))
     (if (empty? children)
       true
       (and (= children (sort-by #(:value %) children))
          (with-alternating-colours? children)))))
 
 (defn moveable? [column card]
-  (do
-    #_(js/console.log "moveable::open? " (open? card))
-    #_(js/console.log "moveable::column" (clj->js (:cards column)))
-    #_(js/console.log "moveable::card" (clj->js card))
-    #_(js/console.log "moveable::sorted-children?" (sorted-children? card))
-    (and (open? card) (sorted-children? (:cards column) card))
-    ))
+  (and (open? card) (sorted-children? (:cards column) card)))
 
 (defn free-pile-for [piles card]
-  (let [x
-    (first
-      (->> ((:suit card) piles)
-           (filter
-             (fn [pile]
-               (= (count pile) (dec (:value card)))))))]
-    #_(js/console.log "x" (clj->js x))
-    #_(js/console.log "suit" (clj->js (:suit card)))
-    #_(js/console.log "piles" (clj->js piles))
-    x))
+  (first
+    (->> ((:suit card) piles)
+         (filter
+           (fn [pile]
+             (= (count pile) (dec (:value card))))))))
 
 #_(first (filter
   (fn [pile] (= (count pile) 0))
@@ -113,18 +102,14 @@
 
 ;; DISCARD CARDS - - - - - - -
 
-(defn discardable? [app card]
-  ;; TODO: implement real check
-  (let [x (and (moveable? (column-for (:columns app) card) card) (free-pile-for (:piles app) card))]
-    (js/console.log "discardable?::card" (clj->js card))
-    (js/console.log "discardable::moveable?" (moveable? (column-for (:columns app) card) card))
-    (js/console.log "discardable::free-pile?" (free-pile-for (:piles app) card))
-     x))
-
 (defn column-for [columns card]
   (first (filter
     (fn [column] (some #{card} (:cards column)))
     columns)))
+
+(defn discardable? [app card]
+  ;; TODO: implement real check
+  (and (moveable? (column-for (:columns app) card) card) (free-pile-for (:piles app) card)))
 
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
@@ -135,11 +120,14 @@
       (-> app
         (update-in [:columns (:index column) :cards] pop)
         ;; TODO: find pile via free-pile-for and add index to piles
-        (update-in [:piles (:suit card) 0] conj card))
+        (update-in [:piles (:suit card) 0] conj card)
+        ;; open last card of pile
+        (update-in [:columns (:index column) :cards]
+                     (fn [cds]
+                       (map-indexed (fn [idx ca] (if (= (inc idx) (count cds)) (assoc ca :open true) ca)) cds))))
+        ;; TODO: open  column's last card
       ;; do nothing if card cannot be discarded
       app)))
-
-#_(swap! app-state (fn [x] (-> x (update-in [:columns 0 :cards] pop))))
 
 
 ;; = = = 1 = = = = = = = = = = =
@@ -213,7 +201,7 @@
 #_(swap! app-state serve-new-cards)
 
 (defn start-drag [card owner]
-  (set! (.-innerHTML (om/get-node owner "card")) "AAAAAAA"))
+  (set! (.-innerHTML (om/get-node owner "card")) (str (label-for @card) "!")))
 
 (defn card-view [card owner]
   (reify
@@ -224,14 +212,15 @@
                    :onDoubleClick (fn [e] (put! discard-channel @card))
                    :ref "card"}
         (dom/span #js {:className (name (colour card))}
-          (str (symbol-for-suit (:suit card)) " " (display-value card) " (" (:deck card) ")"))))))
+          (label-for card))))))
 
 (defn column-view [column owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [discard-channel]}]
-      (apply dom/ul #js {:className "m-column"}
-        (om/build-all card-view (:cards column) {:init-state {:discard-channel discard-channel}})))))
+      (dom/div #js {:className "m-column-wrapper"} ;; .m-column on the div and not the <ul> so empty columns don't disappear
+        (apply dom/ul #js {:className "m-column"}
+          (om/build-all card-view (:cards column) {:init-state {:discard-channel discard-channel}}))))))
 
 (defn columns-view [columns owner]
   (reify
@@ -250,7 +239,6 @@
        (let [discard-channel (om/get-state owner :discard-channel)]
          (go (loop []
            (let [card (<! discard-channel)]
-             (js/console.log "AAAAAA::::: %%%%%" (clj->js card))
              (om/transact! app (fn [xs] (discard-card xs card)))
              (recur))))))
     om/IRenderState
