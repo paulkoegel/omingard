@@ -66,20 +66,44 @@
 
 (defn sorted-children? [column card]
   (let [children (children-of column card)]
-    ;; what if there are no children?
-    (and (= children (sort-by #(:value %) children))
-         (with-alternating-colours? children))))
+    (js/console.log "sorted-children?::children" (clj->js children))
+    (js/console.log "sorted-children?::column" (clj->js column))
+    (js/console.log "sorted-children?::card" (clj->js card))
+    (if (empty? children)
+      true
+      (and (= children (sort-by #(:value %) children))
+         (with-alternating-colours? children)))))
 
 (defn moveable? [column card]
-  (and (open? card) (sorted-children? column card)))
+  (do
+    #_(js/console.log "moveable::open? " (open? card))
+    #_(js/console.log "moveable::column" (clj->js (:cards column)))
+    #_(js/console.log "moveable::card" (clj->js card))
+    #_(js/console.log "moveable::sorted-children?" (sorted-children? card))
+    (and (open? card) (sorted-children? (:cards column) card))
+    ))
 
-;; [app card]
-#_(defn free-pile-for [{piles :piles} card]
-  (first
-    (->> ((:suit card) piles)
-         filter
-         (fn [pile]
-           (= (count pile) (dec (:value card)))))))
+(defn free-pile-for [piles card]
+  (let [x
+    (first
+      (->> ((:suit card) piles)
+           (filter
+             (fn [pile]
+               (= (count pile) (dec (:value card)))))))]
+    #_(js/console.log "x" (clj->js x))
+    #_(js/console.log "suit" (clj->js (:suit card)))
+    #_(js/console.log "piles" (clj->js piles))
+    x))
+
+#_(first (filter
+  (fn [pile] (= (count pile) 0))
+  (:hearts (:piles @app-state))))
+
+#_(first (->> (:diamonds (:piles @app-state))
+     (filter (fn [pile] (= (count pile) (dec 1))))))
+
+
+#_(->> (:hearts (:piles @app-state)))
 
 ;; derefing to the max - not applicable in free-pile-for as (:value card) cannot be used for destructuring - can it?
 ;; (def state {:piles {:hearts [[] []]}})
@@ -91,12 +115,13 @@
 
 (defn discardable? [app card]
   ;; TODO: implement real check
-  true
-  #_(if (and (moveable? card) (free-pile-for app card))
-  ))
+  (let [x (and (moveable? (column-for (:columns app) card) card) (free-pile-for (:piles app) card))]
+    (js/console.log "discardable?::card" (clj->js card))
+    (js/console.log "discardable::moveable?" (moveable? (column-for (:columns app) card) card))
+    (js/console.log "discardable::free-pile?" (free-pile-for (:piles app) card))
+     x))
 
-;; [app card]
-(defn column-for [{columns :columns} card]
+(defn column-for [columns card]
   (first (filter
     (fn [column] (some #{card} (:cards column)))
     columns)))
@@ -105,13 +130,16 @@
 ;; idea for improvement: clicking on the highest sorted card on
 ;; a pile discards all sorted cards below it automatically as well.
 (defn discard-card [app card]
-  (let [column (column-for app card)]
-    (if (discardable? column card)
+  (let [column (column-for (:columns app) card)]
+    (if (discardable? app card)
       (-> app
         (update-in [:columns (:index column) :cards] pop)
-        (update-in [:piles 0] conj card))
+        ;; TODO: find pile via free-pile-for and add index to piles
+        (update-in [:piles (:suit card) 0] conj card))
       ;; do nothing if card cannot be discarded
       app)))
+
+#_(swap! app-state (fn [x] (-> x (update-in [:columns 0 :cards] pop))))
 
 
 ;; = = = 1 = = = = = = = = = = =
@@ -222,6 +250,7 @@
        (let [discard-channel (om/get-state owner :discard-channel)]
          (go (loop []
            (let [card (<! discard-channel)]
+             (js/console.log "AAAAAA::::: %%%%%" (clj->js card))
              (om/transact! app (fn [xs] (discard-card xs card)))
              (recur))))))
     om/IRenderState
