@@ -47,7 +47,7 @@
 
   [:body {
     :font-family "'Droid Sans', sans-serif"
-    :font-size (rem 16)}]
+    :font-size (rem 1.6)}]
 
   [:.l-navigation-container {
     :width "100%"
