@@ -104,12 +104,18 @@ body {
 
 .m-columns-wrapper {
   width: 100rem;
+  margin: 0 auto;
+}
+
+.m-columns {
+  margin: 0;
+  padding: 0;
 }
 
 .m-column-wrapper {
   float: left;
-  width: 100px;
-  margin-right: 30px;
+  width: 10rem;
+  margin-right: 1rem;
   min-height: 1px;
   border-top: 1px solid black;
 }
