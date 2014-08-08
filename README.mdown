@@ -1,14 +1,20 @@
 # Omingard
-Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-backbone) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).
+Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-backbone) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om) (from [CoffeeScript](http://coffeescript.org) and [Backbone Marionette](http://marionettejs.com)).
+The name's a bit of a personal joke - please bear with me :)
+
 
 ### Setup
 Check out this repository:
 
-    git clone git@github.com:paulwittmann/omingard.git`
+    git clone git@github.com:paulwittmann/omingard.git
 
 Watch for ClojureScript changes:
 
     lein cljsbuild auto
+
+Watch for CSS changes - preprocessor language: [Garden](https://github.com/noprompt/garden) via [lein-garden](https://github.com/noprompt/lein-garden) - with:
+
+    lein garden auto
 
 Start a web server:
 
@@ -16,9 +22,13 @@ Start a web server:
 
 Open `http://localhost:8000`.
 
-Refer to the excellent [Lighttable ClojureScript tutorial](https://github.com/swannodette/lt-cljs-tutorial) for integrating a ClojureScript REPL with an editor.
+Refer to the excellent [Lighttable ClojureScript tutorial](https://github.com/swannodette/lt-cljs-tutorial) for integrating a ClojureScript REPL with Lighttable.  
+Or [Perfect ClojureScript Development Environment With Vim](https://astashov.github.io/blog/2014/07/30/perfect-clojurescript-development-environment-with-vim) for the same with vim.  
+You should easily find similar tutorials for Emacs - check out [Austin].  
+
+Also see [Weasel](https://github.com/tomjakubowski/weasel).
+
 
 ### Status
-
 Current screenshot:
 ![screenshot](https://dl.dropboxusercontent.com/u/15321563/omingard.png)
