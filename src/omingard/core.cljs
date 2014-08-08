@@ -6,7 +6,7 @@
 ;; 5. continue until there are no more moves (you lose) or all cards have been discarded to the piles.
 
 
-(ns om-tut.core
+(ns omingard.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -226,8 +226,18 @@
   (reify
     om/IRenderState
     (render-state [this {:keys [discard-channel]}]
-      (apply dom/ul #js {:className "m-columns"}
-        (om/build-all column-view columns {:init-state {:discard-channel discard-channel}})))))
+      (dom/div #js {:className "m-columns-wrapper"}
+        (apply dom/ul #js {:className "m-columns cf"}
+        (om/build-all column-view columns {:init-state {:discard-channel discard-channel}}))))))
+
+(defn navigation-view [app owner]
+  (dom/div #js {:className "l-navigation-container"}
+    (dom/ul #js {:className "m-navigation cf"}
+      (dom/li #js {:className "m-navigation--item"}
+        (dom/h1 #js {:className "m-navigation--title"}
+           "Irmingard"))
+      (dom/li #js {:className "m-navigation--item"}
+        (dom/button #js {:className "m-navigation--hit-me" :onClick (fn [_] (om/transact! app serve-new-cards))} "Hit me!")))))
 
 (defn omingard-view [app owner]
   (reify
@@ -244,8 +254,8 @@
     om/IRenderState
     (render-state [this {:keys [discard-channel]}]
       (dom/div #js {:className "omingard-wrapper"}
-        (om/build columns-view (:columns app) {:init-state {:discard-channel discard-channel}})
-        (dom/button #js {:onClick (fn [_] (om/transact! app serve-new-cards))} "Hit me!")))))
+        (om/build navigation-view app)
+        (om/build columns-view (:columns app) {:init-state {:discard-channel discard-channel}})))))
 
 (om/root
   omingard-view
