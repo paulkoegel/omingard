@@ -16,7 +16,6 @@
 
 (enable-console-print!)
 
-
 ;; GLOBAL CONSTANTS
 (def columns# 9)
 
@@ -231,13 +230,16 @@
         (om/build-all column-view columns {:init-state {:discard-channel discard-channel}}))))))
 
 (defn navigation-view [app owner]
+  (reify
+  om/IRender
   (dom/div #js {:className "l-navigation-container"}
     (dom/ul #js {:className "m-navigation cf"}
       (dom/li #js {:className "m-navigation--item"}
         (dom/h1 #js {:className "m-navigation--title"}
            "Irmingard"))
       (dom/li #js {:className "m-navigation--item"}
-        (dom/button #js {:className "m-navigation--hit-me" :onClick (fn [_] (om/transact! app serve-new-cards))} "Hit me!")))))
+        (dom/button #js {:className "m-navigation--hit-me"
+                         :onClick (fn [_] (om/transact! app serve-new-cards))} "Hit me!"))))))
 
 (defn omingard-view [app owner]
   (reify
