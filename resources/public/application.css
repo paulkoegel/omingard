@@ -104,7 +104,7 @@ body {
 }
 
 .m-columns-wrapper {
-  margin: 0 auto;
+  margin: 2rem auto 0;
   width: 100rem;
 }
 

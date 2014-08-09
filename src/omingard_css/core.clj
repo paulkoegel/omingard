@@ -18,7 +18,7 @@
        that are clearfixed.
     2. The use of `table` rather than `block` is only necessary if using
        `:before` to contain the top-margins of child elements.)
-  
+
   [:.cf:before :.cf:after
      {:content (pr-str " ") ;; 1
       :display "table"      ;; 2
@@ -77,7 +77,8 @@
 
   [:.m-columns-wrapper {
     :width "100rem"
-    :margin "0 auto"}]
+    :margin "2rem auto 0"}]
+
   [:.m-columns {
     :margin 0
     :padding 0}]

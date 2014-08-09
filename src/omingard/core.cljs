@@ -5,7 +5,6 @@
 ;;    (and after them 2s etc.) to one of eight discard piles, or serve new open cards (1 per column)
 ;; 5. continue until there are no more moves (you lose) or all cards have been discarded to the piles.
 
-
 (ns omingard.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
