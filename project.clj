@@ -15,12 +15,16 @@
 
   :cljsbuild {
     :builds [{:id "omingard"
-              :source-paths ["src/omingard"]
+              :source-paths ["src/omingard" "test"]
               :compiler {
                 :output-to "omingard.js"
                 :output-dir "out"
                 :optimizations :none
-                :source-map true}}]}
+                :source-map true}}]
+    :test-commands {"unit-tests" ["phantomjs" :runner
+                                          ;;"this.literal_js_was_evaluated=true"
+                                          "out/cljs/testable.js"]}}
+                                          ;;"test/cemerick/cljs/test/extra_test_command_file.js"]}}
 
   :garden {:builds [{;; Optional name of the build:
                      :id "application"
@@ -30,4 +34,5 @@
                      :compiler {;; Where to save the file:
                                 :output-to "resources/application.css"
                                 ;; Compress the output?
-                                :pretty-print? false}}]})
+                                :pretty-print? false}}]}
+)
