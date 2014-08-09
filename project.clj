@@ -8,10 +8,14 @@
                  [om "0.7.1"]
                  [garden "1.2.1" :exclusions [org.clojure/clojure]]]
 
+  :profiles {:dev {:dependencies [[midje "1.6.3"]]
+                   :plugins [[lein-midje "3.1.3"]]}}
+
   :plugins [[lein-cljsbuild "1.0.3"]
             [lein-garden "0.1.9" :exclusions [org.clojure/clojure]]]
 
-  :source-paths ["src"]
+  :source-paths ["src" "src/omingard"]
+  :test-paths ["src/test" "src/test/omingard"]
 
   :cljsbuild {
     :builds [{:id "omingard"
