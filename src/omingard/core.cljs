@@ -66,15 +66,16 @@
       (first colours)
       (rest colours))))
 
-(defn sorted-children? [column card]
+(defn sorted-from-card? [column card]
   (let [children (children-of column card)]
     (if (empty? children)
       true
-      (and (= children (sort-by #(:value %) children))
-         (with-alternating-colours? children)))))
+      (let [cards (conj card children)]
+        (and (= cards (sort-by #(:value %) cards))
+             (with-alternating-colours? children))))))
 
 (defn moveable? [column card]
-  (and (open? card) (sorted-children? (:cards column) card)))
+  (and (open? card) (sorted-from-card? (:cards column) card)))
 
 (defn free-pile-for [piles card]
   (first
