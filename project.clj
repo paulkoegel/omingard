@@ -15,7 +15,7 @@
 
   :cljsbuild {
     :builds [{:id "omingard"
-              :source-paths ["src/omingard" "test"]
+              :source-paths ["src/omingard" "test"] ;; not "src" b/c we don't want to build the stuff inside omingard_css.
               :compiler {
                 :output-to "omingard.js"
                 :output-dir "out"
