@@ -5,11 +5,11 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2277"]
                  [org.clojure/core.async "0.1.319.0-6b1aca-alpha"]
-                 [om "0.7.1"]
-                 [garden "1.2.1" :exclusions [org.clojure/clojure]]]
+                 [om "0.7.1"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
-            [lein-garden "0.1.9" :exclusions [org.clojure/clojure]]]
+            [lein-garden "0.1.9" :exclusions [org.clojure/clojure]]
+            [com.cemerick/clojurescript.test "0.3.1"]]
 
   :source-paths ["src"]
 
