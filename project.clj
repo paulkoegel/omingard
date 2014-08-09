@@ -15,7 +15,7 @@
 
   :cljsbuild {
     :builds [{:id "omingard"
-              :source-paths ["src"]
+              :source-paths ["src/omingard"]
               :compiler {
                 :output-to "omingard.js"
                 :output-dir "out"
