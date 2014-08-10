@@ -8,8 +8,7 @@
                  [om "0.7.1"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
-            [lein-garden "0.1.9" :exclusions [org.clojure/clojure]]
-            [com.cemerick/clojurescript.test "0.3.1"]]
+            [lein-garden "0.1.9" :exclusions [org.clojure/clojure]]]
 
   :source-paths ["src"]
 
@@ -22,16 +21,12 @@
                 :optimizations :none
                 :source-map true}}
              {:id "test"
-              :source-paths ["src/omingard test"]
+              :source-paths ["src/omingard" "src/omingardtest"]
               :compiler {
-                :output-to "outtest/omingard-test.js"
-                :output-dir "outtest"
-                :optimizations :simple
-                :source-map true}}]
-    :test-commands {"unit-tests" ["phantomjs" :runner
-                                  ;; "this.literal_js_was_evaluated=true"
-                                  "outtest/omingard-test.js"]}}
-                                  ;;"test/cemerick/cljs/test/extra_test_command_file.js"]}}
+                :output-to "test.js"
+                :output-dir "testout"
+                :optimizations :none}}]}
+                ;;:source-map true}}]}
 
   :garden {:builds [{;; Optional name of the build:
                      :id "application"
