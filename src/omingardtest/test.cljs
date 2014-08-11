@@ -6,6 +6,21 @@
 ;; 5. continue until there are no more moves (you lose) or all cards have been discarded to the piles.
 
 (ns omingardtest.test
-  (:require [omingard.core]))
+  (:require [omingard.core :as o]))
 
-(js/alert (omingard.core/colour {:suit :hearts}))
+(defn colour-test []
+  (let [expectations [
+      (= (o/colour {:suit :hearts}) :red)
+      (= (o/colour {:suit :diamonds}) :red)
+      (= (o/colour {:suit :clubs}) :black)
+      (= (o/colour {:suit :spades}) :black)
+      (= (o/colour {:suit :stars}) nil)]]
+    (str "colour: " (let [result (every? true? expectations)] (if result result expectations)))))
+
+(defn onload []
+  (let [output
+          (fn []
+            (colour-test))]
+    (set! (.-innerHTML (.getElementById js/document "test-output")) (output))))
+
+(set! (.-onload js/window) onload)
