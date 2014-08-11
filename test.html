@@ -4,6 +4,30 @@
     <link rel="stylesheet" href="resources/public/normalize.css" type="text/css">
     <link rel="stylesheet" href="resources/public/application.css" type="text/css">
     <link href='test-favicon.png' rel='shortcut icon'>
+    <style>
+      body {
+        line-height: 3rem;
+      }
+      #test-output {
+        width: 1000px;
+        margin: 20px auto 0;
+        background: #eee;
+        padding: 30px;
+      }
+      #test-output h1 {
+        margin-top: 0;
+      }
+      .green, .red {
+        padding: 2px 5px;
+        color: white;
+      }
+      .green {
+        background-color: darkgreen;
+      }
+      .red {
+        background-color: red;
+      }
+    </style>
   </head>
   <body>
     <script type='text/javascript' id='lt_ws' src='http://localhost:61958/socket.io/lighttable/ws.js'></script>
