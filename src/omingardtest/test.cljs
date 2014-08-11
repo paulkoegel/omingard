@@ -8,19 +8,61 @@
 (ns omingardtest.test
   (:require [omingard.core :as o]))
 
-(defn colour-test []
-  (let [expectations [
-      (= (o/colour {:suit :hearts}) :red)
-      (= (o/colour {:suit :diamonds}) :red)
-      (= (o/colour {:suit :clubs}) :black)
-      (= (o/colour {:suit :spades}) :black)
-      (= (o/colour {:suit :stars}) nil)]]
-    (str "colour: " (let [result (every? true? expectations)] (if result result expectations)))))
+(defn print-result [test-name expectations result]
+  (str test-name ": " (if result (str "<span class='green'>passed</span>") (str "<span class='red'>Failed: " expectations "</span>"))))
+
+(def tests [
+  (defn colour-test []
+    (let [
+      expectations [
+        (= (o/colour {:suit :hearts}) :red)
+        (= (o/colour {:suit :diamonds}) :red)
+        (= (o/colour {:suit :clubs}) :black)
+        (= (o/colour {:suit :spades}) :black)
+        (= (o/colour {:suit :stars}) nil)]
+      result (every? true? expectations)]
+        (print-result "colour" expectations result)))
+
+  (defn display-value-test []
+    (let [
+      expectations
+        [
+          (= (o/display-value {:value  0}) nil)
+          (= (o/display-value {:value  1}) "A")
+          (= (o/display-value {:value  2}) "2")
+          (= (o/display-value {:value 10}) "10")
+          (= (o/display-value {:value 11}) "J")
+          (= (o/display-value {:value 12}) "Q")
+          (= (o/display-value {:value 13}) "K")
+          (= (o/display-value {:value 14}) nil)]
+      result (every? true? expectations)]
+        (print-result "display-value" expectations result)))
+
+  (defn symbol-for-suit-test []
+    (let [expectations[
+        (= (o/symbol-for-suit :spades) "♠")
+        (= (o/symbol-for-suit :hearts) "♥")
+        (= (o/symbol-for-suit :diamonds) "♦")
+        (= (o/symbol-for-suit :clubs) "♣")
+        (= (o/symbol-for-suit :godzilla) nil)]
+      result (every? true? expectations)]
+        (print-result "symbol-for-suit" expectations result)))
+
+  (defn open?-test []
+    (let [expectations [
+        (= (o/open? {:value 11 :suit "diamonds" :open true}) true)
+        (= (o/open? {:value 11 :suit "diamonds" :open false}) false)
+        (= (o/open? {:value 11 :suit "diamonds"}) nil)]
+      result (every? true? expectations)]
+        (print-result "open?" expectations result)))
+
+])
+
 
 (defn onload []
   (let [output
           (fn []
-            (colour-test))]
-    (set! (.-innerHTML (.getElementById js/document "test-output")) (output))))
+            (reduce (fn [memo test] (str memo "\n<div class='test-result'>" (test) "</div>")) "" tests))]
+    (set! (.-innerHTML (.getElementById js/document "test-output")) (str "<h1>Omingard Tests</h1><div class='output'>" (output) "</div>"))))
 
 (set! (.-onload js/window) onload)
