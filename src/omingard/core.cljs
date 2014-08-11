@@ -30,7 +30,7 @@
 (defn display-value [{value :value}]
   (cond
     (= value 1) "A"
-    (< value 11) (str value)
+    (and (> value 0) (< value 11)) (str value)
     (= value 11) "J"
     (= value 12) "Q"
     (= value 13) "K"))
@@ -40,7 +40,8 @@
     :spades "♠"
     :hearts "♥"
     :diamonds "♦"
-    :clubs "♣"))
+    :clubs "♣"
+    nil))
 
 (defn open? [card]
   (:open card))
