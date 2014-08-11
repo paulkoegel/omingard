@@ -40,24 +40,37 @@
 
   (defn symbol-for-suit-test []
     (let [expectations[
-        (= (o/symbol-for-suit :spades) "♠")
-        (= (o/symbol-for-suit :hearts) "♥")
-        (= (o/symbol-for-suit :diamonds) "♦")
-        (= (o/symbol-for-suit :clubs) "♣")
-        (= (o/symbol-for-suit :godzilla) nil)]
+        (= (o/symbol-for-suit :spades)
+           "♠")
+        (= (o/symbol-for-suit :hearts)
+           "♥")
+        (= (o/symbol-for-suit :diamonds)
+           "♦")
+        (= (o/symbol-for-suit :clubs)
+           "♣")
+        (= (o/symbol-for-suit :godzilla)
+           nil)]
       result (every? true? expectations)]
         (print-result "symbol-for-suit" expectations result)))
 
   (defn open?-test []
     (let [expectations [
-        (= (o/open? {:value 11 :suit "diamonds" :open true}) true)
-        (= (o/open? {:value 11 :suit "diamonds" :open false}) false)
-        (= (o/open? {:value 11 :suit "diamonds"}) nil)]
+        (= (o/open? {:value 11 :suit "diamonds" :deck 2 :open true})
+           true)
+        (= (o/open? {:value 11 :suit "diamonds" :deck 2 :open false})
+           false)
+        (= (o/open? {:value 11 :suit "diamonds" :deck 2})
+           nil)]
       result (every? true? expectations)]
         (print-result "open?" expectations result)))
 
+  (defn label-for-test []
+    (let [expectations [
+        (= (o/label-for {:value 13 :suit :hearts :deck 1})
+           "♥ K (1)")]
+      result (every? true? expectations)]
+        (print-result "label-for" expectations result)))
 ])
-
 
 (defn onload []
   (let [output
