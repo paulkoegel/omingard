@@ -18,7 +18,6 @@
 ;; GLOBAL CONSTANTS
 (def columns# 9)
 
-
 ;; HELPER FUNCTIONS
 (defn colour [{suit :suit :as card}]
   (cond
