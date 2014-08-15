@@ -154,7 +154,38 @@
         ]
        )}
 
+  {:name "sorted-from-card?"
+   :expectations
+     (let [sorted-column (map card
+                           ["h.K"
+                            "c.Q"
+                            "d.J"
+                            "s.10"
+                            "h.9"
+                            "c.8"
+                            "d.7"
+                            "s.6"
+                            "d.5"
+                            "c.4"
+                            "h.3"
+                            "s.2"])
+           unsorted-column (map card
+                                ["h.A" "c.K" "d.Q" "s.7" "d.6" "c.5" "d.4" "s.3" "c.2"])]
+       [
+         ["a column is always sorted from its last card"
+           (= true (o/sorted-from-card? sorted-column (card "s.2")))]
+         ["a column is never sorted from a card that's not in that column"
+           (= false (o/sorted-from-card? sorted-column (card "d.K")))]
+         ["sorted column: sorted from card in the middle"
+           (= true (o/sorted-from-card? sorted-column (card "h.9")))]
+         ["sorted column: sorted from the top"
+           (= true (o/sorted-from-card? sorted-column (card "h.K")))]
+        ]
+       )
+  }
+
 ])
+
 
 (defn formatted-result [test-name expectations result]
   (str
