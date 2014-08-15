@@ -108,7 +108,14 @@
              (o/children-of column (card "h.3")))]
          ["many children"
           (= [(card "d.7") (card "s.6") (card "d.5") (card "c.4") (card "h.3") (card "s.2")]
-             (o/children-of column (card "c.8")))]])}
+             (o/children-of column (card "c.8")))]
+         ["all children"
+          (= [(card "c.Q") (card "d.J") (card "s.10") (card "h.9") (card "c.8") (card "d.7") (card "s.6") (card "d.5") (card "c.4") (card "h.3") (card "s.2")]
+             (o/children-of column (card "h.K")))]
+         ["nil"
+          (= []
+             (o/children-of column nil))]]
+        )}
 ])
 
 (defn formatted-result [test-name expectations result]
