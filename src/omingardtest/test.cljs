@@ -117,6 +117,28 @@
           (= []
              (o/children-of sorted-column nil))]]
         )}
+
+  {:name "with-alternating-colours?"
+   :expectations
+     (let [sorted-alternating-cards (map card ["d.10" "s.9" "h.8" "c.7" "d.6" "c.5" "d.4" "s.3" "h.2" "s.A"])
+           unsorted-alternating-cards (map card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])
+           cards-without-alternating-colours (map card ["c.A" "s.K" "d.K" "h.7" "h.10" "c.9" "c.2" "s.Q"])
+           one-card-red [(card "d.8")]
+           one-card-black [(card "s.8")]]
+       [
+         ["sorted alternating cards"
+           (true? (o/with-alternating-colours? sorted-alternating-cards))]
+         ["unsorted alternating cards"
+           (true? (o/with-alternating-colours? unsorted-alternating-cards))]
+         ["cards without alternating colours"
+           (false? (o/with-alternating-colours? cards-without-alternating-colours))]
+         ["one card: red"
+           (true? (o/with-alternating-colours? one-card-red))]
+         ["one card: black"
+           (true? (o/with-alternating-colours? one-card-black))]
+        ]
+       )}
+
 ])
 
 (defn formatted-result [test-name expectations result]
