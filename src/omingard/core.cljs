@@ -158,7 +158,7 @@
     {:stack (shuffled-stack)
      :piles (piles-for-suits suits)
      :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
-     :currently_dragging [] ;; tuple of clolum-index, card-index !?!
+     :currently_dragging [] ;; tuple of column-index, card-index !?!
     }))
 
 (defn serve-card-to-column [state column-index & [open?]]
