@@ -84,7 +84,7 @@
 (defn with-alternating-colours? [cards]
   (let [colours (map #(colour %) cards)]
     ;; potential problem with reduce is that it'll return `false` if the last element
-    ;; of an alternating sequence is `false`, but that should not happen.
+    ;; of cards is `false`, but this function expects to be handed card maps.
     ;; works when cards contains only one card
     (if (reduce
           (fn [memo colour] (if (not= memo colour) colour (reduced false))) ;; `reduced` breaks the iteration
