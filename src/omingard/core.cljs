@@ -15,6 +15,33 @@
 
 (enable-console-print!)
 
+;; DEBUGGING HELPERS
+
+;; transforms "J" etc. back to 11 etc.
+(defn value-from-literal-value [literal-value]
+  (let [literal-value (string/lower-case literal-value)]
+  ;;(let [literal-value (string/lower-case literal-value)]
+    (cond
+      (= literal-value "a") 1
+      (= literal-value "j") 11
+      (= literal-value "q") 12
+      (= literal-value "k") 13
+      :else (js/parseInt literal-value))))
+
+;; "d.12.a" creates a queen of diamonds (with deck "a") card map
+(defn card [card-string]
+  (let [card-components (string/split card-string #"\.")
+        suit (keyword (first card-components))
+        value (second card-components)
+        deck (if (= (count card-components) 3) (keyword (last card-components)) nil)]
+    {:suit
+       (cond (= suit :s) :spades
+             (= suit :c) :clubs
+             (= suit :h) :hearts
+             (= suit :d) :diamonds)
+     :value (value-from-literal-value value)
+     :deck (or deck :a)}))
+
 ;; GLOBAL CONSTANTS
 (def columns# 9)
 
@@ -49,7 +76,8 @@
   (str (symbol-for-suit (:suit card)) " " (display-value card) " (" (:deck card) ")"))
 
 (defn children-of [column card]
-  (let [children (vec (last (partition-by (fn [el] (= el card)) column)))]
+  (let [partitioned-column (partition-by (fn [el] (= el card)) column)
+        children (if (= 3 (count partitioned-column)) (vec (last partitioned-column)) [])]
     (if (= children column)
       [] ;; card's not included in that column
       children
@@ -141,8 +169,8 @@
   (mapcat
     (fn [value]
       ;; need to add a deck parameter to distinguish cards with the same value and suit in the same column
-      [{:deck 1 :suit suit :value value}
-       {:deck 2 :suit suit :value value}])
+      [{:deck :a :suit suit :value value}
+       {:deck :b :suit suit :value value}])
     (range 1 14)))
 
 (defn shuffled-stack []
@@ -264,3 +292,20 @@
   omingard-view
   app-state
   {:target (. js/document (getElementById "omingard"))})
+
+
+;; -- - - - - - - -reset
+;; sandbox
+#_(let [column [(card "h.K")
+              (card "c.Q")
+              (card "d.J")
+              (card "s.10")
+              (card "h.9")
+              (card "c.8")
+              (card "d.7")
+              (card "s.6")
+              (card "d.5")
+              (card "c.4")
+              (card "h.3")
+              (card "s.2")]]
+  (children-of column (card "s.2")))
