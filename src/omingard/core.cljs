@@ -221,8 +221,8 @@
 ;; when there are no more moves, serve new cards to columns
 (defn serve-new-cards [state]
   (reduce
-    (fn [state i]
-      (serve-card-to-column state i true))
+    (fn [memo i]
+      (serve-card-to-column memo i true))
     state
     (range columns#)))
 
