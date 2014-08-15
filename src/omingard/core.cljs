@@ -96,13 +96,14 @@
 (defn sorted-from-card? [column card]
   (let [children (children-of column card)]
     (if (empty? children)
-      true
-      (let [cards (conj card children)]
-        (and (= cards (sort-by #(:value %) cards))
+      (if (= card (last column)) true false)
+      (let [cards (cons card children)]
+        (and (= cards (reverse (sort-by #(:value %) cards)))
              (with-alternating-colours? children))))))
 
 (defn moveable? [column card]
-  (and (open? card) (sorted-from-card? (:cards column) card)))
+  (and (open? card)
+       (sorted-from-card? (:cards column) card)))
 
 (defn free-pile-for [piles card]
   (first
@@ -191,8 +192,8 @@
 (defn serve-card-to-column [state column-index & [open?]]
   (let [card (peek (:stack state))
         card (if (and open? card)
-              (assoc card :open true)
-              card)]
+               (assoc card :open true)
+               card)]
     (if card
       (-> state
           (update-in [:stack] pop)
@@ -212,7 +213,7 @@
     (fn [state [idx n]]
       (serve-cards-to-column state idx n))
     state
-    (map-indexed vector [1, 2, 3, 4, 5, 4, 3, 2, 1])))
+    (map-indexed vector [1 2 3 4 5 4 3 2 1])))
 
 ;; set up initial state of the game
 (swap! app-state serve-cards)
