@@ -228,15 +228,11 @@
 
 #_(swap! app-state serve-new-cards)
 
-(defn start-drag [card owner]
-  (set! (.-innerHTML (om/get-node owner "card")) (str (label-for @card) "!")))
-
 (defn card-view [card owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [discard-channel]}]
       (dom/li #js {:className (str "m-card" (if (open? card) " open"))
-                   :onClick #(start-drag card owner)
                    :onDoubleClick (fn [e] (put! discard-channel @card))
                    :ref "card"}
         (dom/span #js {:className (name (colour card))}
