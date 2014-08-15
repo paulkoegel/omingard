@@ -85,36 +85,37 @@
 
   {:name "children-of"
    :expectations
-     (let [column [(card "h.K")
-                   (card "c.Q")
-                   (card "d.J")
-                   (card "s.10")
-                   (card "h.9")
-                   (card "c.8")
-                   (card "d.7")
-                   (card "s.6")
-                   (card "d.5")
-                   (card "c.4")
-                   (card "h.3")
-                   (card "s.2")]]
+     ;; TODO: add unsorted-column
+     (let [sorted-column [(card "h.K")
+                          (card "c.Q")
+                          (card "d.J")
+                          (card "s.10")
+                          (card "h.9")
+                          (card "c.8")
+                          (card "d.7")
+                          (card "s.6")
+                          (card "d.5")
+                          (card "c.4")
+                          (card "h.3")
+                          (card "s.2")]]
        ;;"card that isn't in the column has no children"
        [
          ["card that isn't in the column has no children"
-          (= [] (o/children-of column (card "d.K")))]
+          (= [] (o/children-of sorted-column (card "d.K")))]
          [(o/children-of column (card "s.2"))
-          (= [] (o/children-of column (card "s.2")))]
+          (= [] (o/children-of sorted-column (card "s.2")))]
          ["one child"
           (= [(card "s.2")]
-             (o/children-of column (card "h.3")))]
+             (o/children-of sorted-column (card "h.3")))]
          ["many children"
           (= [(card "d.7") (card "s.6") (card "d.5") (card "c.4") (card "h.3") (card "s.2")]
-             (o/children-of column (card "c.8")))]
+             (o/children-of sorted-column (card "c.8")))]
          ["all children"
           (= [(card "c.Q") (card "d.J") (card "s.10") (card "h.9") (card "c.8") (card "d.7") (card "s.6") (card "d.5") (card "c.4") (card "h.3") (card "s.2")]
-             (o/children-of column (card "h.K")))]
+             (o/children-of sorted-column (card "h.K")))]
          ["nil"
           (= []
-             (o/children-of column nil))]]
+             (o/children-of sorted-column nil))]]
         )}
 ])
 
