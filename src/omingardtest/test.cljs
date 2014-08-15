@@ -9,81 +9,130 @@
   (:require [omingard.core :as o]
             [clojure.string :as string]))
 
+;; HELPER FUNCTIONS
+
+;; transforms "J" etc. back to 11 etc.
+(defn value-from-literal-value [literal-value]
+  (let [literal-value (string/lower-case literal-value)]
+  ;;(let [literal-value (string/lower-case literal-value)]
+    (cond
+      (= literal-value "a") 1
+      (= literal-value "j") 11
+      (= literal-value "q") 12
+      (= literal-value "k") 13
+      :else (js/parseInt literal-value))))
+
+
+;; "d.12.a" creates a queen of diamonds (with deck "a") card map
+(defn card [card-string]
+  (let [card-components (string/split card-string #"\.")
+        suit (keyword (first card-components))
+        value (second card-components)
+        deck (if (= (count card-components) 3) (keyword (last card-components)) nil)]
+    {:suit
+       (cond (= suit :s) :spades
+             (= suit :c) :clubs
+             (= suit :h) :hearts
+             (= suit :d) :diamonds)
+     :value (value-from-literal-value value)
+     :deck (or deck :a)}))
+
 (def scenarios [
+
   {:name "colour"
    :expectations [
-    (= (o/colour {:suit :hearts})
-       :red)
-    (= (o/colour {:suit :diamonds})
-       :red)
-    (= (o/colour {:suit :clubs})
-       :black)
-    (= (o/colour {:suit :spades})
-       :black)
-    (= (o/colour {:suit :stars})
-       nil)]}
+    ["hearts"
+     (= :red (o/colour {:suit :hearts}))]
+    ["diamonds"
+     (= :red (o/colour {:suit :diamonds}))]
+    ["clubs"
+     (= :black (o/colour {:suit :clubs}))]
+    ["spades"
+     (= :black (o/colour {:suit :spades}))]
+    ["stars"
+     (= nil (o/colour {:suit :stars}))]]}
 
   {:name "display-value"
    :expectations [
-     (= (o/display-value {:value  0})
-        nil)
-     (= (o/display-value {:value  1})
-        "A")
-     (= (o/display-value {:value  2})
-        "2")
-     (= (o/display-value {:value 10})
-        "10")
-     (= (o/display-value {:value 11})
-        "J")
-     (= (o/display-value {:value 12})
-        "Q")
-     (= (o/display-value {:value 13})
-        "K")
-     (= (o/display-value {:value 14})
-        nil)]}
+     ["0"
+      (= nil (o/display-value {:value  0}))]
+     ["1"
+      (= "A" (o/display-value {:value  1}))]
+     ["2" (= "2" (o/display-value {:value  2}))]
+     ["10" (= "10" (o/display-value {:value 10}))]
+     ["J" (= "J" (o/display-value {:value 11}))]
+     ["Q" (= "Q" (o/display-value {:value 12}))]
+     ["K" (= "K" (o/display-value {:value 13}))]
+     ["nil" (= nil (o/display-value {:value 14}))]]}
 
   {:name "symbol-for-suit"
    :expectations [
-     (= (o/symbol-for-suit :spades)
-        "♠")
-     (= (o/symbol-for-suit :hearts)
-        "♥")
-     (= (o/symbol-for-suit :diamonds)
-        "♦")
-     (= (o/symbol-for-suit :clubs)
-        "♣")
-     (= (o/symbol-for-suit :godzilla)
-        nil)]}
+     ["spades"   (= "♠" (o/symbol-for-suit :spades))]
+     ["hearts"   (= "♥" (o/symbol-for-suit :hearts))]
+     ["diamonds" (= "♦" (o/symbol-for-suit :diamonds))]
+     ["clubs"    (= "♣" (o/symbol-for-suit :clubs))]
+     ["godzilla" (= nil (o/symbol-for-suit :godzilla))]]}
 
   {:name "open?"
    :expectations [
-     (= (o/open? {:value 11 :suit "diamonds" :deck 2 :open true})
-        true)
-     (= (o/open? {:value 11 :suit "diamonds" :deck 2 :open false})
-        false)
-     (= (o/open? {:value 11 :suit "diamonds" :deck 2})
-        nil)]}
+     ["true"              (= true  (o/open? {:value 11 :suit "diamonds" :deck 2 :open true}))]
+     ["false"             (= false (o/open? {:value 11 :suit "diamonds" :deck 2 :open false}))]
+     ["key doesn't exist" (= nil   (o/open? {:value 11 :suit "diamonds" :deck 2}))]]}
 
-  {:name "label-for-test"
+  {:name "label-for"
    :expectations [
-     (= (o/label-for {:value 13 :suit :hearts :deck 1})
-        "♥ K (1)")]}
+     ["King of Hearts, deck A" (= "♥ K (1)" (o/label-for {:value 13 :suit :hearts :deck 1}))]]}
+
+  {:name "children-of"
+   :expectations
+     (let [column [(card "h.K")
+                   (card "c.Q")
+                   (card "d.J")
+                   (card "s.10")
+                   (card "h.9")
+                   (card "c.8")
+                   (card "d.7")
+                   (card "s.6")
+                   (card "d.5")
+                   (card "c.4")
+                   (card "h.3")
+                   (card "s.2")]]
+       ;;"card that isn't in the column has no children"
+       [
+         ["card that isn't in the column has no children"
+          (= [] (o/children-of column (card "d.K")))]
+         [(o/children-of column (card "s.2"))
+          (= [] (o/children-of column (card "s.2")))]
+         ["one child"
+          (= [(card "s.2")]
+             (o/children-of column (card "h.3")))]
+         ["many children"
+          (= [(card "d.7") (card "s.6") (card "d.5") (card "c.4") (card "h.3") (card "s.2")]
+             (o/children-of column (card "c.8")))]])}
 ])
 
-(defn formatted-result [test-name errors result]
+(defn formatted-result [test-name expectations result]
   (str
     "<div class='test-result'>"
     test-name ": "
     (if result (str "<span class='green'>passed</span>")
-               (str "<span class='red'>Failed: " errors "</span>"))
+               (apply str
+                 (map
+                   (fn [[description expectation]]
+                     (str "<span class='"
+                       (if expectation "green" "red")
+                       "'>"
+                       description
+                       "</span>"))
+                    expectations)))
+      #_(str "<span class='red'>Failed: " (first ) (last expectations "</span>"))
     "</div>"))
 
-
 (defn test-output []
-  (string/join
+  (apply str
     (map
       (fn [{scenario-name :name expectations :expectations}]
-        (let [result (every? true? expectations)]
+        (let [result (every? true? (map (fn [e] (last e)) expectations))]
           (formatted-result scenario-name expectations result)))
       scenarios)))
 
