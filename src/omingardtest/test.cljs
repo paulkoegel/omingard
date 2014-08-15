@@ -85,37 +85,52 @@
 
   {:name "children-of"
    :expectations
-     ;; TODO: add unsorted-column
-     (let [sorted-column [(card "h.K")
-                          (card "c.Q")
-                          (card "d.J")
-                          (card "s.10")
-                          (card "h.9")
-                          (card "c.8")
-                          (card "d.7")
-                          (card "s.6")
-                          (card "d.5")
-                          (card "c.4")
-                          (card "h.3")
-                          (card "s.2")]]
-       ;;"card that isn't in the column has no children"
+     (let [sorted-column (map card
+                           ["h.K"
+                            "c.Q"
+                            "d.J"
+                            "s.10"
+                            "h.9"
+                            "c.8"
+                            "d.7"
+                            "s.6"
+                            "d.5"
+                            "c.4"
+                            "h.3"
+                            "s.2"])
+           unsorted-column (map card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])]
        [
-         ["card that isn't in the column has no children"
+         ["sorted column: nil"
+          (= [] (o/children-of sorted-column nil))]
+         ["sorted column: card that isn't in the column has no children"
           (= [] (o/children-of sorted-column (card "d.K")))]
-         [(o/children-of column (card "s.2"))
+         ["last card has no children"
           (= [] (o/children-of sorted-column (card "s.2")))]
-         ["one child"
+         ["sorted column: one child"
           (= [(card "s.2")]
              (o/children-of sorted-column (card "h.3")))]
-         ["many children"
-          (= [(card "d.7") (card "s.6") (card "d.5") (card "c.4") (card "h.3") (card "s.2")]
+         ["sorted column: many children"
+          (= (map card ["d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
              (o/children-of sorted-column (card "c.8")))]
-         ["all children"
-          (= [(card "c.Q") (card "d.J") (card "s.10") (card "h.9") (card "c.8") (card "d.7") (card "s.6") (card "d.5") (card "c.4") (card "h.3") (card "s.2")]
+         ["sorted column: all children"
+          (= (map card ["c.Q" "d.J" "s.10" "h.9" "c.8" "d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
              (o/children-of sorted-column (card "h.K")))]
-         ["nil"
-          (= []
-             (o/children-of sorted-column nil))]]
+
+         ["unsorted column: nil"
+          (= [] (o/children-of unsorted-column nil))]
+         ["unsorted column: card that isn't in the column has no children"
+          (= [] (o/children-of unsorted-column (card "s.A")))]
+         ["unsorted column: last card has no children"
+          (= [] (o/children-of unsorted-column (card "c.Q")))]
+         ["unsorted column: one child"
+           (= [(card "c.Q")] (o/children-of unsorted-column (card "h.2")))]
+         ["unsorted column: many children"
+           (= (map card ["s.7" "h.2" "c.Q"])
+              (o/children-of unsorted-column (card "d.Q")))]
+         ["unsorted column: all children"
+           (= (map card ["c.K" "d.Q" "s.7" "h.2" "c.Q"])
+              (o/children-of unsorted-column (card "h.A")))]
+        ]
         )}
 
   {:name "with-alternating-colours?"
