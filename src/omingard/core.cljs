@@ -76,12 +76,9 @@
   (str (symbol-for-suit (:suit card)) " " (display-value card) " (" (:deck card) ")"))
 
 (defn children-of [column card]
-  (let [partitioned-column (partition-by (fn [el] (= el card)) column)
-        children (if (= 3 (count partitioned-column)) (vec (last partitioned-column)) [])]
-    (if (= children column)
-      [] ;; card's not included in that column
-      children
-      )))
+  (vec (rest (drop-while
+               (fn [el] (not= el card))
+               column))))
 
 (defn with-alternating-colours? [cards]
   (let [colours (map #(colour %) cards)]
@@ -296,7 +293,7 @@
 
 ;; -- - - - - - - -reset
 ;; sandbox
-#_(let [column [(card "h.K")
+(let [column [(card "h.K")
               (card "c.Q")
               (card "d.J")
               (card "s.10")
@@ -309,3 +306,8 @@
               (card "h.3")
               (card "s.2")]]
   (children-of column (card "s.2")))
+
+(.indexOf #js [1 2 3] 3)
+
+
+(vec (rest (drop-while (fn [el] (not= 9 el)) [1 2 3 4 5 6 7 8 9])))
