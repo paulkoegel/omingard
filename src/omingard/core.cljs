@@ -152,11 +152,11 @@
         ;; open last card of pile
         (update-in [:columns (:index column) :cards]
                      (fn [cds]
-                       (map-indexed (fn [idx ca] (if (= (inc idx) (count cds)) (assoc ca :open true) ca)) cds))))
-        ;; TODO: open  column's last card
-      ;; do nothing if card cannot be discarded
-      app)))
+                       (assoc-in cds [(dec (count cds)) :open?] true))))
 
+
+      app ;; do nothing if card cannot be discarded
+    )))
 
 ;; = = = 1 = = = = = = = = = = =
 ;; GENERATE A STACK OF CARDS
