@@ -103,9 +103,13 @@ body {
   background: #234892;
 }
 
+.l-game-container {
+  margin: 0 auto;
+  width: 100rem;
+}
+
 .m-columns-wrapper {
   margin: 2rem auto 0;
-  width: 100rem;
 }
 
 .m-columns {
@@ -152,4 +156,8 @@ body {
 
 .m-card.open {
   background-color: #fafafa;
+}
+
+.l-piles-container {
+  background: #ccc;
 }

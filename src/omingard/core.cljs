@@ -226,8 +226,6 @@
     state
     (range columns#)))
 
-#_(swap! app-state serve-new-cards)
-
 (defn card-view [card owner]
   (reify
     om/IRenderState
@@ -267,6 +265,23 @@
             (dom/button #js {:className "m-navigation--hit-me"
                              :onClick (fn [_] (om/transact! app serve-new-cards))} "Hit me!")))))))
 
+(defn pile-view [pile owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/li #js {:className "m-pile"}
+        (apply dom/ul nil
+          (om/build-all card-view pile))
+    ))))
+
+(defn piles-view [piles owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div #js {:className "l-piles-container"}
+        (apply dom/ul #js {:className "m-piles"}
+          (om/build-all pile-view piles))))))
+
 (defn omingard-view [app owner]
   (reify
     om/IInitState
@@ -283,7 +298,10 @@
     (render-state [this {:keys [discard-channel]}]
       (dom/div #js {:className "omingard-wrapper"}
         (om/build navigation-view app)
-        (om/build columns-view (:columns app) {:init-state {:discard-channel discard-channel}})))))
+        (dom/div #js {:className "l-game-container"}
+          (om/build columns-view (:columns app) {:init-state {:discard-channel discard-channel}})
+          (om/build piles-view (vec (reduce (fn [memo el] (concat memo (val el))) [] (:piles app))))
+        )))))
 
 (om/root
   omingard-view

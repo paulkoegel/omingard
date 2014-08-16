@@ -75,8 +75,11 @@
     :border-radius (px 10)
     :border "1px solid #234892"}]
 
+  [:.l-game-container {
+   :width "100rem"
+   :margin "0 auto"}]
+
   [:.m-columns-wrapper {
-    :width "100rem"
     :margin "2rem auto 0"}]
 
   [:.m-columns {
@@ -115,4 +118,7 @@
         :color "red"}]
       [:&.open {
         :background-color "#fafafa"}]]
+
+  [:.l-piles-container {
+     :background "#ccc"}]
 )
