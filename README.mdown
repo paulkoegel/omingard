@@ -3,6 +3,11 @@ Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-b
 The name's a bit of a personal joke - please bear with me :)
 
 
+### Demo
+[![screenshot](https://dl.dropboxusercontent.com/u/15321563/omingard.png)](https://dl.dropboxusercontent.com/u/15321563/omingard/index.html)
+Found a bug? Please create a new [issue](https://github.com/paulwittmann/omingard/issues) - thank you!
+
+
 ### Setup
 Check out this repository:
 
@@ -29,6 +34,3 @@ You should easily find similar tutorials for Emacs - check out [Austin].
 Also see [Weasel](https://github.com/tomjakubowski/weasel) and [Figwheel](https://github.com/bhauman/lein-figwheel).
 
 
-### Status
-Current screenshot:
-![screenshot](https://dl.dropboxusercontent.com/u/15321563/omingard.png)
