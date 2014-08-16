@@ -30,7 +30,7 @@ Open `http://localhost:8000`.
 
 Refer to the excellent [Lighttable ClojureScript tutorial](https://github.com/swannodette/lt-cljs-tutorial) for integrating a ClojureScript REPL with Lighttable.
 Or [Perfect ClojureScript Development Environment With Vim](https://astashov.github.io/blog/2014/07/30/perfect-clojurescript-development-environment-with-vim) for the same with vim.
-You should easily find similar tutorials for Emacs - check out [Austin].
+You should easily find similar tutorials for Emacs - check out [Austin](https://github.com/cemerick/austin).
 
 Also see [Weasel](https://github.com/tomjakubowski/weasel) and [Figwheel](https://github.com/bhauman/lein-figwheel).
 
