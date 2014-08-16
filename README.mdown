@@ -1,10 +1,11 @@
 # Omingard
-Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-backbone) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om) (from [CoffeeScript](http://coffeescript.org) and [Backbone Marionette](http://marionettejs.com)).
-The name's a bit of a personal joke - please bear with me :)
-
+Port of Better Solitaire [Irmingard](https://github.com/paulwittmann/irmingard-backbone) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).
+The name's kind of a personal joke - please bear with me :)
+Original implementation with [CoffeeScript](http://coffeescript.org) and [Backbone Marionette](http://marionettejs.com):
+[irmingard-backbone](https://github.com/paulwittmann/irmingard-backbone).
 
 ### Demo
-[![screenshot](https://dl.dropboxusercontent.com/u/15321563/omingard.png)](https://dl.dropboxusercontent.com/u/15321563/omingard/index.html)
+[![screenshot](/current_screenshot.png)](https://dl.dropboxusercontent.com/u/15321563/omingard/index.html)
 Found a bug? Please create a new [issue](https://github.com/paulwittmann/omingard/issues) - thank you!
 
 
