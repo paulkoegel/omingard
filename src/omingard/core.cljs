@@ -289,8 +289,6 @@
           (om/build piles-view (:piles app))))
     )))
 
-(:piles @app-state)
-
 (om/root
   omingard-view
   app-state
