@@ -122,6 +122,9 @@
   [:.l-piles-container {
     :background "#ccc"}]
 
+  [:.m-piles {
+    :list-style-type "none"}]
+
   [:.m-pile {
     :float "left"}]
 )

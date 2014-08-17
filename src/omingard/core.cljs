@@ -252,9 +252,12 @@
     om/IRender
     (render [this]
       (dom/li #js {:className "m-pile"}
-        (apply dom/ul #js {:className "m-pile--cards"}
-          (om/build-all card-view (:cards pile))))
-    )))
+        (let [cards (:cards pile)]
+          (if (seq cards)
+            (apply dom/ul #js {:className "m-pile--cards"}
+              (om/build-all card-view cards))
+            (om/build card-view {:suit (:suit pile)})))))))
+
 
 (defn piles-view [piles owner]
   (reify
