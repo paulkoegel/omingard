@@ -160,13 +160,13 @@
   (shuffle (mapcat cards-for-suit suits)))
 
 (defn piles-for-suits [suits]
-  (vec (map-indexed (fn [idx suit] {:index idx :suit suit :cards []}) (concat suits suits))))
+  (vec (map-indexed (fn [idx suit] {:index idx :suit suit :cards []}) suits)))
 
 ;; initialise app state
 (def app-state
   (atom
     {:stack (shuffled-stack)
-     :piles (piles-for-suits suits)
+     :piles (piles-for-suits (mapcat (fn [suit] [suit suit]) suits))
      :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
      :currently_dragging [] ;; tuple of column-index, card-index !?!
     }))
