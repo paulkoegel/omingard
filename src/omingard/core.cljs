@@ -107,25 +107,12 @@
 
 (defn free-pile-for [piles card]
   (first
-    (->> ((:suit card) piles)
+    (->> piles
          (filter
            (fn [pile]
-             (= (count pile) (dec (:value card))))))))
-
-#_(first (filter
-  (fn [pile] (= (count pile) 0))
-  (:hearts (:piles @app-state))))
-
-#_(first (->> (:diamonds (:piles @app-state))
-     (filter (fn [pile] (= (count pile) (dec 1))))))
-
-
-#_(->> (:hearts (:piles @app-state)))
-
-;; derefing to the max - not applicable in free-pile-for as (:value card) cannot be used for destructuring - can it?
-;; (def state {:piles {:hearts [[] []]}})
-;; (defn x [{{pile :hearts} :piles}] pile)
-;; (x state)
+             (and
+               (= (:suit pile) (:suit card))
+               (= (count (:cards pile)) (dec (:value card)))))))))
 
 
 ;; DISCARD CARDS - - - - - - -
@@ -147,14 +134,11 @@
     (if (discardable? app card)
       (-> app
         (update-in [:columns (:index column) :cards] pop)
-        ;; TODO: find pile via free-pile-for and add index to piles
-        (update-in [:piles (:suit card) 0] conj card)
-        ;; open last card of pile
+        (update-in [:piles (:suit card) (:index (free-pile-for (:piles app) card))] conj card)
+        ;; open new last card of column
         (update-in [:columns (:index column) :cards]
                      (fn [cds]
                        (assoc-in cds [(dec (count cds)) :open?] true))))
-
-
       app ;; do nothing if card cannot be discarded
     )))
 
@@ -162,14 +146,12 @@
 ;; GENERATE A STACK OF CARDS
 ;; = = = 1 = = = = = = = = = = =
 
-;; each suit twice
 (def suits [:hearts :diamonds :spades :clubs])
 
-;; [suits] where an entry of suits consists of, e.g., [:hearts :hearts]
 (defn cards-for-suit [suit]
   (mapcat
     (fn [value]
-      ;; need to add a deck parameter to distinguish cards with the same value and suit in the same column
+      ;; need a deck parameter to distinguish cards with the same value and suit in the same column
       [{:deck :a :suit suit :value value}
        {:deck :b :suit suit :value value}])
     (range 1 14)))
@@ -178,7 +160,10 @@
   (shuffle (mapcat cards-for-suit suits)))
 
 (defn piles-for-suits [suits]
-  (reduce (fn [memo, suit] (assoc memo suit [[] []])) {} suits))
+  (vec (reduce (fn [memo, suit] (concat memo [{:suit suit :index 0 :cards []}
+                                         {:suit suit :index 1 :cards []}]))
+          []
+          suits)))
 
 ;; initialise app state
 (def app-state
@@ -271,14 +256,15 @@
     (render [this]
       (dom/li #js {:className "m-pile"}
         (apply dom/ul nil
-          (om/build-all card-view pile))
-    ))))
+          (om/build-all card-view (:cards pile))))
+    )))
 
 (defn piles-view [piles owner]
   (reify
     om/IRender
     (render [this]
       (dom/div #js {:className "l-piles-container"}
+        (dom/h3 nil "Piles")
         (apply dom/ul #js {:className "m-piles"}
           (om/build-all pile-view piles))))))
 
@@ -300,32 +286,12 @@
         (om/build navigation-view app)
         (dom/div #js {:className "l-game-container"}
           (om/build columns-view (:columns app) {:init-state {:discard-channel discard-channel}})
-          (om/build piles-view (vec (reduce (fn [memo el] (concat memo (val el))) [] (:piles app))))
-        )))))
+          (om/build piles-view (:piles app))))
+    )))
+
+(:piles @app-state)
 
 (om/root
   omingard-view
   app-state
   {:target (. js/document (getElementById "omingard"))})
-
-
-;; -- - - - - - - -reset
-;; sandbox
-(let [column [(card "h.K")
-              (card "c.Q")
-              (card "d.J")
-              (card "s.10")
-              (card "h.9")
-              (card "c.8")
-              (card "d.7")
-              (card "s.6")
-              (card "d.5")
-              (card "c.4")
-              (card "h.3")
-              (card "s.2")]]
-  (children-of column (card "s.2")))
-
-(.indexOf #js [1 2 3] 3)
-
-
-(vec (rest (drop-while (fn [el] (not= 9 el)) [1 2 3 4 5 6 7 8 9])))
