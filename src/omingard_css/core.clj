@@ -120,5 +120,8 @@
         :background-color "#fafafa"}]]
 
   [:.l-piles-container {
-     :background "#ccc"}]
+    :background "#ccc"}]
+
+  [:.m-pile {
+    :float "left"}]
 )

@@ -161,3 +161,7 @@ body {
 .l-piles-container {
   background: #ccc;
 }
+
+.m-pile {
+  float: left;
+}

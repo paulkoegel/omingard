@@ -134,7 +134,7 @@
     (if (discardable? app card)
       (-> app
         (update-in [:columns (:index column) :cards] pop)
-        (update-in [:piles (:suit card) (:index (free-pile-for (:piles app) card))] conj card)
+        (update-in [:piles (:index (free-pile-for (:piles app) card)) :cards] conj card)
         ;; open new last card of column
         (update-in [:columns (:index column) :cards]
                      (fn [cds]
@@ -160,10 +160,7 @@
   (shuffle (mapcat cards-for-suit suits)))
 
 (defn piles-for-suits [suits]
-  (vec (reduce (fn [memo, suit] (concat memo [{:suit suit :index 0 :cards []}
-                                         {:suit suit :index 1 :cards []}]))
-          []
-          suits)))
+  (vec (map-indexed (fn [idx suit] {:index idx :suit suit :cards []}) (concat suits suits))))
 
 ;; initialise app state
 (def app-state
@@ -255,7 +252,7 @@
     om/IRender
     (render [this]
       (dom/li #js {:className "m-pile"}
-        (apply dom/ul nil
+        (apply dom/ul #js {:className "m-pile--cards"}
           (om/build-all card-view (:cards pile))))
     )))
 
@@ -265,7 +262,7 @@
     (render [this]
       (dom/div #js {:className "l-piles-container"}
         (dom/h3 nil "Piles")
-        (apply dom/ul #js {:className "m-piles"}
+        (apply dom/ul #js {:className "m-piles cf"}
           (om/build-all pile-view piles))))))
 
 (defn omingard-view [app owner]
