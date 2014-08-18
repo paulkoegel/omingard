@@ -90,7 +90,7 @@
     (if (reduce
           (fn [memo colour] (if (not= memo colour) colour (reduced false))) ;; `reduced` breaks the iteration
           (first colours)
-          (rest colours)) ;; returns false or the last colour
+          (rest colours)) ;; reduce returns false or the last card's colour
          true
          false)))
 
