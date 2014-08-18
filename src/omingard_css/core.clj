@@ -117,7 +117,9 @@
       [:.red {
         :color "red"}]
       [:&.open {
-        :background-color "#fafafa"}]]
+        :background-color "#fafafa"}]
+      [:&.move-it {
+        :background-color "yellow"}]]
 
   [:.l-piles-container {
     :background "#ccc"}]

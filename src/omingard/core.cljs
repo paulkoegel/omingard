@@ -125,7 +125,8 @@
 
 (defn discardable? [app card]
   ;; TODO: implement real check
-  (and (moveable? (column-for (:columns app) card) card) (free-pile-for (:piles app) card)))
+  (and (moveable? (column-for (:columns app) card) card)
+       (free-pile-for (:piles app) card)))
 
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
@@ -142,6 +143,20 @@
                        (assoc-in cds [(dec (count cds)) :open?] true))))
       app ;; do nothing if card cannot be discarded
     )))
+
+(defn index-for-card-in-column [column card]
+  (first (keep-indexed (fn [idx el] (when (= el card) idx)) (:cards column))))
+
+(defn mark-for-moving [app card]
+  (let [column (column-for (:columns app) card)]
+    (-> app
+      (assoc-in [:columns (:index column) :cards (index-for-card-in-column column card) :move-it] true))))
+
+;; card has already been dereferenced - otherwise we get "Cannot manipulate cursor outside of render phase", only om.core/transact!, om.core/update!, and cljs.core/deref operations allowed"" errors.
+(defn handle-card-click [_event channel card]
+  (if (open? card)
+    (put! channel [mark-for-moving card])))
+
 
 ;; = = = 1 = = = = = = = = = = =
 ;; GENERATE A STACK OF CARDS
@@ -212,9 +227,10 @@
 (defn card-view [card owner]
   (reify
     om/IRenderState
-    (render-state [this {:keys [discard-channel]}]
-      (dom/li #js {:className (str "m-card" (if (open? card) " open"))
-                   :onDoubleClick (fn [e] (put! discard-channel @card))
+    (render-state [this {:keys [channel]}]
+      (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
+                   :onClick (fn [event] (handle-card-click event channel @card))
+                   :onDoubleClick (fn [e] (put! channel [discard-card @card]))
                    :ref "card"}
         (dom/span #js {:className (colour (:suit card))}
           (label-for card))))))
@@ -222,18 +238,18 @@
 (defn column-view [column owner]
   (reify
     om/IRenderState
-    (render-state [this {:keys [discard-channel]}]
+    (render-state [this {:keys [channel]}]
       (dom/div #js {:className "m-column-wrapper"} ;; .m-column on the div and not the <ul> so empty columns don't disappear
         (apply dom/ul #js {:className "m-column"}
-          (om/build-all card-view (:cards column) {:init-state {:discard-channel discard-channel}}))))))
+          (om/build-all card-view (:cards column) {:init-state {:channel channel}}))))))
 
 (defn columns-view [columns owner]
   (reify
     om/IRenderState
-    (render-state [this {:keys [discard-channel]}]
+    (render-state [this {:keys [channel]}]
       (dom/div #js {:className "m-columns-wrapper"}
         (apply dom/ul #js {:className "m-columns cf"}
-        (om/build-all column-view columns {:init-state {:discard-channel discard-channel}}))))))
+        (om/build-all column-view columns {:init-state {:channel channel}}))))))
 
 (defn navigation-view [app owner]
   (reify
@@ -275,20 +291,20 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:discard-channel (chan)})
+      {:channel (chan)})
     om/IWillMount
     (will-mount [_]
-       (let [discard-channel (om/get-state owner :discard-channel)]
+       (let [channel (om/get-state owner :channel)]
          (go (loop []
-           (let [card (<! discard-channel)]
-             (om/transact! app (fn [xs] (discard-card xs card)))
-             (recur))))))
+           (let [[func & attrs] (<! channel)]
+             (om/transact! app (fn [xs] (apply func xs attrs))))
+           (recur)))))
     om/IRenderState
-    (render-state [this {:keys [discard-channel]}]
+    (render-state [this {:keys [channel]}]
       (dom/div #js {:className "omingard-wrapper"}
         (om/build navigation-view app)
         (dom/div #js {:className "l-game-container"}
-          (om/build columns-view (:columns app) {:init-state {:discard-channel discard-channel}})
+          (om/build columns-view (:columns app) {:init-state {:channel channel}})
           (om/build piles-view (:piles app))))
     )))
 

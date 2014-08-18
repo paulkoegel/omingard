@@ -158,6 +158,10 @@ body {
   background-color: #fafafa;
 }
 
+.m-card.move-it {
+  background-color: yellow;
+}
+
 .l-piles-container {
   background: #ccc;
 }
