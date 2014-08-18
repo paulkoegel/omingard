@@ -257,8 +257,10 @@
           (if (seq cards)
             (apply dom/ul #js {:className "m-pile--cards"}
               (om/build-all card-view cards))
-            (om/build card-view {:suit (:suit pile)})))))))
-
+            ;; pile has no cards
+            (let [suit (:suit pile)]
+              (dom/span #js {:className (str "m-pile--placeholder " (colour suit))}
+                (symbol-for-suit suit)))))))))
 
 (defn piles-view [piles owner]
   (reify
