@@ -42,13 +42,13 @@
   {:name "colour"
    :expectations [
     ["hearts"
-     (= :red (o/colour {:suit :hearts}))]
+     (= "red" (o/colour :hearts))]
     ["diamonds"
-     (= :red (o/colour {:suit :diamonds}))]
+     (= "red" (o/colour :diamonds))]
     ["clubs"
-     (= :black (o/colour {:suit :clubs}))]
+     (= "black" (o/colour :clubs))]
     ["spades"
-     (= :black (o/colour {:suit :spades}))]
+     (= "black" (o/colour :spades))]
     ["stars"
      (= nil (o/colour {:suit :stars}))]]}
 

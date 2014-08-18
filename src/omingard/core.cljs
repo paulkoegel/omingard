@@ -46,10 +46,11 @@
 (def columns# 9)
 
 ;; HELPER FUNCTIONS
-(defn colour [{suit :suit :as card}]
+;; returns strings b/c we can't use keywords to set CSS classes.
+(defn colour [suit]
   (cond
-    (some #{suit} [:hearts :diamonds]) :red
-    (some #{suit} [:clubs :spades])    :black))
+    (some #{suit} [:hearts :diamonds]) "red"
+    (some #{suit} [:clubs :spades])    "black"))
 
 ;; replaces certain values with "J" (jack) etc.
 ;; [card]
@@ -82,7 +83,7 @@
 
 ;; [cards, not column] usually fed with the result of children-of
 (defn with-alternating-colours? [cards]
-  (let [colours (map colour cards)]
+  (let [colours (map (fn [card] (colour (:suit card))) cards)]
     ;; potential problem with reduce is that it'll return `false` if the last element
     ;; of cards is `false`, but this function expects to be handed card maps.
     ;; works when cards contains only one card
@@ -215,7 +216,7 @@
       (dom/li #js {:className (str "m-card" (if (open? card) " open"))
                    :onDoubleClick (fn [e] (put! discard-channel @card))
                    :ref "card"}
-        (dom/span #js {:className (name (colour card))}
+        (dom/span #js {:className (colour (:suit card))}
           (label-for card))))))
 
 (defn column-view [column owner]
