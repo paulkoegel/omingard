@@ -169,3 +169,15 @@ body {
 .m-pile {
   float: left;
 }
+
+.m-pile--placeholder {
+
+}
+
+.m-pile--placeholder.red {
+  color: red;
+}
+
+.m-pile--placeholder.black {
+  color: black;
+}

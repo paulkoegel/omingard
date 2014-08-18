@@ -127,4 +127,11 @@
 
   [:.m-pile {
     :float "left"}]
+
+  [:.m-pile--placeholder {
+   }
+     [:&.red {
+       :color "red"}]
+     [:&.black {
+       :color "black"}]]
 )
