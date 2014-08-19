@@ -14,6 +14,7 @@
             [clojure.string :as string]))
 
 (enable-console-print!)
+(js/React.initializeTouchEvents true)
 
 ;; DEBUGGING HELPERS
 
