@@ -254,12 +254,32 @@
       app
       cards-to-unmark)))
 
+(defn can-be-placed-below? [upper-card lower-card]
+  (and (= (:value upper-card) (inc (:value lower-card)))
+       (not= (colour upper-card) (colour lower-card))))
+
+(defn move-marked-cards-to [app new-column]
+  (let [columns (:columns app)
+        cards-to-move (cards-marked-for-moving app)]
+    (reduce
+      (fn [memo card]
+        (let [old-column (column-for columns card)]
+          (-> memo
+            (update-in [:columns (:index old-column) :cards]
+                       pop)
+            (update-in [:columns (:index new-column) :cards]
+                       conj card))))
+      app
+      cards-to-move)))
+
 (defn process-single-click [app card]
   (js/console.log "process single link")
   (if (seq (cards-marked-for-moving app))
     (do
       (js/console.log "there are cards marked for moving! - Put some cards right here!")
-      (unmark-all-cards app))
+      (-> app
+        (move-marked-cards-to (column-for (:columns app) card))
+        (unmark-all-cards)))
     (do
       (js/console.log "no cards marked for moving")
       (mark-for-moving app card))))
