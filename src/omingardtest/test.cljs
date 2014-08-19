@@ -184,6 +184,92 @@
        )
   }
 
+  {:name "unmark-all-cards"
+   :expectations [
+      ["it works"
+        (=
+          {:columns
+              [{:index 0, :cards [{:suit :clubs, :open true, :deck :a, :value 12}]}
+               {:index 1,
+                :cards
+                [{:suit :diamonds, :deck :b, :value 1}
+                 {:suit :hearts, :open true, :deck :a, :value 7}]}
+               {:index 2,
+                :cards
+                [{:suit :clubs, :deck :a, :value 4}
+                 {:suit :clubs, :deck :a, :value 13}
+                 {:suit :spades, :open true, :deck :a, :value 11}]}
+               {:index 3,
+                :cards
+                [{:suit :hearts, :deck :b, :value 2}
+                 {:suit :clubs, :deck :b, :value 11}
+                 {:suit :clubs, :deck :b, :value 13}
+                 {:suit :hearts, :open true, :deck :a, :value 5}]}
+               {:index 4,
+                :cards
+                [{:suit :spades, :deck :b, :value 12}
+                 {:suit :clubs, :deck :b, :value 12}
+                 {:suit :diamonds, :deck :a, :value 5}
+                 {:suit :hearts, :deck :a, :value 10}
+                 {:suit :hearts, :open true, :deck :b, :value 7}]}
+               {:index 5,
+                :cards
+                [{:suit :clubs, :deck :b, :value 9}
+                 {:suit :hearts, :deck :b, :value 4}
+                 {:suit :diamonds, :deck :a, :value 12}
+                 {:suit :clubs, :open true, :deck :a, :value 7}]}
+               {:index 6,
+                :cards
+                [{:suit :spades, :deck :a, :value 2}
+                 {:suit :diamonds, :deck :b, :value 9}
+                 {:suit :hearts, :open true, :deck :b, :value 1}]}
+               {:index 7,
+                :cards
+                [{:suit :clubs, :deck :b, :value 8}
+                 {:suit :spades, :open true, :deck :b, :value 8}]}
+               {:index 8, :cards [{:suit :hearts, :open true, :deck :a, :value 1}]}]}
+          (o/unmark-all-cards
+            {:columns
+              [{:index 0, :cards [{:suit :clubs, :open true, :deck :a, :value 12}]}
+               {:index 1,
+                :cards
+                [{:suit :diamonds, :deck :b, :value 1}
+                 {:suit :hearts, :open true, :deck :a, :value 7, :move-it true}]}
+               {:index 2,
+                :cards
+                [{:suit :clubs, :deck :a, :value 4}
+                 {:suit :clubs, :deck :a, :value 13}
+                 {:suit :spades, :open true, :deck :a, :value 11}]}
+               {:index 3,
+                :cards
+                [{:suit :hearts, :deck :b, :value 2}
+                 {:suit :clubs, :deck :b, :value 11}
+                 {:suit :clubs, :deck :b, :value 13}
+                 {:suit :hearts, :open true, :deck :a, :value 5}]}
+               {:index 4,
+                :cards
+                [{:suit :spades, :deck :b, :value 12}
+                 {:suit :clubs, :deck :b, :value 12}
+                 {:suit :diamonds, :deck :a, :value 5}
+                 {:suit :hearts, :deck :a, :value 10}
+                 {:suit :hearts, :open true, :deck :b, :value 7}]}
+               {:index 5,
+                :cards
+                [{:suit :clubs, :deck :b, :value 9}
+                 {:suit :hearts, :deck :b, :value 4}
+                 {:suit :diamonds, :deck :a, :value 12}
+                 {:suit :clubs, :open true, :deck :a, :value 7}]}
+               {:index 6,
+                :cards
+                [{:suit :spades, :deck :a, :value 2}
+                 {:suit :diamonds, :deck :b, :value 9}
+                 {:suit :hearts, :open true, :deck :b, :value 1}]}
+               {:index 7,
+                :cards
+                [{:suit :clubs, :deck :b, :value 8}
+                 {:suit :spades, :open true, :deck :b, :value 8}]}
+               {:index 8, :cards [{:suit :hearts, :open true, :deck :a, :value 1}]}]}))]
+    ]}
 ])
 
 
