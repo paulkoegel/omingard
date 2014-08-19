@@ -229,26 +229,27 @@
     state
     (range columns#)))
 
-(defn single-click [channel]
+(defn single-click [channel card]
   (put! channel [debugg "single click"]))
-(defn double-click [channel]
+(defn double-click [channel card]
+  (put! channel [discard-card card])
   (put! channel [debugg "double click"]))
 
 ;; modeled on: https://gist.github.com/karbassi/639453
-(defn handle-card-interaction [click-count single-click-timer channel]
+(defn handle-card-interaction [click-count single-click-timer channel card]
   "Distinguish between single and double clicks / taps with a timeout of 400ms"
   (swap! click-count inc)
   (cond
     (= @click-count 1)
       (swap! single-click-timer
              (fn [_]
-               (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click channel))
+               (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click channel card))
                                      400)))
     (= @click-count 2)
       (do
         (js/window.clearTimeout @single-click-timer)
         (swap! click-count (fn [_] 0))
-        (double-click channel))))
+        (double-click channel card))))
 
 (defn card-view [card owner]
   (reify
@@ -259,10 +260,10 @@
         (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
                      :onClick (fn [event]
                        (.preventDefault event)
-                       (handle-card-interaction click-count single-click-timer channel))
+                       (handle-card-interaction click-count single-click-timer channel @card))
                      :onTouchEnd (fn [event]
                        (.preventDefault event)
-                       (handle-card-interaction click-count single-click-timer channel))
+                       (handle-card-interaction click-count single-click-timer channel @card))
                      :ref "card"}
           (dom/span #js {:className (colour (:suit card))}
             (label-for card)))))))
