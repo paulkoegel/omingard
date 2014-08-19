@@ -304,7 +304,7 @@
         (dom/ul #js {:className "m-navigation cf"}
           (dom/li #js {:className "m-navigation--item"}
             (dom/h1 #js {:className "m-navigation--title"}
-              "Irmingard"))
+              "Omingard"))
           (dom/li #js {:className "m-navigation--item"}
             (dom/button #js {:className "m-navigation--hit-me"
                              :onClick (fn [_] (om/transact! app serve-new-cards))} "Hit me!")))))))
