@@ -304,6 +304,14 @@
             {:index 0})
             )]
     ]}
+  {:name "can-be-placed-below?"
+   :expectations [
+     ["can be placed below"
+       (= true
+          (o/can-be-placed-below? (card "s.7") (card "h.8")))]
+     ["cannot be placed below"
+       (= false
+          (o/can-be-placed-below? (card "c.J") (card "d.K")))]]}
 ])
 
 
