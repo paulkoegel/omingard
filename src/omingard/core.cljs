@@ -247,6 +247,20 @@
 (defn double-click []
   (js/console.log "double click!"))
 
+(defn handle-single-double-click-tap [click-count single-click-timer]
+  (swap! click-count inc)
+    (cond
+      (= @click-count 1)
+        (swap! single-click-timer (fn [_]
+                                    (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click))
+                                                          400)))
+      (= @click-count 2)
+         (do
+           (js/window.clearTimeout @single-click-timer)
+           (swap! click-count (fn [_] 0))
+           (double-click)))
+     false)
+
 (defn card-view [card owner]
   (reify
     om/IRenderState
@@ -255,22 +269,35 @@
             single-click-timer (atom nil)]
         (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
                      ;; https://gist.github.com/karbassi/639453
-                     :onClick (fn [event]
-                       (js/console.log "--- there was a click")
-                       (swap! click-count inc)
-                       (cond
-                         (= @click-count 1)
-                           (do
-                             (js/console.log "1")
-                             (swap! single-click-timer (fn [_] (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click)) 400))))
-                         (= @click-count 2)
-                           (do
-                             (js/window.clearTimeout @single-click-timer)
-                             (swap! click-count (fn [_] 0))
-                             (double-click)
-                             ))
-                       false)
-
+                     :onClick (fn [_event]
+                       (handle-single-double-click-tap click-count single-click-timer))
+                       ;; (swap! click-count inc)
+                       ;; (cond
+                       ;;   (= @click-count 1)
+                       ;;     (do
+                       ;;       (swap! single-click-timer (fn [_] (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click)) 400))))
+                       ;;   (= @click-count 2)
+                       ;;     (do
+                       ;;       (js/window.clearTimeout @single-click-timer)
+                       ;;       (swap! click-count (fn [_] 0))
+                       ;;       (double-click)
+                       ;;       ))
+                       ;; false)
+                     :onTouchEnd (fn [_event]
+                       (handle-single-double-click-tap click-count single-click-timer))
+                       ;; (handle-single-double-click-tap)
+                       ;; (swap! click-count inc)
+                       ;; (cond
+                       ;;   (= @click-count 1)
+                       ;;     (do
+                       ;;       (swap! single-click-timer (fn [_] (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click)) 400))))
+                       ;;   (= @click-count 2)
+                       ;;     (do
+                       ;;       (js/window.clearTimeout @single-click-timer)
+                       ;;       (swap! click-count (fn [_] 0))
+                       ;;       (double-click)
+                       ;;       ))
+                       ;; false)
                        ;;(check-click event channel @card)) ;;(fn [event] (handle-card-click event channel @card))
                      ;; :onDoubleClick (fn [event] (check-click event channel @card)) ;;(fn [e] (put! channel [discard-card @card]))
                      :ref "card"}
