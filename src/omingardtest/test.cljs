@@ -270,6 +270,40 @@
                  {:suit :spades, :open true, :deck :b, :value 8}]}
                {:index 8, :cards [{:suit :hearts, :open true, :deck :a, :value 1}]}]}))]
     ]}
+
+  {:name "move-marked-cards-to"
+   :expectations [
+      ["it works"
+        (=
+          {:columns
+            [{:index 0,
+              :cards
+              [{:suit :clubs, :open true, :deck :a, :value 12}
+               {:suit :hearts, :open true, :deck :a, :value 7, :move-it true}]}
+             {:index 1,
+              :cards
+              [{:suit :diamonds, :deck :b, :value 1}]}
+             {:index 2,
+              :cards
+              [{:suit :clubs, :deck :a, :value 4}
+               {:suit :clubs, :deck :a, :value 13}
+               {:suit :spades, :open true, :deck :a, :value 11}]}
+             ]}
+          (o/move-marked-cards-to
+            {:columns
+              [{:index 0, :cards [{:suit :clubs, :open true, :deck :a, :value 12}]}
+               {:index 1,
+                :cards
+                [{:suit :diamonds, :deck :b, :value 1}
+                 {:suit :hearts, :open true, :deck :a, :value 7, :move-it true}]}
+               {:index 2,
+                :cards
+                [{:suit :clubs, :deck :a, :value 4}
+                 {:suit :clubs, :deck :a, :value 13}
+                 {:suit :spades, :open true, :deck :a, :value 11}]}]}
+            {:index 0})
+            )]
+    ]}
 ])
 
 
