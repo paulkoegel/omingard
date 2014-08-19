@@ -188,7 +188,6 @@
     {:stack (shuffled-stack)
      :piles (piles-for-suits (mapcat (fn [suit] [suit suit]) suits))
      :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
-     :currently_dragging [] ;; tuple of column-index, card-index !?!
      :debug-texts []
     }))
 
@@ -229,7 +228,45 @@
     state
     (range columns#)))
 
+(defn all-cards [app]
+  (reduce
+    (fn [memo el]
+      (apply conj memo (:cards el)))
+    []
+    (:columns app)))
+
+(defn cards-marked-for-moving [app]
+  (filter
+    (fn [card]
+      (:move-it card))
+    (all-cards app)))
+
+(defn unmark-all-cards [app]
+  (let [cards-to-unmark (cards-marked-for-moving app)
+        columns (:columns app)]
+    (reduce
+      (fn [memo card]
+        (let [column (column-for columns card)]
+          (update-in memo
+                     [:columns (:index column) :cards (index-for-card-in-column column card)]
+                     (fn [el] (dissoc el :move-it))
+                     )))
+      app
+      cards-to-unmark)))
+
+(defn process-single-click [app card]
+  (js/console.log "process single link")
+  (if (seq (cards-marked-for-moving app))
+    (do
+      (js/console.log "there are cards marked for moving! - Put some cards right here!")
+      (unmark-all-cards app))
+    (do
+      (js/console.log "no cards marked for moving")
+      (mark-for-moving app card))))
+
 (defn single-click [channel card]
+  (when (open? card)
+    (put! channel [process-single-click card]))
   (put! channel [debugg "single click"]))
 (defn double-click [channel card]
   (put! channel [discard-card card])
