@@ -224,16 +224,58 @@
     state
     (range columns#)))
 
+;; card's already derefed
+;; (defn check-click [event channel card]
+;;   clickCount++
+;;   if (clickCount === 1) {
+;;   singleClickTimer = setTimeout(function() {
+;;   clickCount = 0;
+;;   singleClick();
+;;   }, 400);
+;;   } else if (clickCount === 2) {
+;;   clearTimeout(singleClickTimer);
+;;   clickCount = 0;
+;;   doubleClick();
+;; }
+;; }, false)
+;;   :onClick check-click ;;(fn [event] (handle-card-click event channel @card))
+;;   :onDoubleClick check-click ;;(fn [e] (put! channel [discard-card @card]))
+;; )
+
+(defn single-click []
+  (js/console.log "single click!"))
+(defn double-click []
+  (js/console.log "double click!"))
+
 (defn card-view [card owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
-      (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
-                   :onClick (fn [event] (handle-card-click event channel @card))
-                   :onDoubleClick (fn [e] (put! channel [discard-card @card]))
-                   :ref "card"}
-        (dom/span #js {:className (colour (:suit card))}
-          (label-for card))))))
+      (let [click-count (atom 0)
+            single-click-timer (atom nil)]
+        (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
+                     ;; https://gist.github.com/karbassi/639453
+                     :onClick (fn [event]
+                       (js/console.log "--- there was a click")
+                       (swap! click-count inc)
+                       (cond
+                         (= @click-count 1)
+                           (do
+                             (js/console.log "1")
+                             (swap! single-click-timer (fn [_] (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click)) 400))))
+                         (= @click-count 2)
+                           (do
+                             (js/window.clearTimeout @single-click-timer)
+                             (swap! click-count (fn [_] 0))
+                             (double-click)
+                             ))
+                       false)
+
+                       ;;(check-click event channel @card)) ;;(fn [event] (handle-card-click event channel @card))
+                     ;; :onDoubleClick (fn [event] (check-click event channel @card)) ;;(fn [e] (put! channel [discard-card @card]))
+                     :ref "card"}
+          (dom/span #js {:className (colour (:suit card))}
+            (label-for card)))))))
 
 (defn column-view [column owner]
   (reify
