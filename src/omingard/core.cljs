@@ -18,6 +18,9 @@
 
 ;; DEBUGGING HELPERS
 
+(defn debugg [app text]
+  (update-in app [:debug-texts] (fn [a] (cons text a))))
+
 ;; transforms "J" etc. back to 11 etc.
 (defn value-from-literal-value [literal-value]
   (let [literal-value (string/lower-case literal-value)]
@@ -186,6 +189,7 @@
      :piles (piles-for-suits (mapcat (fn [suit] [suit suit]) suits))
      :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
      :currently_dragging [] ;; tuple of column-index, card-index !?!
+     :debug-texts []
     }))
 
 (defn serve-card-to-column [state column-index & [open?]]
@@ -225,44 +229,26 @@
     state
     (range columns#)))
 
-;; card's already derefed
-;; (defn check-click [event channel card]
-;;   clickCount++
-;;   if (clickCount === 1) {
-;;   singleClickTimer = setTimeout(function() {
-;;   clickCount = 0;
-;;   singleClick();
-;;   }, 400);
-;;   } else if (clickCount === 2) {
-;;   clearTimeout(singleClickTimer);
-;;   clickCount = 0;
-;;   doubleClick();
-;; }
-;; }, false)
-;;   :onClick check-click ;;(fn [event] (handle-card-click event channel @card))
-;;   :onDoubleClick check-click ;;(fn [e] (put! channel [discard-card @card]))
-;; )
-
-(defn single-click []
-  (js/console.log "single click!"))
-(defn double-click []
-  (js/console.log "double click!"))
+(defn single-click [channel]
+  (put! channel [debugg "single click"]))
+(defn double-click [channel]
+  (put! channel [debugg "double click"]))
 
 ;; modeled on: https://gist.github.com/karbassi/639453
-(defn handle-card-interaction [click-count single-click-timer]
+(defn handle-card-interaction [click-count single-click-timer channel]
   "Distinguish between single and double clicks / taps with a timeout of 400ms"
   (swap! click-count inc)
     (cond
       (= @click-count 1)
         (swap! single-click-timer
                (fn [_]
-                 (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click))
+                 (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click channel))
                                        400)))
       (= @click-count 2)
          (do
            (js/window.clearTimeout @single-click-timer)
            (swap! click-count (fn [_] 0))
-           (double-click)))
+           (double-click channel)))
      false)
 
 (defn card-view [card owner]
@@ -273,9 +259,9 @@
             single-click-timer (atom nil)]
         (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
                      :onClick (fn [_event]
-                       (handle-card-interaction click-count single-click-timer))
+                       (handle-card-interaction click-count single-click-timer channel))
                      :onTouchEnd (fn [_event]
-                       (handle-card-interaction click-count single-click-timer))
+                       (handle-card-interaction click-count single-click-timer channel))
                      :ref "card"}
           (dom/span #js {:className (colour (:suit card))}
             (label-for card)))))))
@@ -350,8 +336,16 @@
         (om/build navigation-view app)
         (dom/div #js {:className "l-game-container"}
           (om/build columns-view (:columns app) {:init-state {:channel channel}})
-          (om/build piles-view (:piles app))))
-    )))
+          (dom/div #js {:className "l-debug"}
+            (dom/h3 nil "Debug (newest click events first)")
+            (apply dom/ul #js {:className "m-debug-texts"}
+              (map-indexed
+                (fn [idx el]
+                  (dom/li #js {:className "m-debug-texts--item"}
+                    (str (- (count (:debug-texts app)) idx) ". " el)))
+                (:debug-texts app))))
+          (om/build piles-view (:piles app)))
+      ))))
 
 (om/root
   omingard-view

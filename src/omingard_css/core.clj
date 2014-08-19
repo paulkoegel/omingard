@@ -38,10 +38,10 @@
       (fn [[min-width font-size]]
         (at-media {:min-width min-width}
           [:& {:font-size font-size}]))
-      [[   "0px" "14.00%"]
-       [ "320px" "20.00%"]
-       [ "768px" "41.06%"]
-       ["1024px" "53.74%"]
+      [[   "0px" "30.00%"]
+       [ "320px" "40.00%"]
+       [ "768px" "50.06%"]
+       ["1024px" "58.74%"]
        ["1200px" "62.50%"]
        ["1600px" "83.03%"]])]
 
@@ -136,4 +136,7 @@
        :color "red"}]
      [:&.black {
        :color "black"}]]
+
+  [:.l-debug {
+    :background "#C1D1F7"}]
 )

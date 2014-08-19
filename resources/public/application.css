@@ -22,7 +22,7 @@ html {
 @media (min-width: 0px) {
 
   html {
-    font-size: 14.00%;
+    font-size: 30.00%;
   }
 
 }
@@ -30,7 +30,7 @@ html {
 @media (min-width: 320px) {
 
   html {
-    font-size: 20.00%;
+    font-size: 40.00%;
   }
 
 }
@@ -38,7 +38,7 @@ html {
 @media (min-width: 768px) {
 
   html {
-    font-size: 41.06%;
+    font-size: 50.06%;
   }
 
 }
@@ -46,7 +46,7 @@ html {
 @media (min-width: 1024px) {
 
   html {
-    font-size: 53.74%;
+    font-size: 58.74%;
   }
 
 }
@@ -184,4 +184,8 @@ body {
 
 .m-pile--placeholder.black {
   color: black;
+}
+
+.l-debug {
+  background: #C1D1F7;
 }
