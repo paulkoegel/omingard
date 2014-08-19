@@ -238,18 +238,17 @@
 (defn handle-card-interaction [click-count single-click-timer channel]
   "Distinguish between single and double clicks / taps with a timeout of 400ms"
   (swap! click-count inc)
-    (cond
-      (= @click-count 1)
-        (swap! single-click-timer
-               (fn [_]
-                 (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click channel))
-                                       400)))
-      (= @click-count 2)
-         (do
-           (js/window.clearTimeout @single-click-timer)
-           (swap! click-count (fn [_] 0))
-           (double-click channel)))
-     false)
+  (cond
+    (= @click-count 1)
+      (swap! single-click-timer
+             (fn [_]
+               (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click channel))
+                                     400)))
+    (= @click-count 2)
+      (do
+        (js/window.clearTimeout @single-click-timer)
+        (swap! click-count (fn [_] 0))
+        (double-click channel))))
 
 (defn card-view [card owner]
   (reify
@@ -258,9 +257,11 @@
       (let [click-count (atom 0)
             single-click-timer (atom nil)]
         (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
-                     :onClick (fn [_event]
+                     :onClick (fn [event]
+                       (.preventDefault event)
                        (handle-card-interaction click-count single-click-timer channel))
-                     :onTouchEnd (fn [_event]
+                     :onTouchEnd (fn [event]
+                       (.preventDefault event)
                        (handle-card-interaction click-count single-click-timer channel))
                      :ref "card"}
           (dom/span #js {:className (colour (:suit card))}
