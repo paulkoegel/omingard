@@ -56,6 +56,9 @@
     (some #{suit} [:hearts :diamonds]) "red"
     (some #{suit} [:clubs :spades])    "black"))
 
+(defn card-colour [{suit :suit}]
+  (colour suit))
+
 ;; replaces certain values with "J" (jack) etc.
 ;; [card]
 (defn display-value [{value :value}]
@@ -254,9 +257,9 @@
       app
       cards-to-unmark)))
 
-(defn can-be-placed-below? [upper-card lower-card]
+(defn can-be-placed-below? [lower-card upper-card]
   (and (= (:value upper-card) (inc (:value lower-card)))
-       (not= (colour upper-card) (colour lower-card))))
+       (not= (card-colour upper-card) (card-colour lower-card))))
 
 (defn move-marked-cards-to [app new-column]
   (let [columns (:columns app)
@@ -276,10 +279,16 @@
   (js/console.log "process single link")
   (if (seq (cards-marked-for-moving app))
     (do
-      (js/console.log "there are cards marked for moving! - Put some cards right here!")
-      (-> app
-        (move-marked-cards-to (column-for (:columns app) card))
-        (unmark-all-cards)))
+      (js/console.log "Try to move some cards here")
+      (if (can-be-placed-below? (first (cards-marked-for-moving app)) card)
+        (do
+          (js/console.log "Looks safe, moving!")
+          (-> app
+            (move-marked-cards-to (column-for (:columns app) card))
+            (unmark-all-cards)))
+        (do
+          (js/console.log "Sorry, cannot move that there, honey!")
+          (unmark-all-cards app))))
     (do
       (js/console.log "no cards marked for moving")
       (mark-for-moving app card))))
