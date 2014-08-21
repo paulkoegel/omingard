@@ -91,15 +91,13 @@
 ;; [cards, not column] usually fed with the result of children-of
 (defn with-alternating-colours? [cards]
   (let [colours (map (fn [card] (colour (:suit card))) cards)]
-    ;; potential problem with reduce is that it'll return `false` if the last element
-    ;; of cards is `false`, but this function expects to be handed card maps.
-    ;; works when cards contains only one card
-    (if (reduce
-          (fn [memo colour] (if (not= memo colour) colour (reduced false))) ;; `reduced` breaks the iteration
-          (first colours)
-          (rest colours)) ;; reduce returns false or the last card's colour
-         true
-         false)))
+    ;; JFYI: the `reduce` can return `false` if the last element of
+    ;; `cards` is `false`, but this function expects to be handed cards anyway.
+    ;; works when `cards` contains only one card
+    (boolean (reduce
+               (fn [memo colour] (if (not= memo colour) colour (reduced false))) ;; `reduced` breaks the iteration
+               (first colours)
+               (rest colours))))) ;; reduce returns false or the last card's colour
 
 (defn sorted-from-card? [column card]
   (let [children (children-of column card)]
