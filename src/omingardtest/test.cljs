@@ -190,6 +190,34 @@
        )
   }
 
+  ;; TODO: pending
+  ;;{:name "moveable?"
+  ;; :expectations []}
+
+  ;; TODO: pending
+  ;;{:name "free-pile-for"
+  ;; :expectations []}
+
+  ;; TODO: pending
+  ;;{:name "column-for"
+  ;; :expectations []}
+
+  ;; TODO: pending
+  ;;{:name "discardable?"
+  ;; :expectations []}
+
+  ;; TODO: pending
+  ;;{:name "discard-card"
+  ;; :expectations []}
+
+  ;; TODO: pending
+  ;;{:name "index-for-card-in-column"
+  ;; :expectations []}
+
+  ;; TODO: pending
+  ;;{:name "mark-for-moving"
+  ;; :expectations []}
+
   {:name "unmark-all-cards"
    :expectations [
       ["it works"
