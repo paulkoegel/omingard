@@ -16,52 +16,56 @@
 (enable-console-print!)
 (js/React.initializeTouchEvents true)
 
-;; DEBUGGING HELPERS
+;; : : : DEBUGGING HELPERS : : : : : : : : :
 
-(defn debugg [app text]
-  (update-in app [:debug-texts] (fn [a] (cons text a))))
+      (defn debugg [app text]
+        (update-in app [:debug-texts] (fn [a] (cons text a))))
 
-;; transforms "J" etc. back to 11 etc.
-(defn value-from-literal-value [literal-value]
-  (let [literal-value (string/lower-case literal-value)]
-  ;;(let [literal-value (string/lower-case literal-value)]
-    (cond
-      (= literal-value "a") 1
-      (= literal-value "j") 11
-      (= literal-value "q") 12
-      (= literal-value "k") 13
-      :else (js/parseInt literal-value))))
+      ;; transforms "J" etc. back to 11 etc.
+      (defn value-from-literal-value [literal-value]
+        (let [literal-value (string/lower-case literal-value)]
+          (cond
+            (= literal-value "a") 1
+            (= literal-value "j") 11
+            (= literal-value "q") 12
+            (= literal-value "k") 13
+            :else (js/parseInt literal-value))))
 
-;; "d.12.a" creates a queen of diamonds (with deck "a") card map
-(defn card [card-string]
-  (let [card-components (string/split card-string #"\.")
-        suit (keyword (first card-components))
-        value (second card-components)
-        deck (if (= (count card-components) 3) (keyword (last card-components)) nil)]
-    {:suit
-       (cond (= suit :s) :spades
-             (= suit :c) :clubs
-             (= suit :h) :hearts
-             (= suit :d) :diamonds)
-     :value (value-from-literal-value value)
-     :deck (or deck :a)}))
+      ;; "d.12.a" creates a queen of diamonds (with deck "a") card map
+      (defn card [card-string]
+        (let [card-components (string/split card-string #"\.")
+              suit (keyword (first card-components))
+              value (second card-components)
+              deck (if (= (count card-components) 3) (keyword (last card-components)) nil)]
+          {:suit
+             (cond (= suit :s) :spades
+                   (= suit :c) :clubs
+                   (= suit :h) :hearts
+                   (= suit :d) :diamonds)
+           :value (value-from-literal-value value)
+           :deck (or deck :a)}))
+;; - - END -- DEBUGGING HELPERS : : : : : :
 
-;; GLOBAL CONSTANTS
+
+
+;; : : : GLOBAL CONSTANTS : : : : : : : : :
 (def columns# 9)
 
-;; HELPER FUNCTIONS
+
+;; : : : HELPER FUNCTIONS : : : : : : : : :
 ;; returns strings b/c we can't use keywords to set CSS classes.
 (defn colour [suit]
+  "Returns a suit's colour as a string (not a keyword b/c we use it for CSS classes)."
   (cond
     (some #{suit} [:hearts :diamonds]) "red"
     (some #{suit} [:clubs :spades])    "black"))
 
 (defn card-colour [{suit :suit}]
+  "Returns a card's colour as a string."
   (colour suit))
 
-;; replaces certain values with "J" (jack) etc.
-;; [card]
 (defn display-value [{value :value}]
+  "Takes a card and returns their value or converted value (\"A\" for ace, \"J\" for jack etc.)."
   (cond
     (= value 1) "A"
     (and (> value 0) (< value 11)) (str value)
@@ -70,6 +74,7 @@
     (= value 13) "K"))
 
 (defn symbol-for-suit [suit]
+  "Takes a suit and returns its ASCII symbol, e.g. ♠ for :spades."
   (case suit
     :spades "♠"
     :hearts "♥"
@@ -78,12 +83,20 @@
     nil))
 
 (defn open? [card]
+  "Check whether a card is open."
   (:open card))
 
 (defn label-for [card]
-  (str (symbol-for-suit (:suit card)) " " (display-value card) " (" (:deck card) ")"))
+  "Returns a human-readable string for a card, e.g. \"♠ 7\""
+  (str (symbol-for-suit (:suit card))
+       " "
+       (display-value card)
+       " ("
+       (:deck card)
+       ")"))
 
 (defn children-of [column card]
+  "Returns a vector of all the cards below a certain card in a column."
   (vec (rest (drop-while
                (fn [el] (not= el card))
                column))))
