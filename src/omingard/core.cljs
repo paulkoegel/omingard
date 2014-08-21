@@ -1,9 +1,10 @@
-;; 1. Let there be cards in a stack: 2 Rummy decks (104 cards - ace, 2-10, jack, queen, king; each suit twice)
-;; 2. Shuffle stack.
-;; 3. Serve cards to columns
-;; 4. Game begins: either move a free open card from one column to another, discard aces
+;; 1. Set up:
+;;    a. Let there be cards in a stack: 2 Rummy decks (104 cards - ace, 2-10, jack, queen, king; each suit twice)
+;;    b. Shuffle the stack.
+;;    c. Serve cards to columns.
+;; 2. Game loop: either move a free open card from one column to another, discard aces
 ;;    (and after them 2s etc.) to one of eight discard piles, or serve new open cards (1 per column)
-;; 5. Continue until there are no more moves or all cards have been discarded to the piles.
+;; 3. End of game: continue until there are no more moves or all cards have been discarded to the piles.
 
 (ns omingard.core
   (:require-macros [cljs.core.async.macros :refer [go]])
@@ -50,6 +51,73 @@
 
 ;; : : : GLOBAL CONSTANTS : : : : : : : : :
 (def columns# 9)
+
+
+;; : : : 1. GENERATE A STACK OF CARDS : : :
+
+(def suits [:hearts :diamonds :spades :clubs])
+
+(defn cards-for-suit [suit]
+  (mapcat
+    (fn [value]
+      ;; need a deck parameter to distinguish cards with the same value and suit in the same column
+      [{:deck :a :suit suit :value value}
+       {:deck :b :suit suit :value value}])
+    (range 1 14)))
+
+(defn shuffled-stack []
+  (shuffle (mapcat cards-for-suit suits)))
+
+(defn piles-for-suits [suits]
+  (vec (map-indexed (fn [idx suit] {:index idx :suit suit :cards []}) suits)))
+
+;; initialise app state
+(def app-state
+  (atom
+    {:stack (shuffled-stack)
+     :piles (piles-for-suits (mapcat (fn [suit] [suit suit]) suits))
+     :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
+     :debug-texts []
+    }))
+
+(defn serve-card-to-column [state column-index & [open?]]
+  (let [card (peek (:stack state))
+        card (if (and open? card)
+               (assoc card :open true)
+               card)]
+    (if card
+      (-> state
+          (update-in [:stack] pop)
+          (update-in [:columns column-index :cards] conj card))
+      ;; do nothing if stack is empty
+      state)))
+
+(defn serve-cards-to-column [state column-index n]
+  (reduce
+    (fn [memo val]
+      (serve-card-to-column memo column-index (if (= (- n 1) val) true false)))
+    state
+    (range n)))
+
+(defn serve-cards [state]
+  (reduce
+    (fn [state [idx n]]
+      (serve-cards-to-column state idx n))
+    state
+    (map-indexed vector [1 2 3 4 5 4 3 2 1])))
+
+;; set up initial state of the game
+(swap! app-state serve-cards)
+
+;; : : :   2.   G A M E   L O O P   : : : : : : : : :
+
+(defn serve-new-cards [state]
+  "When there are no more moves, append a new open card to each column."
+  (reduce
+    (fn [memo i]
+      (serve-card-to-column memo i true))
+    state
+    (range columns#)))
 
 
 ;; : : : HELPER FUNCTIONS : : : : : : : : :
@@ -123,6 +191,7 @@
              (with-alternating-colours? cards))))))
 
 (defn moveable? [column card]
+  "Takes a column and a card and checks whether the card can be moved elsewhere."
   (and (open? card)
        (sorted-from-card? (:cards column) card)))
 
@@ -136,12 +205,14 @@
                (= (count (:cards pile)) (dec (:value card)))))))))
 
 
-;; DISCARD CARDS - - - - - - -
+;; : : : DISCARD CARDS : : : : : : : : :
 
 (defn column-for [columns card]
-  (first (filter
-    (fn [column] (some #{card} (:cards column)))
-    columns)))
+  "Takes a card an a vector of columns and returns the column that contains the card."
+  (first
+    (->> columns
+         (filter
+           (fn [column] (some #{card} (:cards column)))))))
 
 (defn discardable? [app card]
   ;; TODO: implement real check
@@ -178,71 +249,6 @@
     (put! channel [mark-for-moving card])))
 
 
-;; = = = 1 = = = = = = = = = = =
-;; GENERATE A STACK OF CARDS
-;; = = = 1 = = = = = = = = = = =
-
-(def suits [:hearts :diamonds :spades :clubs])
-
-(defn cards-for-suit [suit]
-  (mapcat
-    (fn [value]
-      ;; need a deck parameter to distinguish cards with the same value and suit in the same column
-      [{:deck :a :suit suit :value value}
-       {:deck :b :suit suit :value value}])
-    (range 1 14)))
-
-(defn shuffled-stack []
-  (shuffle (mapcat cards-for-suit suits)))
-
-(defn piles-for-suits [suits]
-  (vec (map-indexed (fn [idx suit] {:index idx :suit suit :cards []}) suits)))
-
-;; initialise app state
-(def app-state
-  (atom
-    {:stack (shuffled-stack)
-     :piles (piles-for-suits (mapcat (fn [suit] [suit suit]) suits))
-     :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
-     :debug-texts []
-    }))
-
-(defn serve-card-to-column [state column-index & [open?]]
-  (let [card (peek (:stack state))
-        card (if (and open? card)
-               (assoc card :open true)
-               card)]
-    (if card
-      (-> state
-          (update-in [:stack] pop)
-          (update-in [:columns column-index :cards] conj card))
-      ;; do nothing if stack is empty
-      state)))
-
-(defn serve-cards-to-column [state column-index n]
-  (reduce
-    (fn [memo val]
-      (serve-card-to-column memo column-index (if (= (- n 1) val) true false)))
-    state
-    (range n)))
-
-(defn serve-cards [state]
-  (reduce
-    (fn [state [idx n]]
-      (serve-cards-to-column state idx n))
-    state
-    (map-indexed vector [1 2 3 4 5 4 3 2 1])))
-
-;; set up initial state of the game
-(swap! app-state serve-cards)
-
-;; when there are no more moves, serve new cards to columns
-(defn serve-new-cards [state]
-  (reduce
-    (fn [memo i]
-      (serve-card-to-column memo i true))
-    state
-    (range columns#)))
 
 (defn all-cards [app]
   (reduce
