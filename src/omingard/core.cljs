@@ -113,12 +113,13 @@
                (rest colours))))) ;; reduce returns false or the last card's colour
 
 (defn sorted-from-card? [column card]
+  "Takes a column and a card and checks whether the card and its children are sorted (i.e. with alternating colours and descending values)."
   (let [children (children-of column card)]
     (if (empty? children)
-      (if (= card (last column)) true false)
+      (= card (last column)) ;; card is either the last card in the column (true), or not in the column at all (false)
       (let [cards (cons card children)]
         (and (= cards (reverse (sort-by #(:value %) cards)))
-             (with-alternating-colours? children))))))
+             (with-alternating-colours? cards))))))
 
 (defn moveable? [column card]
   (and (open? card)

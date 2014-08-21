@@ -170,16 +170,22 @@
                             "h.3"
                             "s.2"])
            unsorted-column (map card
-                                ["h.A" "c.K" "d.Q" "s.7" "d.6" "c.5" "d.4" "s.3" "c.2"])]
+                            ["h.A" "c.K" "c.8" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])
+           another-unsorted-column (map card
+                            ["h.A" "c.K" "d.2" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])]
        [
          ["a column is always sorted from its last card"
            (= true (o/sorted-from-card? sorted-column (card "s.2")))]
          ["a column is never sorted from a card that's not in that column"
            (= false (o/sorted-from-card? sorted-column (card "d.K")))]
-         ["sorted column: sorted from card in the middle"
+         ["sorted from a card in the middle"
            (= true (o/sorted-from-card? sorted-column (card "h.9")))]
-         ["sorted column: sorted from the top"
+         ["sorted from the top"
            (= true (o/sorted-from-card? sorted-column (card "h.K")))]
+         ["not sorted from one card above sorted cards - when card above has only proper value"
+           (= false (o/sorted-from-card? unsorted-column (card "c.8")))]
+         ["not sorted from one card above sorted cards - when card above has only proper colour"
+           (= false (o/sorted-from-card? another-unsorted-column (card "d.2")))]
         ]
        )
   }
