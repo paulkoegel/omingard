@@ -103,12 +103,13 @@
 
 ;; [cards, not column] usually fed with the result of children-of
 (defn with-alternating-colours? [cards]
-  (let [colours (map (fn [card] (colour (:suit card))) cards)]
+  "Takes a vector of cards (not a column b/c it's usually fed with the result of children-of) and check whether they have alternating colours."
+  (let [colours (map card-colour cards)]
     ;; JFYI: the `reduce` can return `false` if the last element of
     ;; `cards` is `false`, but this function expects to be handed cards anyway.
     ;; works when `cards` contains only one card
     (boolean (reduce
-               (fn [memo colour] (if (not= memo colour) colour (reduced false))) ;; `reduced` breaks the iteration
+               (fn [memo colour] (if-not (= memo colour) colour (reduced false))) ;; `reduced` breaks the iteration
                (first colours)
                (rest colours))))) ;; reduce returns false or the last card's colour
 
