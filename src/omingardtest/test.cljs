@@ -316,7 +316,7 @@
                {:suit :hearts, :open true, :deck :a, :value 7, :moving true}]}
              {:index 1,
               :cards
-              [{:suit :diamonds, :deck :b, :value 1}]}
+              [{:suit :diamonds, :deck :b, :value 1, :open true}]}
              {:index 2,
               :cards
               [{:suit :clubs, :deck :a, :value 4}
