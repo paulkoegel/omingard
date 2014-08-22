@@ -197,7 +197,14 @@
   {:name "moveable?"
    :expectations [
      ["not moveable b/c it's not open" ;; nil b/c colour? fails with `nil` and the rest of the `and` doesn't get evaluated.
-      (= nil (o/moveable? {:cards (mapv card ["d.2"])} (card "d.2")))]]}
+      (= nil (o/moveable? {:cards (mapv card ["d.9" "c.2.o"])} (card "d.2")))]
+     ["not moveable b/c the colours are not in order"
+      (= false (o/moveable? {:cards (mapv card ["c.5" "d.4.o" "h.3.o" "c.2.o"])} (card "d.4.o")))]
+     ["not moveable b/c the values are not in order"
+      (= false (o/moveable? {:cards (mapv card ["c.5" "d.7.o" "h.3.o" "c.2.o"])} (card "d.7.o")))]
+     ["moveable"
+      (= true  (o/moveable? {:cards (mapv card ["c.5" "c.4.o" "h.3.o" "c.2.o"])} (card "c.4.o")))]
+     ]}
 
   ;; TODO: pending
   ;;{:name "free-pile-for"
