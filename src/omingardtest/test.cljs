@@ -196,7 +196,7 @@
   ;; TODO: pending
   {:name "moveable?"
    :expectations [
-     ["not moveable b/c it's not open"
+     ["not moveable b/c it's not open" ;; nil b/c colour? fails with `nil` and the rest of the `and` doesn't get evaluated.
       (= nil (o/moveable? {:cards (mapv card ["d.2"])} (card "d.2")))]]}
 
   ;; TODO: pending
