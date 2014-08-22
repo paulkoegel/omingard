@@ -194,8 +194,10 @@
   }
 
   ;; TODO: pending
-  ;;{:name "moveable?"
-  ;; :expectations []}
+  {:name "moveable?"
+   :expectations [
+     ["not moveable b/c it's not open"
+      (= nil (o/moveable? {:cards (mapv card ["d.2"])} (card "d.2")))]]}
 
   ;; TODO: pending
   ;;{:name "free-pile-for"
