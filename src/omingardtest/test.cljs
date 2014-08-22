@@ -88,7 +88,7 @@
 
   {:name "children-of"
    :expectations
-     (let [sorted-column (map card
+     (let [sorted-column (mapv card
                            ["h.K"
                             "c.Q"
                             "d.J"
@@ -101,7 +101,7 @@
                             "c.4"
                             "h.3"
                             "s.2"])
-           unsorted-column (map card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])]
+           unsorted-column (mapv card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])]
        [
          ["sorted column: nil"
           (= [] (o/children-of sorted-column nil))]
@@ -113,10 +113,10 @@
           (= [(card "s.2")]
              (o/children-of sorted-column (card "h.3")))]
          ["sorted column: many children"
-          (= (map card ["d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
+          (= (mapv card ["d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
              (o/children-of sorted-column (card "c.8")))]
          ["sorted column: all children"
-          (= (map card ["c.Q" "d.J" "s.10" "h.9" "c.8" "d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
+          (= (mapv card ["c.Q" "d.J" "s.10" "h.9" "c.8" "d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
              (o/children-of sorted-column (card "h.K")))]
 
          ["unsorted column: nil"
@@ -128,19 +128,19 @@
          ["unsorted column: one child"
            (= [(card "c.Q")] (o/children-of unsorted-column (card "h.2")))]
          ["unsorted column: many children"
-           (= (map card ["s.7" "h.2" "c.Q"])
+           (= (mapv card ["s.7" "h.2" "c.Q"])
               (o/children-of unsorted-column (card "d.Q")))]
          ["unsorted column: all children"
-           (= (map card ["c.K" "d.Q" "s.7" "h.2" "c.Q"])
+           (= (mapv card ["c.K" "d.Q" "s.7" "h.2" "c.Q"])
               (o/children-of unsorted-column (card "h.A")))]
         ]
         )}
 
   {:name "with-alternating-colours?"
    :expectations
-     (let [sorted-alternating-cards (map card ["d.10" "s.9" "h.8" "c.7" "d.6" "c.5" "d.4" "s.3" "h.2" "s.A"])
-           unsorted-alternating-cards (map card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])
-           cards-without-alternating-colours (map card ["c.A" "s.K" "d.K" "h.7" "h.10" "c.9" "c.2" "s.Q"])
+     (let [sorted-alternating-cards (mapv card ["d.10" "s.9" "h.8" "c.7" "d.6" "c.5" "d.4" "s.3" "h.2" "s.A"])
+           unsorted-alternating-cards (mapv card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])
+           cards-without-alternating-colours (mapv card ["c.A" "s.K" "d.K" "h.7" "h.10" "c.9" "c.2" "s.Q"])
            one-card-red [(card "d.8")]
            one-card-black [(card "s.8")]]
        [
@@ -159,7 +159,7 @@
 
   {:name "sorted-from-card?"
    :expectations
-     (let [sorted-column (map card
+     (let [sorted-column (mapv card
                            ["h.K"
                             "c.Q"
                             "d.J"
@@ -172,9 +172,9 @@
                             "c.4"
                             "h.3"
                             "s.2"])
-           unsorted-column (map card
+           unsorted-column (mapv card
                             ["h.A" "c.K" "c.8" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])
-           another-unsorted-column (map card
+           another-unsorted-column (mapv card
                             ["h.A" "c.K" "d.2" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])]
        [
          ["a column is always sorted from its last card"
