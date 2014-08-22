@@ -351,17 +351,19 @@
             )]
     ]}
 
-  {:name "can-be-placed-below?"
+  {:name "can-be-appended-to?"
    :expectations [
-     ["can be placed below"
+     ["can be appended to"
        (= true
-          (o/can-be-placed-below? (card "s.7") (card "h.8")))]
-     ["cannot be placed below"
+         (o/can-be-appended-to? (card "s.7") {:cards (mapv card ["h.8"])}))]
+     ["cannot be appended to"
        (= false
-          (o/can-be-placed-below? (card "c.J") (card "d.K")))]
-     ["cannot be placed below same value"
+         (o/can-be-appended-to? (card "c.J") {:cards (mapv card ["d.K"])}))]
+     ["cannot be appended to column that ends with same value"
        (= false
-          (o/can-be-placed-below? (card "c.3") (card "s.3")))]]}
+         (o/can-be-appended-to? (card "c.3") {:cards (mapv card ["s.3"])}))]
+   ]}
+
 ])
 
 

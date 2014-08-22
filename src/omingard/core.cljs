@@ -33,7 +33,7 @@
             :else (js/parseInt literal-value))))
 
       ;; "d.12.a" creates a queen of diamonds (with deck "a") card; "c.2.o", an open 2 of clubs.
-      (defn card [card-string]
+      (defn ccard [card-string]
         (let [card-components (string/split card-string #"\.")
               suit (keyword (first card-components))
               value (second card-components)
@@ -269,8 +269,7 @@
 
 (defn cards-marked-for-moving [app]
   (filter
-    (fn [card]
-      (:moving card))
+    :moving
     (all-cards app)))
 
 (defn unmark-all-column-cards [app]
@@ -285,9 +284,13 @@
       app
       cards-to-unmark)))
 
-(defn can-be-placed-below? [lower-card upper-card]
-  (and (= (:value upper-card) (inc (:value lower-card)))
-       (not= (card-colour upper-card) (card-colour lower-card))))
+
+(defn can-be-appended-to? [card column]
+  "Takes a card and a column and checks whether the card can be appended to the column."
+  (let [upper-card (last (:cards column))
+        lower-card card]
+    (and (= (:value upper-card) (inc (:value lower-card)))
+         (not= (card-colour upper-card) (card-colour lower-card)))))
 
 (defn move-marked-cards-to [app new-column]
   (let [columns (:columns app)
@@ -307,26 +310,34 @@
       cards-to-move)))
 
 (defn process-single-click [app clicked-card]
-  (js/console.log "process single link")
-  (if (some #{clicked-card} (cards-marked-for-moving app))
-    (discard-card app clicked-card) ;; double click
-    (if (seq (cards-marked-for-moving app)) ;; single click
-      (do ;; there are cards marked for moving -> try to move cards below `card`.
-        (js/console.log "Try to move some cards here")
-        (if (can-be-placed-below? (first (cards-marked-for-moving app)) clicked-card)
-          (do
-            (js/console.log "Looks safe, moving!")
-            (-> app
-              (move-marked-cards-to (column-for (:columns app) clicked-card))
-              (unmark-all-column-cards)))
-          (do
-            (js/console.log "Sorry, cannot move that there, honey!")
-            (-> app
-                (unmark-all-column-cards)
-                (mark-for-moving clicked-card)))))
-      (do ;; there are no cards marked for moving yet -> mark this one.
-        (js/console.log "no cards marked for moving")
-        (mark-for-moving app clicked-card)))))
+  (let [column (column-for (:columns app) clicked-card)]
+    (cond
+      ;; double click
+      (some #{clicked-card} (cards-marked-for-moving app))
+        (discard-card app clicked-card)
+      ;; single click
+      :else
+        (cond
+          ;; there are cards marked for moving -> try to move cards below `card`.
+          (seq (cards-marked-for-moving app))
+            (do
+              (js/console.log "Try to move some cards here")
+              (if (can-be-appended-to? (first (cards-marked-for-moving app)) column)
+                (do
+                  (js/console.log "Looks safe, moving!")
+                  (-> app
+                    (move-marked-cards-to (column-for (:columns app) clicked-card))
+                    (unmark-all-column-cards)))
+                (do
+                  (js/console.log "Sorry, cannot move that there, honey!")
+                  (-> app
+                      (unmark-all-column-cards)
+                      (mark-for-moving clicked-card)))))
+          ;; there are no cards marked for moving yet -> mark this one.
+          :else
+            (do
+              (js/console.log "no cards marked for moving")
+              (mark-for-moving app clicked-card))))))
 
 (defn card-view [card owner]
   (reify
