@@ -116,9 +116,9 @@
         :color "black"}]
       [:.red {
         :color "red"}]
-      [:&.open {
+      [:&.as-open {
         :background-color "#fafafa"}]
-      [:&.move-it {
+      [:&.as-moving {
         :background-color "yellow"}]]
 
   [:.l-piles-container {

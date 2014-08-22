@@ -163,6 +163,10 @@
        (:deck card)
        ")"))
 
+(defn unmark-card [card]
+  "Removes marking from a card."
+  (dissoc card :moving))
+
 (defn children-of [column card]
   "Returns a vector of all the cards below a certain card in a column."
   (vec (rest (drop-while
@@ -226,12 +230,15 @@
   (let [column (column-for (:columns app) card)]
     (if (discardable? app card)
       (-> app
-        (update-in [:columns (:index column) :cards] pop)
-        (update-in [:piles (:index (free-pile-for (:piles app) card)) :cards] conj card)
+        (update-in [:columns (:index column) :cards]
+                   pop)
+        (update-in [:piles (:index (free-pile-for (:piles app) card)) :cards]
+                   conj (unmark-card card))
         ;; open new last card of column
         (update-in [:columns (:index column) :cards]
-                     (fn [cds]
-                       (assoc-in cds [(dec (count cds)) :open?] true))))
+                  (fn [cards]
+                    (when (seq cards)
+                      (assoc-in cards [(dec (count cards)) :open] true)))))
       app ;; do nothing if card cannot be discarded
     )))
 
@@ -241,7 +248,7 @@
 (defn mark-for-moving [app card]
   (let [column (column-for (:columns app) card)]
     (-> app
-      (assoc-in [:columns (:index column) :cards (index-for-card-in-column column card) :move-it] true))))
+      (assoc-in [:columns (:index column) :cards (index-for-card-in-column column card) :moving] true))))
 
 ;; card has already been dereferenced - otherwise we get "Cannot manipulate cursor outside of render phase", only om.core/transact!, om.core/update!, and cljs.core/deref operations allowed"" errors.
 (defn handle-card-click [_event channel card]
@@ -260,10 +267,10 @@
 (defn cards-marked-for-moving [app]
   (filter
     (fn [card]
-      (:move-it card))
+      (:moving card))
     (all-cards app)))
 
-(defn unmark-all-cards [app]
+(defn unmark-all-column-cards [app]
   (let [cards-to-unmark (cards-marked-for-moving app)
         columns (:columns app)]
     (reduce
@@ -271,8 +278,7 @@
         (let [column (column-for columns card)]
           (update-in memo
                      [:columns (:index column) :cards (index-for-card-in-column column card)]
-                     (fn [el] (dissoc el :move-it))
-                     )))
+                     #(unmark-card %))))
       app
       cards-to-unmark)))
 
@@ -289,69 +295,52 @@
           (-> memo
             (update-in [:columns (:index old-column) :cards]
                        pop)
+            (update-in [:columns (:index old-column) :cards]
+                       #(when (seq %)
+                          (assoc-in % [(dec (count %)) :open] true)))
             (update-in [:columns (:index new-column) :cards]
                        conj card))))
       app
       cards-to-move)))
 
-(defn process-single-click [app card]
+(defn process-single-click [app clicked-card]
   (js/console.log "process single link")
-  (if (seq (cards-marked-for-moving app))
-    (do
-      (js/console.log "Try to move some cards here")
-      (if (can-be-placed-below? (first (cards-marked-for-moving app)) card)
-        (do
-          (js/console.log "Looks safe, moving!")
-          (-> app
-            (move-marked-cards-to (column-for (:columns app) card))
-            (unmark-all-cards)))
-        (do
-          (js/console.log "Sorry, cannot move that there, honey!")
-          (unmark-all-cards app))))
-    (do
-      (js/console.log "no cards marked for moving")
-      (mark-for-moving app card))))
-
-(defn single-click [channel card]
-  (when (open? card)
-    (put! channel [process-single-click card]))
-  (put! channel [debugg "single click"]))
-(defn double-click [channel card]
-  (put! channel [discard-card card])
-  (put! channel [debugg "double click"]))
-
-;; modeled on: https://gist.github.com/karbassi/639453
-(defn handle-card-interaction [click-count single-click-timer channel card]
-  "Distinguish between single and double clicks / taps with a timeout of 400ms"
-  (swap! click-count inc)
-  (cond
-    (= @click-count 1)
-      (swap! single-click-timer
-             (fn [_]
-               (js/window.setTimeout (fn [] (swap! click-count (fn [_] 0)) (single-click channel card))
-                                     400)))
-    (= @click-count 2)
-      (do
-        (js/window.clearTimeout @single-click-timer)
-        (swap! click-count (fn [_] 0))
-        (double-click channel card))))
+  (if (some #{clicked-card} (cards-marked-for-moving app))
+    (discard-card app clicked-card) ;; double click
+    (if (seq (cards-marked-for-moving app)) ;; single click
+      (do ;; there are cards marked for moving -> try to move cards below `card`.
+        (js/console.log "Try to move some cards here")
+        (if (can-be-placed-below? (first (cards-marked-for-moving app)) clicked-card)
+          (do
+            (js/console.log "Looks safe, moving!")
+            (-> app
+              (move-marked-cards-to (column-for (:columns app) clicked-card))
+              (unmark-all-column-cards)))
+          (do
+            (js/console.log "Sorry, cannot move that there, honey!")
+            (-> app
+                (unmark-all-column-cards)
+                (mark-for-moving clicked-card)))))
+      (do ;; there are no cards marked for moving yet -> mark this one.
+        (js/console.log "no cards marked for moving")
+        (mark-for-moving app clicked-card)))))
 
 (defn card-view [card owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
-      (let [click-count (atom 0)
-            single-click-timer (atom nil)]
-        (dom/li #js {:className (str "m-card" (if (open? card) " open") (if (:move-it card) " move-it"))
-                     :onClick (fn [event]
-                       (.preventDefault event)
-                       (handle-card-interaction click-count single-click-timer channel @card))
-                     :onTouchEnd (fn [event]
-                       (.preventDefault event)
-                       (handle-card-interaction click-count single-click-timer channel @card))
-                     :ref "card"}
-          (dom/span #js {:className (colour (:suit card))}
-            (label-for card)))))))
+      (dom/li #js {:className (str "m-card" (when (open? card) " as-open") (when (:moving card) " as-moving"))
+                   :onClick (fn [event]
+                     (.preventDefault event)
+                     (when (open? @card)
+                       (put! channel [process-single-click @card])))
+                   :onTouchEnd (fn [event]
+                     (.preventDefault event)
+                     (when (open? @card)
+                       (put! channel [process-single-click @card])))
+                   :ref "card"}
+        (dom/span #js {:className (card-colour card)}
+          (label-for card))))))
 
 (defn column-view [column owner]
   (reify

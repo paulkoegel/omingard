@@ -154,11 +154,11 @@ body {
   color: red;
 }
 
-.m-card.open {
+.m-card.as-open {
   background-color: #fafafa;
 }
 
-.m-card.move-it {
+.m-card.as-moving {
   background-color: yellow;
 }
 

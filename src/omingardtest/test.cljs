@@ -218,7 +218,7 @@
   ;;{:name "mark-for-moving"
   ;; :expectations []}
 
-  {:name "unmark-all-cards"
+  {:name "unmark-all-column-cards"
    :expectations [
       ["it works"
         (=
@@ -262,13 +262,13 @@
                 [{:suit :clubs, :deck :b, :value 8}
                  {:suit :spades, :open true, :deck :b, :value 8}]}
                {:index 8, :cards [{:suit :hearts, :open true, :deck :a, :value 1}]}]}
-          (o/unmark-all-cards
+          (o/unmark-all-column-cards
             {:columns
               [{:index 0, :cards [{:suit :clubs, :open true, :deck :a, :value 12}]}
                {:index 1,
                 :cards
                 [{:suit :diamonds, :deck :b, :value 1}
-                 {:suit :hearts, :open true, :deck :a, :value 7, :move-it true}]}
+                 {:suit :hearts, :open true, :deck :a, :value 7, :moving true}]}
                {:index 2,
                 :cards
                 [{:suit :clubs, :deck :a, :value 4}
@@ -313,7 +313,7 @@
             [{:index 0,
               :cards
               [{:suit :clubs, :open true, :deck :a, :value 12}
-               {:suit :hearts, :open true, :deck :a, :value 7, :move-it true}]}
+               {:suit :hearts, :open true, :deck :a, :value 7, :moving true}]}
              {:index 1,
               :cards
               [{:suit :diamonds, :deck :b, :value 1}]}
@@ -329,7 +329,7 @@
                {:index 1,
                 :cards
                 [{:suit :diamonds, :deck :b, :value 1}
-                 {:suit :hearts, :open true, :deck :a, :value 7, :move-it true}]}
+                 {:suit :hearts, :open true, :deck :a, :value 7, :moving true}]}
                {:index 2,
                 :cards
                 [{:suit :clubs, :deck :a, :value 4}
@@ -338,6 +338,7 @@
             {:index 0})
             )]
     ]}
+
   {:name "can-be-placed-below?"
    :expectations [
      ["can be placed below"
@@ -345,7 +346,10 @@
           (o/can-be-placed-below? (card "s.7") (card "h.8")))]
      ["cannot be placed below"
        (= false
-          (o/can-be-placed-below? (card "c.J") (card "d.K")))]]}
+          (o/can-be-placed-below? (card "c.J") (card "d.K")))]
+     ["cannot be placed below same value"
+       (= false
+          (o/can-be-placed-below? (card "c.3") (card "s.3")))]]}
 ])
 
 
