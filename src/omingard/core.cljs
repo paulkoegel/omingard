@@ -32,19 +32,22 @@
             (= literal-value "k") 13
             :else (js/parseInt literal-value))))
 
-      ;; "d.12.a" creates a queen of diamonds (with deck "a") card map
+      ;; "d.12.a" creates a queen of diamonds (with deck "a") card; "c.2.o", an open 2 of clubs.
       (defn card [card-string]
         (let [card-components (string/split card-string #"\.")
               suit (keyword (first card-components))
               value (second card-components)
-              deck (if (= (count card-components) 3) (keyword (last card-components)) nil)]
-          {:suit
-             (cond (= suit :s) :spades
-                   (= suit :c) :clubs
-                   (= suit :h) :hearts
-                   (= suit :d) :diamonds)
-           :value (value-from-literal-value value)
-           :deck (or deck :a)}))
+              option (when (= 3 (count card-components)) (keyword (last card-components)))
+              deck (when (some #{option} [:a :b]) option)
+              open (when (= :o option) true)
+              card {:suit
+                      (cond (= suit :s) :spades
+                            (= suit :c) :clubs
+                            (= suit :h) :hearts
+                            (= suit :d) :diamonds)
+                    :value (value-from-literal-value value)
+                    :deck (or deck :a)}]
+          (if open (assoc card :open true) card)))
 ;; - - END -- DEBUGGING HELPERS : : : : : :
 
 
