@@ -436,9 +436,17 @@
            (let [[func & attrs] (<! channel)]
              (om/transact! app (fn [xs] (apply func xs attrs))))
            (recur)))))
+    om/IDidMount
+    (did-mount [this]
+      (.focus (om/get-node owner)))
     om/IRenderState
     (render-state [this {:keys [channel]}]
-      (dom/div #js {:className "omingard-wrapper"}
+      (dom/div #js {:className "omingard-wrapper"
+                    :tabIndex 0 ;; for focussing
+                    :onKeyDown (fn [event]
+                      ;; do not `(.preventDefault event)` as that'd disable ctrl+r and other browser keyboard shortcuts
+                      (when (= 13 (.-keyCode event))
+                            (om/transact! app serve-new-cards)))}
         (om/build navigation-view app)
         (dom/div #js {:className "l-game-container"}
           (om/build columns-view (:columns app) {:init-state {:channel channel}})

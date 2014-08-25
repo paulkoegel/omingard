@@ -72,6 +72,10 @@ body {
   font-family: 'Droid Sans', sans-serif;
 }
 
+.omingard-wrapper {
+  outline: 0;
+}
+
 .l-navigation-container {
   height: 4.5rem;
   padding: 0.8rem 1rem 0.8rem;
