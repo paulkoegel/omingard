@@ -402,13 +402,13 @@
 
 (defn pile-view [pile owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IRenderState
+    (render-state [this {:keys [channel]}]
       (dom/li #js {:className "m-pile"}
         (let [cards (:cards pile)]
           (if (seq cards)
             (apply dom/ul #js {:className "m-pile--cards"}
-              (om/build-all card-view cards))
+              (om/build-all card-view cards {:init-state {:channel channel}}))
             ;; pile has no cards
             (let [suit (:suit pile)]
               (dom/span #js {:className (str "m-pile--placeholder " (colour suit))}
@@ -416,12 +416,12 @@
 
 (defn piles-view [piles owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IRenderState
+    (render-state [this {:keys [channel]}]
       (dom/div #js {:className "l-piles-container"}
         (dom/h3 nil "Piles")
         (apply dom/ul #js {:className "m-piles cf"}
-          (om/build-all pile-view piles))))))
+          (om/build-all pile-view piles {:init-state {:channel channel}}))))))
 
 (defn omingard-view [app owner]
   (reify
@@ -449,7 +449,7 @@
                   (dom/li #js {:className "m-debug-texts--item"}
                     (str (- (count (:debug-texts app)) idx) ". " el)))
                 (:debug-texts app))))
-          (om/build piles-view (:piles app)))
+          (om/build piles-view (:piles app) {:init-state {:channel channel}}))
       ))))
 
 (om/root
