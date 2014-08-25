@@ -357,6 +357,19 @@
 
 ;; : : : V I E W S : : : : : : : : : :
 
+(defn handle-column-placeholder-click [app column-index]
+  (js/console.log "handle-column-placeholder-click" column-index))
+
+(defn column-placeholder-view [column-index owner]
+  (reify
+    om/IRenderState
+    (render-state [this {:keys [channel]}]
+      (dom/li #js {:className "m-column--placeholder"
+                   :onClick (fn [event]
+                     (.preventDefault event)
+                     (put! channel [handle-column-placeholder-click @column-index]))}
+                  ))))
+
 (defn card-view [card owner]
   (reify
     om/IRenderState
@@ -376,9 +389,16 @@
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
-      (dom/div #js {:className "m-column-wrapper"} ;; .m-column on the div and not the <ul> so empty columns don't disappear
-        (apply dom/ul #js {:className "m-column"}
-          (om/build-all card-view (:cards column) {:init-state {:channel channel}}))))))
+      (let [column-cards (:cards column)]
+        (dom/div #js {:className "m-column-wrapper"} ;; .m-column on the div and not the <ul> so empty columns don't disappear
+          (cond
+            (seq column-cards)
+              (apply dom/ul #js {:className "m-column"}
+                (om/build-all card-view column-cards {:init-state {:channel channel}}))
+            :else
+              (dom/ul #js {:className "m-column"}
+                (om/build column-placeholder-view {:index (:index column)}))))))))
+
 
 (defn columns-view [columns owner]
   (reify

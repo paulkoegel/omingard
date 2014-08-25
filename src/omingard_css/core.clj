@@ -49,6 +49,10 @@
     :font-family "'Droid Sans', sans-serif"
     :font-size (rem 1.6)}]
 
+  [:.omingard-wrapper {
+    :outline "0"
+   }]
+
   [:.l-navigation-container {
     :width "100%"
     :padding "0.8rem 1rem 0.8rem"
@@ -96,6 +100,13 @@
    [:.m-column {
      :list-style "none"
      :padding 0}]
+
+   [:.m-column--placeholder {
+     :height (px 21)
+     :border-radius "3px"
+     :border "1px dashed #ddd"
+     :margin "2px auto"
+     :background-color "#fafafa"}]
 
    [:.m-card {
       :background "#ddd"
