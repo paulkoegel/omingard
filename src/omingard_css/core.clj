@@ -68,15 +68,22 @@
 
   [:.m-navigation--item {
     :float "left"
-    :margin-right (rem 2)}]
+    :margin-right (rem 2)}
+    [:&.as-right {
+      :float "right"}]]
 
   [:.m-navigation--title {
     :font-size "2rem"
     :margin "0"}]
 
+  [:.m-navigation--undo {
+    :background "#444"
+    :border "1px solid #444"
+    :border-radius (px 3)}]
+
   [:.m-navigation--hit-me {
     :background "#234892"
-    :border-radius (px 10)
+    :border-radius (px 3)
     :border "1px solid #234892"}]
 
   [:.l-game-container {

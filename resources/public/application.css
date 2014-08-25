@@ -96,14 +96,24 @@ body {
   float: left;
 }
 
+.m-navigation--item.as-right {
+  float: right;
+}
+
 .m-navigation--title {
   margin: 0;
   font-size: 2rem;
 }
 
+.m-navigation--undo {
+  border-radius: 3px;
+  border: 1px solid #444;
+  background: #444;
+}
+
 .m-navigation--hit-me {
   border: 1px solid #234892;
-  border-radius: 10px;
+  border-radius: 3px;
   background: #234892;
 }
 
