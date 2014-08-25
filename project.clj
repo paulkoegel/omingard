@@ -13,19 +13,31 @@
   :source-paths ["src"]
 
   :cljsbuild {
-    :builds [{:id "omingard"
-              :source-paths ["src/omingard"] ;; not "src" b/c we don't want to build the stuff inside omingard_css.
+    :builds [
+             ;; {:id "omingard"
+             ;;  :source-paths ["src/omingard"] ;; not "src" b/c we don't want to build the stuff inside omingard_css.
+             ;;  :compiler {
+             ;;    :output-to "omingard.js"
+             ;;    :output-dir "out"
+             ;;    :optimizations :none
+             ;;    :source-map true
+             ;;    :pretty-print true}}
+             {:id "production"
+              :source-paths ["src/omingard/"]
               :compiler {
-                :output-to "omingard.js"
-                :output-dir "out"
-                :optimizations :none
-                :source-map true}}
-             {:id "test"
-              :source-paths ["src/omingard" "src/omingardtest"]
-              :compiler {
-                :output-to "test.js"
-                :output-dir "testout"
-                :optimizations :none}}]}
+                :output-to "resources/public/omingard.js"
+                :output-dir "resources/public/out/"
+                :optimizations :whitespace
+                ;; :pretty-print false
+                :preamble ["react/react.min.js"]
+                :externs  ["react/externs/react.js"]}}
+             ;; {:id "test"
+             ;;  :source-paths ["src/omingard" "src/omingardtest"]
+             ;;  :compiler {
+             ;;    :output-to "test.js"
+             ;;    :output-dir "testout"
+             ;;    :optimizations :none}}
+             ]}
                 ;;:source-map true}}]}
 
   :garden {:builds [{;; Optional name of the build:
