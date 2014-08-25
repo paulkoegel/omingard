@@ -177,7 +177,8 @@
                (:cards column)))))
 
 (defn with-alternating-colours? [cards]
-  "Takes a vector of cards (not a column b/c it's usually fed with the result of children-of) and check whether they have alternating colours."
+  "Takes a vector of cards (not a column b/c it's usually fed with the
+  result of children-of) and check whether they have alternating colours."
   (let [colours (map card-colour cards)]
     ;; JFYI: the `reduce` can return `false` if the last element of
     ;; `cards` is `false`, but this function expects to be handed cards anyway.
@@ -193,18 +194,14 @@
     (= values
        (vec (reverse (range (:value (last cards)) (inc (:value (first cards)))))))))
 
-(defn sorted-from-card? [column card]
+(defn sorted-from-card? [column-cards card]
   "Takes a column and a card and checks whether the card and its children are sorted (i.e. with alternating colours and descending values)."
-  (let [children (children-of column card)]
+  (let [children (children-of column-cards card)]
     (if (empty? children)
-      (= card (last (:cards column))) ;; card is either the last card in the column (true), or not in the column at all (false)
+      (= card (last column-cards)) ;; card is either the last card in the column (true), or not in the column at all (false)
       (let [cards (cons card children)]
         (and (with-descending-values? cards)
              (with-alternating-colours? cards))))))
-
-(let [column {:cards (mapv make-card ["c.2" "c.8.o" "d.7.o" "c.a.o"])}]
-  (sorted-from-card? column (make-card "c.8.o"))
-  (children-of column (make-card "c.8.o")))
 
 (defn moveable? [column card]
   "Takes a column and a card and checks whether the card can be moved elsewhere."
