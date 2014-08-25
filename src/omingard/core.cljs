@@ -170,11 +170,11 @@
   "Removes marking from a card."
   (dissoc card :moving))
 
-(defn children-of [column card]
+(defn children-of [column-cards card]
   "Returns a vector of all the cards below a certain card in a column."
   (vec (rest (drop-while
                (fn [el] (not= el card))
-               (:cards column)))))
+               column-cards))))
 
 (defn with-alternating-colours? [cards]
   "Takes a vector of cards (not a column b/c it's usually fed with the
@@ -197,11 +197,13 @@
 (defn sorted-from-card? [column-cards card]
   "Takes a column and a card and checks whether the card and its children are sorted (i.e. with alternating colours and descending values)."
   (let [children (children-of column-cards card)]
-    (if (empty? children)
-      (= card (last column-cards)) ;; card is either the last card in the column (true), or not in the column at all (false)
-      (let [cards (cons card children)]
-        (and (with-descending-values? cards)
-             (with-alternating-colours? cards))))))
+    (cond
+      (empty? children)
+        (= card (last column-cards)) ;; card is either the last card in the column (true), or not in the column at all (false)
+      :else
+        (let [cards (cons card children)]
+          (and (with-descending-values? cards)
+            (with-alternating-colours? cards))))))
 
 (defn moveable? [column card]
   "Takes a column and a card and checks whether the card can be moved elsewhere."

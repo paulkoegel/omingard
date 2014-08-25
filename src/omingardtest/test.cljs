@@ -87,7 +87,7 @@
 
   {:name "children-of"
    :expectations
-     (let [sorted-column {:cards (mapv make-card
+     (let [sorted-column (mapv make-card
                            ["h.K"
                             "c.Q"
                             "d.J"
@@ -99,8 +99,8 @@
                             "d.5"
                             "c.4"
                             "h.3"
-                            "s.2"])}
-           unsorted-column {:cards (mapv make-card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])}]
+                            "s.2"])
+           unsorted-column (mapv make-card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])]
        [
          ["sorted column: nil"
           (= [] (o/children-of sorted-column nil))]
@@ -168,7 +168,7 @@
 
   {:name "sorted-from-card?"
    :expectations
-     (let [sorted-column {:cards (mapv make-card
+     (let [sorted-column (mapv make-card
                            ["h.K"
                             "c.Q"
                             "d.J"
@@ -180,13 +180,13 @@
                             "d.5"
                             "c.4"
                             "h.3"
-                            "s.2"])}
-           unsorted-column {:cards (mapv make-card
-                            ["h.A" "c.K" "c.8" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])}
-           another-unsorted-column {:cards (mapv make-card
-                            ["h.A" "c.K" "d.2" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])}
-           yet-another-unsorted-column {:cards (mapv make-card
-                            ["c.2" "c.8.o" "d.7.o" "c.a.o"])}]
+                            "s.2"])
+           unsorted-column (mapv make-card
+                            ["h.A" "c.K" "c.8" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])
+           another-unsorted-column (mapv make-card
+                            ["h.A" "c.K" "d.2" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])
+           yet-another-unsorted-column (mapv make-card
+                            ["c.2" "c.8.o" "d.7.o" "c.a.o"])]
 
        [
          ["a column is always sorted from its last card"
