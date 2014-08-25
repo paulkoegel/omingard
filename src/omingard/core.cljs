@@ -158,6 +158,10 @@
   "Removes marking from a card."
   (dissoc card :moving))
 
+(defn index-for [vektor card]
+  "Takes a vector and a card and returns the index of the card in the vector."
+  (first (keep-indexed (fn [idx el] (when (= el card) idx)) vektor)))
+
 (defn children-of [column-cards card]
   "Returns a vector of all the cards below a certain card in a column."
   (vec (rest (drop-while
@@ -210,20 +214,23 @@
                (= (count (:cards pile)) (dec (:value card)))))))))
 
 (defn column-for [columns card]
-  "Takes a card an a vector of columns and returns the column that contains the card."
+  "Takes a vector of columns and a card and returns the column that contains the card."
   (first
     (->> columns
          (filter
            (fn [column] (some #{card} (:cards column)))))))
 
+(defn pile-for [piles card]
+  "Takes a vector of piles and a card and returns the pile that contains the card."
+  (first
+    (->> piles
+         (filter
+           (fn [pile] (some #{card} (:cards pile)))))))
+
 (defn discardable? [app card]
   (let [column (column-for (:columns app) card)]
     (and (moveable? (:cards column) card)
          (free-pile-for (:piles app) card))))
-
-
-(defn index-for-card-in-column [column card]
-  (first (keep-indexed (fn [idx el] (when (= el card) idx)) (:cards column))))
 
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
@@ -244,21 +251,36 @@
                         (assoc-in cards [(dec (count cards)) :open] true)))))
       :else
         (-> app
-          (update-in [:columns (:index column) :cards (index-for-card-in-column column card)]
+          (update-in [:columns (:index column) :cards (index-for (:cards column) card)]
                      unmark-card)) ;; do nothing if card cannot be discarded
     )))
 
-(defn mark-card-for-moving [app column-index card-index]
+(defn path-vector-for-card [app card]
+  (let [column (column-for (:columns app) card)
+        pile (pile-for (:piles app) card)]
+    (cond
+      column
+        [:columns (:index column) :cards (index-for (:cards column) card)]
+      pile
+        [:piles (:index pile) :cards (index-for (:cards pile) card)]
+      ;; else: the card's still in the stack and a path vector of nil is fine
+  )))
+
+(defn mark-card-for-moving [app card]
+  "Find and mark a certain card for moving."
+  (assoc-in app (conj (path-vector-for-card app card) :moving) true))
+
+(defn mark-column-card-for-moving [app column-index card-index]
+  "Mark a card in a column for moving and find it via its column- and card-index."
   (assoc-in app [:columns column-index :cards card-index :moving] true))
 
 (defn mark-card-and-children-for-moving [app card]
-  (let [column (column-for (:columns app) card)]
-    (do
-      (js/console.log (clj->js (range (index-for-card-in-column column card) (count (:cards column)))))
-      (reduce
-        (fn [memo idx] (mark-card-for-moving memo (:index column) idx))
-        app
-        (range (index-for-card-in-column column card) (count (:cards column)))))))
+  (let [column (column-for (:columns app) card)
+        column-cards (:cards column)]
+    (reduce
+      (fn [memo idx] (mark-column-card-for-moving memo (:index column) idx))
+      app
+      (range (index-for column-cards card) (count column-cards)))))
 
 (defn all-cards [app]
   (reduce
@@ -279,7 +301,7 @@
       (fn [memo card]
         (let [column (column-for columns card)]
           (update-in memo
-                     [:columns (:index column) :cards (index-for-card-in-column column card)]
+                     [:columns (:index column) :cards (index-for (:cards column) card)]
                      #(unmark-card %))))
       app
       cards-to-unmark)))
@@ -311,7 +333,10 @@
 (defn handle-click [app clicked-card]
   (let [column (column-for (:columns app) clicked-card)]
     (cond
-      (moveable? column clicked-card)
+      ;; card's on top of a pile - maybe write a function for this with a better check
+      (and (not column) (open? clicked-card))
+        (mark-card-for-moving app clicked-card)
+      (moveable? (:cards column) clicked-card)
         (cond
           ;; double click
           (some #{clicked-card} (cards-marked-for-moving app))
