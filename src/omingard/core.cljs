@@ -111,18 +111,6 @@
 ;; set up initial state of the game
 (swap! app-state serve-cards)
 
-;; : : :   2.   G A M E   L O O P   : : : : : : : : :
-
-(defn serve-new-cards [app]
-  "When there are no more moves, append a new open card to each column."
-  (let [app (unmark-all-column-cards app)]
-    (reduce
-      (fn [memo i]
-        (serve-card-to-column memo i true))
-      app
-      (range columns#))))
-
-
 ;; : : : HELPER FUNCTIONS : : : : : : : : :
 ;; returns strings b/c we can't use keywords to set CSS classes.
 (defn colour [suit]
@@ -233,27 +221,31 @@
   (and (moveable? (column-for (:columns app) card) card)
        (free-pile-for (:piles app) card)))
 
+(defn index-for-card-in-column [column card]
+  (first (keep-indexed (fn [idx el] (when (= el card) idx)) (:cards column))))
+
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
 ;; a pile discards all sorted cards below it automatically as well.
 (defn discard-card [app card]
   (let [column (column-for (:columns app) card)]
-    (if (discardable? app card)
-      (-> app
-        (update-in [:columns (:index column) :cards]
-                   pop)
-        (update-in [:piles (:index (free-pile-for (:piles app) card)) :cards]
-                   conj (unmark-card card))
-        ;; open new last card of column
-        (update-in [:columns (:index column) :cards]
-                  (fn [cards]
-                    (when (seq cards)
-                      (assoc-in cards [(dec (count cards)) :open] true)))))
-      app ;; do nothing if card cannot be discarded
+    (cond
+      (discardable? app card)
+        (-> app
+          (update-in [:columns (:index column) :cards]
+                     pop)
+          (update-in [:piles (:index (free-pile-for (:piles app) card)) :cards]
+                     conj (unmark-card card))
+          ;; open new last card of column
+          (update-in [:columns (:index column) :cards]
+                    (fn [cards]
+                      (when (seq cards)
+                        (assoc-in cards [(dec (count cards)) :open] true)))))
+      :else
+        (-> app
+          (update-in [:columns (:index column) :cards (index-for-card-in-column column card)]
+                     unmark-card)) ;; do nothing if card cannot be discarded
     )))
-
-(defn index-for-card-in-column [column card]
-  (first (keep-indexed (fn [idx el] (when (= el card) idx)) (:cards column))))
 
 (defn mark-card-for-moving [app column-index card-index]
   (assoc-in app [:columns column-index :cards card-index :moving] true))
@@ -290,7 +282,6 @@
                      #(unmark-card %))))
       app
       cards-to-unmark)))
-
 
 (defn can-be-appended-to? [card column]
   "Takes a card and a column and checks whether the card can be appended to the column."
@@ -349,6 +340,21 @@
                   (mark-card-and-children-for-moving app clicked-card))))
       :else
         app)))
+
+
+;; : : :   2.   G A M E   L O O P   : : : : : : : : :
+
+(defn serve-new-cards [app]
+  "When there are no more moves, append a new open card to each column."
+  (let [app (unmark-all-column-cards app)]
+    (reduce
+      (fn [memo i]
+        (serve-card-to-column memo i true))
+      app
+      (range columns#))))
+
+
+;; : : : V I E W S : : : : : : : : : :
 
 (defn card-view [card owner]
   (reify
