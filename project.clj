@@ -27,8 +27,8 @@
               :compiler {
                 :output-to "resources/public/omingard.js"
                 :output-dir "resources/public/out/"
-                :optimizations :whitespace
-                ;; :pretty-print false
+                :optimizations :advanced
+                :pretty-print false
                 :preamble ["react/react.min.js"]
                 :externs  ["react/externs/react.js"]}}
              ;; {:id "test"
