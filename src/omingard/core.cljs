@@ -193,10 +193,10 @@
           (and (with-descending-values? cards)
             (with-alternating-colours? cards))))))
 
-(defn moveable? [column card]
+(defn moveable? [column-cards card]
   "Takes a column and a card and checks whether the card can be moved elsewhere."
   (and (open? card)
-       (sorted-from-card? (:cards column) card)))
+       (sorted-from-card? column-cards card)))
 
 ;; TODO: consider should simply returning a pile index here - after all that's all we need in discardable?
 (defn free-pile-for [piles card]
@@ -217,9 +217,10 @@
            (fn [column] (some #{card} (:cards column)))))))
 
 (defn discardable? [app card]
-  ;; TODO: implement real check
-  (and (moveable? (column-for (:columns app) card) card)
-       (free-pile-for (:piles app) card)))
+  (let [column (column-for (:columns app) card)]
+    (and (moveable? (:cards column) card)
+         (free-pile-for (:piles app) card))))
+
 
 (defn index-for-card-in-column [column card]
   (first (keep-indexed (fn [idx el] (when (= el card) idx)) (:cards column))))
