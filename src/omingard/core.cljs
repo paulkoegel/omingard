@@ -32,24 +32,23 @@
             (= literal-value "k") 13
             :else (js/parseInt literal-value))))
 
-      ;; "d.12.a" creates a queen of diamonds (with deck "a") card; "c.2.o", an open 2 of clubs.
-      (defn ccard [card-string]
+      (defn make-card [card-string]
+        "Builds a card map from a string - \"d.12.a\", e.g., creates a queen of diamonds (with deck \"a\")."
         (let [card-components (string/split card-string #"\.")
-              suit (keyword (first card-components))
+              suit  (keyword (first card-components))
               value (second card-components)
               option (when (= 3 (count card-components)) (keyword (last card-components)))
-              deck (when (some #{option} [:a :b]) option)
-              open (when (= :o option) true)
+              deck   (when (some #{option} [:a :b]) option)
+              open   (when (= :o option) true)
               card {:suit
-                      (cond (= suit :s) :spades
-                            (= suit :c) :clubs
-                            (= suit :h) :hearts
-                            (= suit :d) :diamonds)
-                    :value (value-from-literal-value value)
-                    :deck (or deck :a)}]
+                    (cond (= suit :s) :spades
+                          (= suit :c) :clubs
+                          (= suit :h) :hearts
+                          (= suit :d) :diamonds)
+              :value (value-from-literal-value value)
+              :deck (or deck :a)}]
           (if open (assoc card :open true) card)))
 ;; - - END -- DEBUGGING HELPERS : : : : : :
-
 
 
 ;; : : : GLOBAL CONSTANTS : : : : : : : : :
@@ -114,13 +113,14 @@
 
 ;; : : :   2.   G A M E   L O O P   : : : : : : : : :
 
-(defn serve-new-cards [state]
+(defn serve-new-cards [app]
   "When there are no more moves, append a new open card to each column."
-  (reduce
-    (fn [memo i]
-      (serve-card-to-column memo i true))
-    state
-    (range columns#)))
+  (let [app (unmark-all-column-cards app)]
+    (reduce
+      (fn [memo i]
+        (serve-card-to-column memo i true))
+      app
+      (range columns#))))
 
 
 ;; : : : HELPER FUNCTIONS : : : : : : : : :
@@ -174,9 +174,8 @@
   "Returns a vector of all the cards below a certain card in a column."
   (vec (rest (drop-while
                (fn [el] (not= el card))
-               column))))
+               (:cards column)))))
 
-;; [cards, not column] usually fed with the result of children-of
 (defn with-alternating-colours? [cards]
   "Takes a vector of cards (not a column b/c it's usually fed with the result of children-of) and check whether they have alternating colours."
   (let [colours (map card-colour cards)]
@@ -188,21 +187,33 @@
                (first colours)
                (rest colours))))) ;; reduce returns false or the last card's colour
 
+(defn with-descending-values? [cards]
+  "Checks whether a vector of cards is ordered by the cards' values and has no gaps."
+  (let [values (map :value cards)]
+    (= values
+       (vec (reverse (range (:value (last cards)) (inc (:value (first cards)))))))))
+
 (defn sorted-from-card? [column card]
   "Takes a column and a card and checks whether the card and its children are sorted (i.e. with alternating colours and descending values)."
   (let [children (children-of column card)]
     (if (empty? children)
-      (= card (last column)) ;; card is either the last card in the column (true), or not in the column at all (false)
+      (= card (last (:cards column))) ;; card is either the last card in the column (true), or not in the column at all (false)
       (let [cards (cons card children)]
-        (and (= cards (reverse (sort-by #(:value %) cards)))
+        (and (with-descending-values? cards)
              (with-alternating-colours? cards))))))
+
+(let [column {:cards (mapv make-card ["c.2" "c.8.o" "d.7.o" "c.a.o"])}]
+  (sorted-from-card? column (make-card "c.8.o"))
+  (children-of column (make-card "c.8.o")))
 
 (defn moveable? [column card]
   "Takes a column and a card and checks whether the card can be moved elsewhere."
   (and (open? card)
        (sorted-from-card? (:cards column) card)))
 
+;; TODO: consider should simply returning a pile index here - after all that's all we need in discardable?
 (defn free-pile-for [piles card]
+  "Takes a vector of piles and a card and returns a pile where the card can be discarded."
   (first
     (->> piles
          (filter
@@ -210,9 +221,6 @@
              (and
                (= (:suit pile) (:suit card))
                (= (count (:cards pile)) (dec (:value card)))))))))
-
-
-;; : : : DISCARD CARDS : : : : : : : : :
 
 (defn column-for [columns card]
   "Takes a card an a vector of columns and returns the column that contains the card."
@@ -248,17 +256,17 @@
 (defn index-for-card-in-column [column card]
   (first (keep-indexed (fn [idx el] (when (= el card) idx)) (:cards column))))
 
-(defn mark-for-moving [app card]
+(defn mark-card-for-moving [app column-index card-index]
+  (assoc-in app [:columns column-index :cards card-index :moving] true))
+
+(defn mark-card-and-children-for-moving [app card]
   (let [column (column-for (:columns app) card)]
-    (-> app
-      (assoc-in [:columns (:index column) :cards (index-for-card-in-column column card) :moving] true))))
-
-;; card has already been dereferenced - otherwise we get "Cannot manipulate cursor outside of render phase", only om.core/transact!, om.core/update!, and cljs.core/deref operations allowed"" errors.
-(defn handle-card-click [_event channel card]
-  (if (open? card)
-    (put! channel [mark-for-moving card])))
-
-
+    (do
+      (js/console.log (clj->js (range (index-for-card-in-column column card) (count (:cards column)))))
+      (reduce
+        (fn [memo idx] (mark-card-for-moving memo (:index column) idx))
+        app
+        (range (index-for-card-in-column column card) (count (:cards column)))))))
 
 (defn all-cards [app]
   (reduce
@@ -309,35 +317,39 @@
       app
       cards-to-move)))
 
-(defn process-single-click [app clicked-card]
+(defn handle-click [app clicked-card]
   (let [column (column-for (:columns app) clicked-card)]
     (cond
-      ;; double click
-      (some #{clicked-card} (cards-marked-for-moving app))
-        (discard-card app clicked-card)
-      ;; single click
-      :else
+      (moveable? column clicked-card)
         (cond
-          ;; there are cards marked for moving -> try to move cards below `card`.
-          (seq (cards-marked-for-moving app))
-            (do
-              (js/console.log "Try to move some cards here")
-              (if (can-be-appended-to? (first (cards-marked-for-moving app)) column)
-                (do
-                  (js/console.log "Looks safe, moving!")
-                  (-> app
-                    (move-marked-cards-to (column-for (:columns app) clicked-card))
-                    (unmark-all-column-cards)))
-                (do
-                  (js/console.log "Sorry, cannot move that there, honey!")
-                  (-> app
-                      (unmark-all-column-cards)
-                      (mark-for-moving clicked-card)))))
-          ;; there are no cards marked for moving yet -> mark this one.
+          ;; double click
+          (some #{clicked-card} (cards-marked-for-moving app))
+            (discard-card app clicked-card)
+          ;; single click
           :else
-            (do
-              (js/console.log "no cards marked for moving")
-              (mark-for-moving app clicked-card))))))
+            (cond
+              ;; there are cards marked for moving -> try to move cards below `card`.
+              (seq (cards-marked-for-moving app))
+                (do
+                  (js/console.log "Try to move some cards here")
+                  (if (can-be-appended-to? (first (cards-marked-for-moving app)) column)
+                    (do
+                      (js/console.log "Looks safe, moving!")
+                      (-> app
+                        (move-marked-cards-to (column-for (:columns app) clicked-card))
+                        (unmark-all-column-cards)))
+                    (do
+                      (js/console.log "Sorry, cannot move that there, honey!")
+                      (-> app
+                          (unmark-all-column-cards)
+                          (mark-card-and-children-for-moving clicked-card)))))
+              ;; there are no cards marked for moving yet -> mark this one.
+              :else
+                (do
+                  (js/console.log "no cards marked for moving")
+                  (mark-card-and-children-for-moving app clicked-card))))
+      :else
+        app)))
 
 (defn card-view [card owner]
   (reify
@@ -346,12 +358,10 @@
       (dom/li #js {:className (str "m-card" (when (open? card) " as-open") (when (:moving card) " as-moving"))
                    :onClick (fn [event]
                      (.preventDefault event)
-                     (when (open? @card)
-                       (put! channel [process-single-click @card])))
+                     (put! channel [handle-click @card]))
                    :onTouchEnd (fn [event]
                      (.preventDefault event)
-                     (when (open? @card)
-                       (put! channel [process-single-click @card])))
+                     (put! channel [handle-click @card]))
                    :ref "card"}
         (dom/span #js {:className (card-colour card)}
           (label-for card))))))

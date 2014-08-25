@@ -22,9 +22,8 @@
       (= literal-value "k") 13
       :else (js/parseInt literal-value))))
 
-
-;; "d.12.a" creates a queen of diamonds (with deck "a") card map
-(defn card [card-string]
+(defn make-card [card-string]
+  "Builds a card map from a string - \"d.12.a\", e.g., creates a queen of diamonds (with deck \"a\")."
   (let [card-components (string/split card-string #"\.")
         suit (keyword (first card-components))
         value (second card-components)
@@ -88,7 +87,7 @@
 
   {:name "children-of"
    :expectations
-     (let [sorted-column (mapv card
+     (let [sorted-column {:cards (mapv make-card
                            ["h.K"
                             "c.Q"
                             "d.J"
@@ -100,49 +99,49 @@
                             "d.5"
                             "c.4"
                             "h.3"
-                            "s.2"])
-           unsorted-column (mapv card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])]
+                            "s.2"])}
+           unsorted-column {:cards (mapv make-card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])}]
        [
          ["sorted column: nil"
           (= [] (o/children-of sorted-column nil))]
          ["sorted column: card that isn't in the column has no children"
-          (= [] (o/children-of sorted-column (card "d.K")))]
+          (= [] (o/children-of sorted-column (make-card "d.K")))]
          ["last card has no children"
-          (= [] (o/children-of sorted-column (card "s.2")))]
+          (= [] (o/children-of sorted-column (make-card "s.2")))]
          ["sorted column: one child"
-          (= [(card "s.2")]
-             (o/children-of sorted-column (card "h.3")))]
+          (= [(make-card "s.2")]
+             (o/children-of sorted-column (make-card "h.3")))]
          ["sorted column: many children"
-          (= (mapv card ["d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
-             (o/children-of sorted-column (card "c.8")))]
+          (= (mapv make-card ["d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
+             (o/children-of sorted-column (make-card "c.8")))]
          ["sorted column: all children"
-          (= (mapv card ["c.Q" "d.J" "s.10" "h.9" "c.8" "d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
-             (o/children-of sorted-column (card "h.K")))]
+          (= (mapv make-card ["c.Q" "d.J" "s.10" "h.9" "c.8" "d.7" "s.6" "d.5" "c.4" "h.3" "s.2"])
+             (o/children-of sorted-column (make-card "h.K")))]
 
          ["unsorted column: nil"
           (= [] (o/children-of unsorted-column nil))]
          ["unsorted column: card that isn't in the column has no children"
-          (= [] (o/children-of unsorted-column (card "s.A")))]
+          (= [] (o/children-of unsorted-column (make-card "s.A")))]
          ["unsorted column: last card has no children"
-          (= [] (o/children-of unsorted-column (card "c.Q")))]
+          (= [] (o/children-of unsorted-column (make-card "c.Q")))]
          ["unsorted column: one child"
-           (= [(card "c.Q")] (o/children-of unsorted-column (card "h.2")))]
+           (= [(make-card "c.Q")] (o/children-of unsorted-column (make-card "h.2")))]
          ["unsorted column: many children"
-           (= (mapv card ["s.7" "h.2" "c.Q"])
-              (o/children-of unsorted-column (card "d.Q")))]
+           (= (mapv make-card ["s.7" "h.2" "c.Q"])
+              (o/children-of unsorted-column (make-card "d.Q")))]
          ["unsorted column: all children"
-           (= (mapv card ["c.K" "d.Q" "s.7" "h.2" "c.Q"])
-              (o/children-of unsorted-column (card "h.A")))]
+           (= (mapv make-card ["c.K" "d.Q" "s.7" "h.2" "c.Q"])
+              (o/children-of unsorted-column (make-card "h.A")))]
         ]
         )}
 
   {:name "with-alternating-colours?"
    :expectations
-     (let [sorted-alternating-cards (mapv card ["d.10" "s.9" "h.8" "c.7" "d.6" "c.5" "d.4" "s.3" "h.2" "s.A"])
-           unsorted-alternating-cards (mapv card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])
-           cards-without-alternating-colours (mapv card ["c.A" "s.K" "d.K" "h.7" "h.10" "c.9" "c.2" "s.Q"])
-           one-card-red [(card "d.8")]
-           one-card-black [(card "s.8")]]
+     (let [sorted-alternating-cards (mapv make-card ["d.10" "s.9" "h.8" "c.7" "d.6" "c.5" "d.4" "s.3" "h.2" "s.A"])
+           unsorted-alternating-cards (mapv make-card ["h.A" "c.K" "d.Q" "s.7" "h.2" "c.Q"])
+           cards-without-alternating-colours (mapv make-card ["c.A" "s.K" "d.K" "h.7" "h.10" "c.9" "c.2" "s.Q"])
+           one-card-red [(make-card "d.8")]
+           one-card-black [(make-card "s.8")]]
        [
          ["sorted alternating cards"
            (true? (o/with-alternating-colours? sorted-alternating-cards))]
@@ -157,9 +156,19 @@
         ]
        )}
 
+  {:name "with-descending-values?"
+   :expectations
+     (let [cards (mapv make-card ["d.9" "d.8" "d.7" "d.6" "d.5" "d.4" "d.3" "d.2"])]
+       [
+        ["sorted"
+         (= true (o/with-descending-values? cards))]
+       ])
+  }
+
+
   {:name "sorted-from-card?"
    :expectations
-     (let [sorted-column (mapv card
+     (let [sorted-column {:cards (mapv make-card
                            ["h.K"
                             "c.Q"
                             "d.J"
@@ -171,39 +180,43 @@
                             "d.5"
                             "c.4"
                             "h.3"
-                            "s.2"])
-           unsorted-column (mapv card
-                            ["h.A" "c.K" "c.8" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])
-           another-unsorted-column (mapv card
-                            ["h.A" "c.K" "d.2" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])]
+                            "s.2"])}
+           unsorted-column {:cards (mapv make-card
+                            ["h.A" "c.K" "c.8" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])}
+           another-unsorted-column {:cards (mapv make-card
+                            ["h.A" "c.K" "d.2" "s.7" "d.6" "c.5" "d.4" "s.3" "h.2"])}
+           yet-another-unsorted-column {:cards (mapv make-card
+                            ["c.2" "c.8.o" "d.7.o" "c.a.o"])}]
+
        [
          ["a column is always sorted from its last card"
-           (= true (o/sorted-from-card? sorted-column (card "s.2")))]
+           (= true (o/sorted-from-card? sorted-column (make-card "s.2")))]
          ["a column is never sorted from a card that's not in that column"
-           (= false (o/sorted-from-card? sorted-column (card "d.K")))]
+           (= false (o/sorted-from-card? sorted-column (make-card "d.K")))]
          ["sorted from a card in the middle"
-           (= true (o/sorted-from-card? sorted-column (card "h.9")))]
+           (= true (o/sorted-from-card? sorted-column (make-card "h.9")))]
          ["sorted from the top"
-           (= true (o/sorted-from-card? sorted-column (card "h.K")))]
+           (= true (o/sorted-from-card? sorted-column (make-card "h.K")))]
          ["not sorted from one card above sorted cards - when card above has only proper value"
-           (= false (o/sorted-from-card? unsorted-column (card "c.8")))]
+           (= false (o/sorted-from-card? unsorted-column (make-card "c.8")))]
          ["not sorted from one card above sorted cards - when card above has only proper colour"
-           (= false (o/sorted-from-card? another-unsorted-column (card "d.2")))]
-        ]
-       )
+           (= false (o/sorted-from-card? another-unsorted-column (make-card "d.2")))]
+         ["not sorted from card in unsorted column"
+           (= false (o/sorted-from-card? yet-another-unsorted-column (make-card "c.8.o")))]
+        ])
   }
 
   ;; TODO: pending
   {:name "moveable?"
    :expectations [
      ["not moveable b/c it's not open" ;; nil b/c colour? fails with `nil` and the rest of the `and` doesn't get evaluated.
-      (= nil (o/moveable? {:cards (mapv card ["d.9" "c.2.o"])} (card "d.2")))]
+      (= nil (o/moveable? {:cards (mapv make-card ["d.9" "c.2.o"])} (make-card "d.2")))]
      ["not moveable b/c the colours are not in order"
-      (= false (o/moveable? {:cards (mapv card ["c.5" "d.4.o" "h.3.o" "c.2.o"])} (card "d.4.o")))]
+      (= false (o/moveable? {:cards (mapv make-card ["c.5" "d.4.o" "h.3.o" "c.2.o"])} (make-card "d.4.o")))]
      ["not moveable b/c the values are not in order"
-      (= false (o/moveable? {:cards (mapv card ["c.5" "d.7.o" "h.3.o" "c.2.o"])} (card "d.7.o")))]
+      (= false (o/moveable? {:cards (mapv make-card ["c.5" "d.7.o" "h.3.o" "c.2.o"])} (make-card "d.7.o")))]
      ["moveable"
-      (= true  (o/moveable? {:cards (mapv card ["c.5" "c.4.o" "h.3.o" "c.2.o"])} (card "c.4.o")))]
+      (= true  (o/moveable? {:cards (mapv make-card ["c.5" "c.4.o" "h.3.o" "c.2.o"])} (make-card "c.4.o")))]
      ]}
 
   ;; TODO: pending
@@ -355,13 +368,13 @@
    :expectations [
      ["can be appended to"
        (= true
-         (o/can-be-appended-to? (card "s.7") {:cards (mapv card ["h.8"])}))]
+         (o/can-be-appended-to? (make-card "s.7") {:cards (mapv make-card ["h.8"])}))]
      ["cannot be appended to"
        (= false
-         (o/can-be-appended-to? (card "c.J") {:cards (mapv card ["d.K"])}))]
+         (o/can-be-appended-to? (make-card "c.J") {:cards (mapv make-card ["d.K"])}))]
      ["cannot be appended to column that ends with same value"
        (= false
-         (o/can-be-appended-to? (card "c.3") {:cards (mapv card ["s.3"])}))]
+         (o/can-be-appended-to? (make-card "c.3") {:cards (mapv make-card ["s.3"])}))]
    ]}
 
 ])
