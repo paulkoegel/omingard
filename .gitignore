@@ -10,3 +10,4 @@ pom.xml
 .nrepl-port
 /testout/
 /resources/public/out/
+/resources/public/omingard.js
