@@ -177,6 +177,7 @@ body {
 }
 
 .m-card.as-open {
+  cursor: pointer;
   background-color: #fafafa;
 }
 

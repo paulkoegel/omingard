@@ -22,7 +22,7 @@
                 :optimizations :none
                 :source-map true
                 :pretty-print true}}
-             {:id "production"
+             #_{:id "production"
               :source-paths ["src/omingard/"]
               :compiler {
                 :output-to "resources/public/omingard.js"

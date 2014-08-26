@@ -115,8 +115,8 @@
      :margin "2px auto"
      :background-color "#fafafa"}]
 
-   [:.m-card {
-      :background "#ddd"
+   [:.m-card
+     {:background "#ddd"
       :line-height (rem 1)
       :margin "2px 0"
       :padding "5px"
@@ -129,15 +129,16 @@
       :-moz-user-select "none"
       :-ms-user-select "none"
       :user-select "none" ;; disable text selection on cards */
-    }
-      [:.black {
-        :color "black"}]
-      [:.red {
-        :color "red"}]
-      [:&.as-open {
-        :background-color "#fafafa"}]
-      [:&.as-moving {
-        :background-color "yellow"}]]
+     }
+       [:.black
+         {:color "black"}]
+       [:.red
+         {:color "red"}]
+       [:&.as-open
+         {:background-color "#fafafa"
+          :cursor "pointer"}]
+       [:&.as-moving
+         {:background-color "yellow"}]]
 
   [:.l-piles-container {
     :background "#ccc"}]
@@ -148,13 +149,13 @@
   [:.m-pile {
     :float "left"}]
 
-  [:.m-pile--placeholder {
-   }
-     [:&.red {
-       :color "red"}]
-     [:&.black {
-       :color "black"}]]
+  [:.m-pile--placeholder
+    {}
+    [:&.red {
+      :color "red"}]
+    [:&.black {
+      :color "black"}]]
 
-  [:.l-debug {
-    :background "#C1D1F7"}]
+  [:.l-debug
+    {:background "#C1D1F7"}]
 )
