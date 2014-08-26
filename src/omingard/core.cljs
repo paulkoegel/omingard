@@ -82,6 +82,13 @@
      :debug-texts []
     }))
 
+(def app-history (atom [@app-state]))
+
+(add-watch app-state :history
+  (fn [_ _ _ n]
+    (when-not (= (last @app-history) n)
+      (swap! app-history conj n))))
+
 (defn serve-card-to-column [state column-index & [open?]]
   (let [card (peek (:stack state))
         card (if (and open? card)
@@ -433,6 +440,11 @@
         (apply dom/ul #js {:className "m-columns cf"}
         (om/build-all column-view columns {:init-state {:channel channel}}))))))
 
+(defn undo [app]
+  (when (> (count @app-history) 1)
+    (swap! app-history pop)
+    (reset! app-state (last @app-history))))
+
 (defn navigation-view [app owner]
   (reify
     om/IRender
@@ -448,8 +460,9 @@
                         "Hit me!"))
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--undo"
-                             :onClick (fn [_] (.undo js/window))}
+                             :onClick (fn [_] (om/transact! app undo))}
                         "↶ Undo")))))))
+
 
 (defn pile-view [pile owner]
   (reify
@@ -515,16 +528,3 @@
   omingard-view
   app-state
   {:target (. js/document (getElementById "omingard"))})
-
-(def app-history (atom [@app-state]))
-
-(add-watch app-state :history
-  (fn [_ _ _ n]
-    (when-not (= (last @app-history) n)
-      (swap! app-history conj n))))
-
-(aset js/window "undo"
-  (fn [e]
-    (when (> (count @app-history) 1)
-      (swap! app-history pop)
-      (reset! app-state (last @app-history)))))
