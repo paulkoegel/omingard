@@ -1,5 +1,5 @@
 (ns omingard.helpers
-  (:require [omingard.appstate :as app])
+  (:require [omingard.appstate :as app]))
 
 ;; : : : HELPER FUNCTIONS : : : : : : : : :
 ;; returns strings b/c we can't use keywords to set CSS classes.
