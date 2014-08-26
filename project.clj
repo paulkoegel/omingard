@@ -20,7 +20,7 @@
                 :output-to "omingard.js"
                 :output-dir "out"
                 :optimizations :none
-                :source-map true
+                :source-map "omingard.js.map"
                 :pretty-print true}}
              #_{:id "production"
               :source-paths ["src/omingard/"]
