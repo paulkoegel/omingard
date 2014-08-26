@@ -2,7 +2,7 @@ goog.addDependency("base.js", ['goog'], []);
 goog.addDependency("../cljs/core.js", ['cljs.core'], ['goog.string', 'goog.object', 'goog.string.StringBuffer', 'goog.array']);
 goog.addDependency("../omingard/setup.js", ['omingard.setup'], ['cljs.core']);
 goog.addDependency("../omingard/appstate.js", ['omingard.appstate'], ['cljs.core', 'omingard.setup']);
-goog.addDependency("../omingard/helpers.js", ['omingard.helpers'], ['cljs.core', 'omingard.appstate']);
+goog.addDependency("../omingard/helpers.js", ['omingard.helpers'], ['cljs.core', 'omingard.appstate', 'omingard.setup']);
 goog.addDependency("../om/dom.js", ['om.dom'], ['cljs.core']);
 goog.addDependency("../cljs/core/async/impl/protocols.js", ['cljs.core.async.impl.protocols'], ['cljs.core']);
 goog.addDependency("../cljs/core/async/impl/buffers.js", ['cljs.core.async.impl.buffers'], ['cljs.core', 'cljs.core.async.impl.protocols']);
