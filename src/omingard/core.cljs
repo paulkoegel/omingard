@@ -59,8 +59,6 @@
     (when-not (= (last @app/app-history) n)
       (swap! app/app-history conj n))))
 
-
-
 (defn column-placeholder-view [column-index owner]
   (reify
     om/IRenderState
@@ -68,7 +66,7 @@
       (dom/li #js {:className "m-column--placeholder"
                    :onClick (fn [event]
                      (.preventDefault event)
-                     (put! channel [helpers/handle-column-placeholder-click @column-index]))}
+                     (put! channel [helpers/handle-column-placeholder-click column-index]))}
                   ))))
 
 (defn column-view [column owner]
@@ -83,7 +81,7 @@
                 (om/build-all card-view/main column-cards {:init-state {:channel channel}}))
             :else
               (dom/ul #js {:className "m-column"}
-                (om/build column-placeholder-view {:index (:index column)}))))))))
+                (om/build column-placeholder-view {:index (:index column)} {:init-state {:channel channel}}))))))))
 
 
 (defn columns-view [columns owner]

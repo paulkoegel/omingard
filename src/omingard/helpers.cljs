@@ -299,7 +299,16 @@
 ;; : : : V I E W S : : : : : : : : : :
 
 (defn handle-column-placeholder-click [app column-index]
-  (js/console.log "handle-column-placeholder-click" column-index))
+  (js/console.log "handle-column-placeholder-click" column-index)
+  (cond
+    (cards-marked-for-moving app)
+      (do
+        (js/console.log "move some cards here!")
+        app)
+    :else
+      (do
+        (js/console.log "nothing to do")
+        app)))
 
 (defn undo [app]
   (when (> (count @app/app-history) 1)
