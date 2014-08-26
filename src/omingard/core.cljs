@@ -82,13 +82,6 @@
      :debug-texts []
     }))
 
-(def app-history (atom [@app-state]))
-
-(add-watch app-state :history
-  (fn [_ _ _ n]
-    (when-not (= (last @app-history) n)
-      (swap! app-history conj n))))
-
 (defn serve-card-to-column [state column-index & [open?]]
   (let [card (peek (:stack state))
         card (if (and open? card)
@@ -117,6 +110,14 @@
 
 ;; set up initial state of the game
 (swap! app-state serve-cards)
+
+;; remember app states for undo
+(def app-history (atom [@app-state]))
+
+(add-watch app-state :history
+  (fn [_ _ _ n]
+    (when-not (= (last @app-history) n)
+      (swap! app-history conj n))))
 
 ;; : : : HELPER FUNCTIONS : : : : : : : : :
 ;; returns strings b/c we can't use keywords to set CSS classes.
