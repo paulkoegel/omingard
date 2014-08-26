@@ -12,7 +12,9 @@
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! chan <!]]
             [clojure.data :as data]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [omingard.setup :as setup]
+            [omingard.appstate :as app]))
 
 (enable-console-print!)
 (js/React.initializeTouchEvents true)
@@ -47,73 +49,13 @@
           (if open (assoc card :open true) card)))
 ;; - - END -- DEBUGGING HELPERS : : : : : :
 
+;; : INITIAL APP STATE : : : : : : : :
+(swap! app/app-state setup/serve-cards)
 
-;; : : : GLOBAL CONSTANTS : : : : : : : : :
-(def columns# 9)
-
-
-;; : : : 1. GENERATE A STACK OF CARDS : : :
-
-(def suits [:hearts :diamonds :spades :clubs])
-
-(defn cards-for-suit [suit]
-  (mapcat
-    (fn [value]
-      ;; need a deck parameter to distinguish cards with the same value and suit in the same column
-      [{:deck :a :suit suit :value value}
-       {:deck :b :suit suit :value value}])
-    (range 1 14)))
-
-(defn shuffled-stack []
-  (shuffle (mapcat cards-for-suit suits)))
-
-(defn piles-for-suits [suits]
-  (vec (map-indexed (fn [idx suit] {:index idx :suit suit :cards []}) suits)))
-
-;; initialise app state
-(def app-state
-  (atom
-    {:stack (shuffled-stack)
-     :piles (piles-for-suits (mapcat (fn [suit] [suit suit]) suits))
-     :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
-    }))
-
-(defn serve-card-to-column [state column-index & [open?]]
-  (let [card (peek (:stack state))
-        card (if (and open? card)
-               (assoc card :open true)
-               card)]
-    (if card
-      (-> state
-          (update-in [:stack] pop)
-          (update-in [:columns column-index :cards] conj card))
-      ;; do nothing if stack is empty
-      state)))
-
-(defn serve-cards-to-column [state column-index n]
-  (reduce
-    (fn [memo val]
-      (serve-card-to-column memo column-index (if (= (- n 1) val) true false)))
-    state
-    (range n)))
-
-(defn serve-cards [state]
-  (reduce
-    (fn [state [idx n]]
-      (serve-cards-to-column state idx n))
-    state
-    (map-indexed vector [1 2 3 4 5 4 3 2 1])))
-
-;; set up initial state of the game
-(swap! app-state serve-cards)
-
-;; remember app states for undo
-(def app-history (atom [@app-state]))
-
-(add-watch app-state :history
+(add-watch app/app-state :history
   (fn [_ _ _ n]
-    (when-not (= (last @app-history) n)
-      (swap! app-history conj n))))
+    (when-not (= (last @app/app-history) n)
+      (swap! app/app-history conj n))))
 
 ;; : : : HELPER FUNCTIONS : : : : : : : : :
 ;; returns strings b/c we can't use keywords to set CSS classes.
@@ -270,6 +212,31 @@
       ;; else: the card's still in the stack and a path vector of nil is fine
   )))
 
+#_(defn first-path [app card]
+  (first (path-vector-for-card app card)))
+
+#_(defn where-am-i? [app card]
+  (let [path (first-path app card)]
+    (cond
+      (= :columns first-path)
+        :column
+      (= :piles first-path)
+        :pile
+      :else
+        :stack)))
+
+#_(defn in-columns? [app card]
+  (let [first-path (first (path-vector-for-card app card))]
+    (= :columns first-path)))
+
+#_(defn in-piles? [app card]
+  (let [first-path (first (path-vector-for-card app card))]
+    (= :piles first-path)))
+
+#_(defn in-stack? [app card]
+  (let [first-path (first (path-vector-for-card app card))]
+    (nil? first-path)))
+
 (defn mark-card-for-moving [app card]
   "Find and mark a certain card for moving."
   (assoc-in app (conj (path-vector-for-card app card) :moving) true))
@@ -379,9 +346,9 @@
   (let [app (unmark-all-column-cards app)]
     (reduce
       (fn [memo i]
-        (serve-card-to-column memo i true))
+        (setup/serve-card-to-column memo i true))
       app
-      (range columns#))))
+      (range setup/columns#))))
 
 
 ;; : : : V I E W S : : : : : : : : : :
@@ -438,9 +405,9 @@
         (om/build-all column-view columns {:init-state {:channel channel}}))))))
 
 (defn undo [app]
-  (when (> (count @app-history) 1)
-    (swap! app-history pop)
-    (reset! app-state (last @app-history))))
+  (when (> (count @app/app-history) 1)
+    (swap! app/app-history pop)
+    (reset! app/app-state (last @app/app-history))))
 
 (defn navigation-view [app owner]
   (reify
@@ -515,5 +482,5 @@
 
 (om/root
   omingard-view
-  app-state
+  app/app-state
   {:target (. js/document (getElementById "omingard"))})

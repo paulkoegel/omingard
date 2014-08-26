@@ -8,9 +8,11 @@ goog.addDependency("../cljs/core/async/impl/channels.js", ['cljs.core.async.impl
 goog.addDependency("../cljs/core/async/impl/ioc_helpers.js", ['cljs.core.async.impl.ioc_helpers'], ['cljs.core', 'cljs.core.async.impl.protocols']);
 goog.addDependency("../cljs/core/async/impl/timers.js", ['cljs.core.async.impl.timers'], ['cljs.core.async.impl.channels', 'cljs.core.async.impl.dispatch', 'cljs.core', 'cljs.core.async.impl.protocols']);
 goog.addDependency("../cljs/core/async.js", ['cljs.core.async'], ['cljs.core.async.impl.channels', 'cljs.core.async.impl.dispatch', 'cljs.core', 'cljs.core.async.impl.buffers', 'cljs.core.async.impl.protocols', 'cljs.core.async.impl.ioc_helpers', 'cljs.core.async.impl.timers']);
+goog.addDependency("../omingard/setup.js", ['omingard.setup'], ['cljs.core']);
+goog.addDependency("../omingard/appstate.js", ['omingard.appstate'], ['cljs.core', 'omingard.setup']);
 goog.addDependency("../om/core.js", ['om.core'], ['cljs.core', 'om.dom', 'goog.ui.IdGenerator']);
 goog.addDependency("../clojure/string.js", ['clojure.string'], ['goog.string', 'cljs.core', 'goog.string.StringBuffer']);
 goog.addDependency("../clojure/set.js", ['clojure.set'], ['cljs.core']);
 goog.addDependency("../clojure/data.js", ['clojure.data'], ['cljs.core', 'clojure.set']);
-goog.addDependency("../omingard/core.js", ['omingard.core'], ['cljs.core', 'om.dom', 'cljs.core.async', 'om.core', 'clojure.string', 'clojure.data']);
+goog.addDependency("../omingard/core.js", ['omingard.core'], ['cljs.core', 'om.dom', 'cljs.core.async', 'omingard.appstate', 'om.core', 'omingard.setup', 'clojure.string', 'clojure.data']);
 goog.addDependency("../omingardtest/test.js", ['omingardtest.test'], ['cljs.core', 'omingard.core', 'clojure.string']);
