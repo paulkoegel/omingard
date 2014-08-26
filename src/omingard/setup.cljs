@@ -22,17 +22,17 @@
   "Takes a vector of suits and returns pile maps for them."
   (vec (map-indexed (fn [idx suit] {:index idx :suit suit :cards []}) suits)))
 
-(defn serve-card-to-column [state column-index & [open?]]
-  (let [card (peek (:stack state))
+(defn serve-card-to-column [app column-index & [open?]]
+  (let [card (peek (:stack app))
         card (if (and open? card)
                (assoc card :open true)
                card)]
     (if card
-      (-> state
+      (-> app
           (update-in [:stack] pop)
           (update-in [:columns column-index :cards] conj card))
       ;; do nothing if stack is empty
-      state)))
+      app)))
 
 (defn serve-cards-to-column [app column-index n]
   (reduce
