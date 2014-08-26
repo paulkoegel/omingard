@@ -19,9 +19,6 @@
 
 ;; : : : DEBUGGING HELPERS : : : : : : : : :
 
-      (defn debugg [app text]
-        (update-in app [:debug-texts] (fn [a] (cons text a))))
-
       ;; transforms "J" etc. back to 11 etc.
       (defn value-from-literal-value [literal-value]
         (let [literal-value (string/lower-case literal-value)]
@@ -79,7 +76,6 @@
     {:stack (shuffled-stack)
      :piles (piles-for-suits (mapcat (fn [suit] [suit suit]) suits))
      :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range columns#)))
-     :debug-texts []
     }))
 
 (defn serve-card-to-column [state column-index & [open?]]
@@ -514,14 +510,6 @@
         (om/build navigation-view app)
         (dom/div #js {:className "l-game-container"}
           (om/build columns-view (:columns app) {:init-state {:channel channel}})
-          (dom/div #js {:className "l-debug"}
-            (dom/h3 nil "Debug (newest click events first)")
-            (apply dom/ul #js {:className "m-debug-texts"}
-              (map-indexed
-                (fn [idx el]
-                  (dom/li #js {:className "m-debug-texts--item"}
-                    (str (- (count (:debug-texts app)) idx) ". " el)))
-                (:debug-texts app))))
           (om/build piles-view (:piles app) {:init-state {:channel channel}}))
       ))))
 
