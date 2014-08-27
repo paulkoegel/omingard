@@ -119,7 +119,13 @@ body {
 
 .l-game-container {
   margin: 0 auto;
+  user-select: none;
+  -khtml-user-select: none;
+  -webkit-touch-callout: none;
   width: 100rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .m-columns-wrapper {
@@ -153,19 +159,13 @@ body {
 }
 
 .m-card {
-  line-height: 1rem;
-  -khtml-user-select: none;
-  margin: 2px 0;
-  -moz-user-select: none;
-  -webkit-touch-callout: none;
-  user-select: none;
-  padding: 5px;
-  text-align: center;
   cursor: pointer;
-  -webkit-user-select: none;
   border-radius: 3px;
+  text-align: center;
+  padding: 5px;
+  margin: 2px 0;
+  line-height: 1rem;
   background: #ddd;
-  -ms-user-select: none;
 }
 
 .m-card .black {

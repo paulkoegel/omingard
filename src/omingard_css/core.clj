@@ -86,9 +86,16 @@
     :border-radius (px 3)
     :border "1px solid #234892"}]
 
-  [:.l-game-container {
-   :width "100rem"
-   :margin "0 auto"}]
+  [:.l-game-container
+    {:width "100rem"
+     :margin "0 auto"
+     :-webkit-touch-callout "none"
+     :-webkit-user-select "none"
+     :-khtml-user-select "none"
+     :-moz-user-select "none"
+     :-ms-user-select "none"
+     :user-select "none" ;; disable text selection on cards */
+     }]
 
   [:.m-columns-wrapper {
     :margin "2rem auto 0"}]
@@ -123,12 +130,6 @@
       :text-align "center"
       :border-radius "3px"
       :cursor "pointer"
-      :-webkit-touch-callout "none"
-      :-webkit-user-select "none"
-      :-khtml-user-select "none"
-      :-moz-user-select "none"
-      :-ms-user-select "none"
-      :user-select "none" ;; disable text selection on cards */
      }
        [:.black
          {:color "black"}]
