@@ -129,7 +129,6 @@
       :padding "5px"
       :text-align "center"
       :border-radius "3px"
-      :cursor "pointer"
      }
        [:.black
          {:color "black"}]
