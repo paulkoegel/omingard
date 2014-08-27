@@ -9,7 +9,6 @@
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
-      #_(dom/li nil "a")
       (dom/li #js {:className (str "m-card" (when (helpers/open? card) " as-open") (when (:moving card) " as-moving"))
                    :onClick (fn [event]
                      (.preventDefault event)
