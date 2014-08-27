@@ -138,8 +138,10 @@
           ;; open new last card of column
           (update-in [:columns (:index column) :cards]
                     (fn [cards]
-                      (when (seq cards)
-                        (assoc-in cards [(dec (count cards)) :open] true)))))
+                      (cond
+                        (seq cards)
+                          (assoc-in cards [(dec (count cards)) :open] true)
+                        :else []))))
       :else
         (-> app
           (update-in [:columns (:index column) :cards (index-for (:cards column) card)]
@@ -231,18 +233,19 @@
 
 (defn move-marked-cards-to [app new-column]
   (let [columns (:columns app)
-        cards-to-move (cards-marked-for-moving app)]
+        cards-to-move (cards-marked-for-moving app)
+        ;; all cards to be moved are in the same column
+        old-column (column-for columns (first cards-to-move))]
     (reduce
       (fn [memo card]
-        (let [old-column (column-for columns card)]
-          (-> memo
-            (update-in [:columns (:index old-column) :cards]
-                       pop)
-            (update-in [:columns (:index old-column) :cards]
-                       #(when (seq %)
-                          (assoc-in % [(dec (count %)) :open] true)))
-            (update-in [:columns (:index new-column) :cards]
-                       conj card))))
+        (-> memo
+          (update-in [:columns (:index old-column) :cards] pop)
+          (update-in [:columns (:index old-column) :cards]
+                     #(if (seq %)
+                       (assoc-in % [(dec (count %)) :open] true)
+                       []))
+          (update-in [:columns (:index new-column) :cards] conj card)
+          (unmark-all-column-cards)))
       app
       cards-to-move)))
 
