@@ -200,7 +200,8 @@
       app
       (range (index-for column-cards card) (count column-cards)))))
 
-(defn all-cards [app]
+(defn all-column-cards [app]
+  "Returns a vector of all column-cards."
   (reduce
     (fn [memo el]
       (apply conj memo (:cards el)))
@@ -210,7 +211,7 @@
 (defn cards-marked-for-moving [app]
   (filter
     :moving
-    (all-cards app)))
+    (all-column-cards app)))
 
 (defn unmark-all-column-cards [app]
   (let [cards-to-unmark (cards-marked-for-moving app)
