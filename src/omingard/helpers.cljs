@@ -303,15 +303,15 @@
 ;; : : : V I E W S : : : : : : : : : :
 
 (defn handle-column-placeholder-click [app column-index]
-  (js/console.log "handle-column-placeholder-click" column-index)
+  (js/console.log "handle-column-placeholder-click" (:index column-index))
   (cond
-    (cards-marked-for-moving app)
+    (= 13 (:value (first (cards-marked-for-moving app))))
       (do
-        (js/console.log "move some cards here!")
-        app)
+        (js/console.log "move king and children here!")
+        (move-marked-cards-to app ((:columns app) (:index column-index))))
     :else
       (do
-        (js/console.log "nothing to do")
+        (js/console.log "not moving a king - nothing to do")
         app)))
 
 (defn undo [app]
