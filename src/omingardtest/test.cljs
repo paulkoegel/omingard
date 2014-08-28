@@ -11,7 +11,7 @@
             [omingard.setup :as setup]
             [omingard.appstate :as app]
             [omingard.helpers :as helpers]
-            [omingard.views.card-view :as card-view]))
+            [omingard.views.card-views :as card-views]))
 
 ;; HELPER FUNCTIONS
 

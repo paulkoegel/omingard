@@ -250,43 +250,6 @@
       app
       cards-to-move)))
 
-(defn handle-click [app clicked-card]
-  (let [column (column-for (:columns app) clicked-card)]
-    (cond
-      ;; card's on top of a pile - maybe write a function for this with a better check
-      (and (not column) (open? clicked-card))
-        (mark-card-for-moving app clicked-card)
-      (moveable? (:cards column) clicked-card)
-        (cond
-          ;; double click
-          (some #{clicked-card} (cards-marked-for-moving app))
-            (discard-card app clicked-card)
-          ;; single click
-          :else
-            (cond
-              ;; there are cards marked for moving -> try to move cards below `card`.
-              (seq (cards-marked-for-moving app))
-                (do
-                  (js/console.log "Try to move some cards here")
-                  (if (can-be-appended-to? (first (cards-marked-for-moving app)) column)
-                    (do
-                      (js/console.log "Looks safe, moving!")
-                      (-> app
-                        (move-marked-cards-to (column-for (:columns app) clicked-card))
-                        (unmark-all-column-cards)))
-                    (do
-                      (js/console.log "Sorry, cannot move that there, honey!")
-                      (-> app
-                          (unmark-all-column-cards)
-                          (mark-card-and-children-for-moving clicked-card)))))
-              ;; there are no cards marked for moving yet -> mark this one.
-              :else
-                (do
-                  (js/console.log "no cards marked for moving")
-                  (mark-card-and-children-for-moving app clicked-card))))
-      :else
-        app)))
-
 
 ;; : : :   2.   G A M E   L O O P   : : : : : : : : :
 

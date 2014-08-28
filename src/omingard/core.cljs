@@ -16,7 +16,8 @@
             [omingard.setup :as setup]
             [omingard.appstate :as app]
             [omingard.helpers :as helpers]
-            [omingard.views.card-view :as card-view]))
+            [omingard.views.card-views :as card-views]
+            [omingard.views.pile-views :as pile-views]))
 
 (enable-console-print!)
 (js/React.initializeTouchEvents true)
@@ -78,7 +79,7 @@
           (cond
             (seq column-cards)
               (apply dom/ul #js {:className "m-column"}
-                (om/build-all card-view/main column-cards {:init-state {:channel channel}}))
+                (om/build-all card-views/item-view column-cards {:init-state {:channel channel}}))
             :else
               (dom/ul #js {:className "m-column"}
                 (om/build column-placeholder-view {:index (:index column)} {:init-state {:channel channel}}))))))))
@@ -110,29 +111,6 @@
                              :onClick (fn [_] (om/transact! app helpers/undo))}
                         "↶ Undo")))))))
 
-(defn pile-view [pile owner]
-  (reify
-    om/IRenderState
-    (render-state [this {:keys [channel]}]
-      (dom/li #js {:className "m-pile"}
-        (let [cards (:cards pile)]
-          (if (seq cards)
-            (apply dom/ul #js {:className "m-pile--cards"}
-              (om/build-all card-view/main cards {:init-state {:channel channel}}))
-            ;; pile has no cards
-            (let [suit (:suit pile)]
-              (dom/span #js {:className (str "m-pile--placeholder " (helpers/colour suit))}
-                (helpers/symbol-for-suit suit)))))))))
-
-(defn piles-view [piles owner]
-  (reify
-    om/IRenderState
-    (render-state [this {:keys [channel]}]
-      (dom/div #js {:className "l-piles-container"}
-        (dom/h3 nil "Piles")
-        (apply dom/ul #js {:className "m-piles cf"}
-          (om/build-all pile-view piles {:init-state {:channel channel}}))))))
-
 (defn omingard-view [app owner]
   (reify
     om/IInitState
@@ -159,7 +137,7 @@
         (om/build navigation-view app)
         (dom/div #js {:className "l-game-container"}
           (om/build columns-view (:columns app) {:init-state {:channel channel}})
-          (om/build piles-view (:piles app) {:init-state {:channel channel}}))
+          (om/build pile-views/collection-view (:piles app) {:init-state {:channel channel}}))
       ))))
 
 (om/root
