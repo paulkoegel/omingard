@@ -25,16 +25,16 @@
                   (h/can-be-appended-to? (first (h/cards-marked-for-moving app)) column)
                     (-> app
                       (h/move-marked-cards-to (h/column-for (:columns app) clicked-card))
-                      (h/unmark-all-column-cards)))
+                      (h/unmark-all-column-cards))
                   :else
                     (-> app
                       (h/unmark-all-column-cards)
-                      (h/mark-card-and-children-for-moving clicked-card))
+                      (h/mark-card-and-children-for-moving clicked-card)))
               ;; there are no cards marked for moving yet -> mark this one.
               :else
-                (h/mark-card-and-children-for-moving app clicked-card))
+                (h/mark-card-and-children-for-moving app clicked-card)))
       :else
-        app))))
+        app)))
 
 
 (defn item-view [card owner]

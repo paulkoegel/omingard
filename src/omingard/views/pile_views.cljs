@@ -3,7 +3,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! chan <!]]
-            [omingard.helpers :as helpers]
+            [omingard.helpers :as h]
             [omingard.views.card-views :as card-views]))
 
 (defn item-view [pile owner]
@@ -17,8 +17,8 @@
               (om/build-all card-views/item-view cards {:init-state {:channel channel}}))
             ;; pile has no cards
             (let [suit (:suit pile)]
-              (dom/span #js {:className (str "m-pile--placeholder " (helpers/colour suit))}
-                (helpers/symbol-for-suit suit)))))))))
+              (dom/span #js {:className (str "m-pile--placeholder " (h/colour suit))}
+                (h/symbol-for-suit suit)))))))))
 
 (defn collection-view [piles owner]
   (reify

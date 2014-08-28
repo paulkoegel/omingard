@@ -93,6 +93,13 @@
   (and (open? card)
        (sorted-from-card? column-cards card)))
 
+(defn pile-for [piles card]
+  "Takes a vector of piles and a card and returns the pile that contains the card."
+  (first
+    (->> piles
+         (filter
+           (fn [pile] (some #{card} (:cards pile)))))))
+
 ;; TODO: consider should simply returning a pile index here - after all that's all we need in discardable?
 (defn free-pile-for [piles card]
   "Takes a vector of piles and a card and returns a pile where the card can be discarded."
@@ -110,13 +117,6 @@
     (->> columns
          (filter
            (fn [column] (some #{card} (:cards column)))))))
-
-(defn pile-for [piles card]
-  "Takes a vector of piles and a card and returns the pile that contains the card."
-  (first
-    (->> piles
-         (filter
-           (fn [pile] (some #{card} (:cards pile)))))))
 
 (defn discardable? [app card]
   (let [column (column-for (:columns app) card)]
@@ -201,17 +201,24 @@
       (range (index-for column-cards card) (count column-cards)))))
 
 (defn all-column-cards [app]
-  "Returns a vector of all column-cards."
+  "Returns a vector of all column cards."
   (reduce
     (fn [memo el]
       (apply conj memo (:cards el)))
     []
     (:columns app)))
 
+(defn all-pile-cards [app]
+  "Returns a vector of all cards in piles."
+  (reduce #(apply conj %1 (:cards %2)) [] (:piles app)))
+
+(defn all-column-and-pile-cards [app]
+  (concat (all-column-cards app) (all-pile-cards app)))
+
 (defn cards-marked-for-moving [app]
   (filter
     :moving
-    (all-column-cards app)))
+    (all-column-and-pile-cards app)))
 
 (defn unmark-all-column-cards [app]
   (let [cards-to-unmark (cards-marked-for-moving app)
@@ -235,23 +242,43 @@
 (defn move-marked-cards-to [app new-column]
   (let [columns (:columns app)
         cards-to-move (cards-marked-for-moving app)
+        top-card-to-move (first cards-to-move)
         ;; all cards to be moved are in the same column
-        old-column (column-for columns (first cards-to-move))]
-    (reduce
-      (fn [memo card]
-        (-> memo
-          (update-in [:columns (:index old-column) :cards] pop)
-          (update-in [:columns (:index old-column) :cards]
-                     #(if (seq %)
-                       (assoc-in % [(dec (count %)) :open] true)
-                       []))
-          (update-in [:columns (:index new-column) :cards] conj card)
-          (unmark-all-column-cards)))
-      app
-      cards-to-move)))
+        old-column (column-for columns top-card-to-move)
+        pile (pile-for (:piles app) top-card-to-move)]
+    (cond
+      ;; moving a card from one column to another
+      old-column
+       (reduce
+         (fn [memo card]
+           (-> memo
+             (update-in [:columns (:index old-column) :cards] pop)
+             (update-in [:columns (:index old-column) :cards]
+                        #(if (seq %)
+                          (assoc-in % [(dec (count %)) :open] true)
+                          []))
+             (update-in [:columns (:index new-column) :cards] conj card)
+             (unmark-all-column-cards)))
+         app
+         cards-to-move)
+       ;; moving a card from a pile to a column
+       pile
+         ;;(reduce
+         ;;  (fn [memo card]
+         (-> app
+           (update-in [:piles (:index pile) :cards] pop)
+           (update-in [:columns (:index new-column) :cards] conj top-card-to-move)
+           (unmark-all-column-cards));;)
+         ;;  app
+         ;;  cards-to-move)
+
+       ;; TODO: moving a card from a column to a pile via 2 clicks
+     )))
 
 
-;; : : :   2.   G A M E   L O O P   : : : : : : : : :
+;; (first (cards-marked-for-moving @app/app-state))
+;; (move-marked-cards-to @app/app-state ((:columns @app/app-state) 5))
+
 
 (defn serve-new-cards [app]
   "When there are no more moves, append a new open card to each column."
@@ -266,16 +293,11 @@
 ;; : : : V I E W S : : : : : : : : : :
 
 (defn handle-column-placeholder-click [app column-index]
-  (js/console.log "handle-column-placeholder-click" (:index column-index))
   (cond
     (= 13 (:value (first (cards-marked-for-moving app))))
-      (do
-        (js/console.log "move king and children here!")
-        (move-marked-cards-to app ((:columns app) (:index column-index))))
+      (move-marked-cards-to app ((:columns app) (:index column-index)))
     :else
-      (do
-        (js/console.log "not moving a king - nothing to do")
-        app)))
+      app))
 
 (defn undo [app]
   (when (> (count @app/app-history) 1)
