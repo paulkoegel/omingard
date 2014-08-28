@@ -159,6 +159,7 @@ body {
 }
 
 .m-card {
+  height: 21px;
   border-radius: 3px;
   text-align: center;
   padding: 5px;
@@ -182,6 +183,12 @@ body {
 
 .m-card.as-moving {
   background-color: yellow;
+}
+
+.m-card.as-closed {
+  background-size: 7px 7px;
+  background-image: linear-gradient(90deg, rgba(200,0,0,.5) 50%, transparent 50%), linear-gradient(rgba(200,0,0,.5) 50%, transparent 50%);
+  background-color: #ffaaaa;
 }
 
 .l-piles-container {

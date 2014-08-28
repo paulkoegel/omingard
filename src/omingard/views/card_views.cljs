@@ -37,17 +37,22 @@
         app)))
 
 
+
 (defn item-view [card owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
-      (dom/li #js {:className (str "m-card" (when (h/open? card) " as-open") (when (:moving card) " as-moving"))
-                   :onClick (fn [event]
-                     (.preventDefault event)
-                     (put! channel [handle-card-click @card]))
-                   :onTouchEnd (fn [event]
-                     (.preventDefault event)
-                     (put! channel [handle-card-click @card]))
-                   :ref "card"}
-        (dom/span #js {:className (h/card-colour card)}
-          (h/label-for card))))))
+      (cond
+        (h/open? card)
+          (dom/li #js {:className (str "m-card as-open" (when (:moving card) " as-moving"))
+                       :onClick (fn [event]
+                         (.preventDefault event)
+                         (put! channel [handle-card-click @card]))
+                       :onTouchEnd (fn [event]
+                         (.preventDefault event)
+                         (put! channel [handle-card-click @card]))
+                       :ref "card"}
+            (dom/span #js {:className (h/card-colour card)}
+              (h/label-for card)))
+        :else
+          (dom/li #js {:className (str "m-card as-closed")})))))

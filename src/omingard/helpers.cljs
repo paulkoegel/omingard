@@ -40,10 +40,7 @@
   "Returns a human-readable string for a card, e.g. \"♠ 7\""
   (str (symbol-for-suit (:suit card))
        " "
-       (display-value card)
-       " ("
-       (:deck card)
-       ")"))
+       (display-value card)))
 
 (defn unmark-card [card]
   "Removes marking from a card."

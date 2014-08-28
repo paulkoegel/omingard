@@ -129,6 +129,7 @@
       :padding "5px"
       :text-align "center"
       :border-radius "3px"
+      :height (px 21)
      }
        [:.black
          {:color "black"}]
@@ -138,7 +139,11 @@
          {:background-color "#fafafa"
           :cursor "pointer"}]
        [:&.as-moving
-         {:background-color "yellow"}]]
+         {:background-color "yellow"}]
+       [:&.as-closed
+         {:background-color "#ffaaaa"
+          :background-image "linear-gradient(90deg, rgba(200,0,0,.5) 50%, transparent 50%), linear-gradient(rgba(200,0,0,.5) 50%, transparent 50%)"
+          :background-size "7px 7px"}]]
 
   [:.l-piles-container {
     :background "#ccc"}]
