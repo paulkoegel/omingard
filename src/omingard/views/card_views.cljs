@@ -3,46 +3,56 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! chan <!]]
-            [omingard.helpers :as h]))
+            [omingard.helpers :as helpers]))
 
 (defn handle-card-click [appl clicked-card]
-  (let [column (h/column-for (:columns appl) clicked-card)]
+  (let [column (helpers/column-for (:columns appl) clicked-card)]
     (cond
       ;; card's on top of a pile - maybe write a function for this with a better check
-      (and (not column) (h/open? clicked-card))
-        (h/mark-card-for-moving appl clicked-card)
-      (h/moveable? (:cards column) clicked-card)
+      (and (not column) (helpers/open? clicked-card))
+        (helpers/mark-card-for-moving appl clicked-card)
+      (helpers/moveable? (:cards column) clicked-card)
         (cond
           ;; double click
-          (some #{clicked-card} (h/cards-marked-for-moving appl))
-            (h/discard-card appl clicked-card)
+          (some #{clicked-card} (helpers/cards-marked-for-moving appl))
+            (helpers/discard-card appl clicked-card)
           ;; single click
           :else
             (cond
               ;; there are cards marked for moving -> try to move cards below `card`.
-              (seq (h/cards-marked-for-moving appl))
+              (seq (helpers/cards-marked-for-moving appl))
                 (cond
-                  (h/can-be-appended-to? (first (h/cards-marked-for-moving appl)) column)
+                  (helpers/can-be-appended-to? (first (helpers/cards-marked-for-moving appl)) column)
                     (-> appl
-                      (h/move-marked-cards-to (h/column-for (:columns appl) clicked-card))
-                      (h/unmark-all-column-cards))
+                      (helpers/move-marked-cards-to (helpers/column-for (:columns appl) clicked-card))
+                      (helpers/unmark-all-column-cards))
                   :else
                     (-> appl
-                      (h/unmark-all-column-cards)
-                      (h/mark-card-and-children-for-moving clicked-card)))
+                      (helpers/unmark-all-column-cards)
+                      (helpers/mark-card-and-children-for-moving clicked-card)))
               ;; there are no cards marked for moving yet -> mark this one.
               :else
-                (h/mark-card-and-children-for-moving appl clicked-card)))
+                (helpers/mark-card-and-children-for-moving appl clicked-card)))
       :else
         appl)))
 
+;; TODO: it's a bit stupid we have to return appl at the end but need to do it since this is executed via om/transact!
+(defn handle-card-hover [appl hovered-card target]
+  (when (helpers/moveable? (:cards (helpers/column-for (:columns appl) hovered-card)) hovered-card)
+    (.add (.-classList target) "is-moveable"))
+  appl)
+
+(defn handle-card-unhover [appl hovered-card target]
+  (when (helpers/moveable? (:cards (helpers/column-for (:columns appl) hovered-card)) hovered-card)
+    (.remove (.-classList target) "is-moveable"))
+  appl)
 
 (defn item-view [card owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
       (cond
-        (h/open? card)
+        (helpers/open? card)
           (dom/li #js {:className (str "m-card as-open" (when (:moving card) " as-moving"))
                        :onClick (fn [event]
                          (.preventDefault event)
@@ -50,8 +60,12 @@
                        :onTouchEnd (fn [event]
                          (.preventDefault event)
                          (put! channel [handle-card-click @card]))
+                       :onMouseOver (fn [event]
+                         (put! channel [handle-card-hover @card (.-currentTarget event)]))
+                       :onMouseLeave (fn [event]
+                         (put! channel [handle-card-unhover @card (.-currentTarget event)]))
                        :ref "card"}
-            (dom/span #js {:className (h/card-colour card)}
-              (h/label-for card)))
+            (dom/span #js {:className (helpers/card-colour card)}
+              (helpers/label-for card)))
         :else
           (dom/li #js {:className (str "m-card as-closed")})))))

@@ -15,7 +15,7 @@
             [clojure.string :as string]
             [omingard.setup :as setup]
             [omingard.appstate :as app]
-            [omingard.helpers :as h]
+            [omingard.helpers :as helpers]
             [omingard.views.card-views :as card-views]
             [omingard.views.pile-views :as pile-views]))
 
@@ -67,7 +67,7 @@
       (dom/li #js {:className "m-column--placeholder"
                    :onClick (fn [event]
                      (.preventDefault event)
-                     (put! channel [h/handle-column-placeholder-click column-index]))}
+                     (put! channel [helpers/handle-column-placeholder-click column-index]))} "Put a king here"
                   ))))
 
 (defn column-view [column owner]
@@ -104,11 +104,11 @@
               "Omingard"))
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--hit-me"
-                             :onClick (fn [_] (om/transact! appl h/serve-new-cards))}
+                             :onClick (fn [_] (om/transact! appl helpers/serve-new-cards))}
                         "Hit me!"))
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--undo"
-                             :onClick (fn [_] (om/transact! appl h/undo))}
+                             :onClick (fn [_] (om/transact! appl helpers/undo))}
                         "↩ Undo")))))))
 
 (defn omingard-view [appl owner]
@@ -133,7 +133,7 @@
                     :onKeyDown (fn [event]
                       ;; do not `(.preventDefault event)` as that'd disable ctrl+r and other browser keyboard shortcuts
                       (when (= 13 (.-keyCode event))
-                            (om/transact! appl h/serve-new-cards)))}
+                            (om/transact! appl helpers/serve-new-cards)))}
         (om/build navigation-view appl)
         (dom/div #js {:className "l-game-container"}
           (om/build columns-view (:columns appl) {:init-state {:channel channel}})
@@ -144,7 +144,3 @@
   omingard-view
   app/app-state
   {:target (. js/document (getElementById "omingard"))})
-
-
-;;@app/app-state
-;;(h/move-marked-cards-to @app/app-state ((:columns @app/app-state) 5))

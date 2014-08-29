@@ -94,7 +94,7 @@
      :-khtml-user-select "none"
      :-moz-user-select "none"
      :-ms-user-select "none"
-     :user-select "none" ;; disable text selection on cards */
+     :user-select "none" ;; disable text selection on cards
      }]
 
   [:.m-columns-wrapper {
@@ -117,10 +117,14 @@
 
    [:.m-column--placeholder {
      :height (px 21)
-     :border-radius "3px"
+     :border-radius (px 3)
      :border "1px dashed #ddd"
      :margin "2px auto"
-     :background-color "#fafafa"}]
+     :background-color "#fafafa"
+     :color "#999"
+     :font-size (px 13)
+     :text-align "center"
+     :line-height (rem 2)}]
 
    [:.m-card
      {:background "#ddd"
@@ -128,8 +132,9 @@
       :margin "2px 0"
       :padding "5px"
       :text-align "center"
-      :border-radius "3px"
-      :height (px 21)
+      :border-radius (px 3)
+      :height (px 25)
+      :border "3px solid transparent"
      }
        [:.black
          {:color "black"}]
@@ -137,9 +142,12 @@
          {:color "red"}]
        [:&.as-open
          {:background-color "#fafafa"
+          :border "3px solid #fafafa"
           :cursor "pointer"}]
        [:&.as-moving
-         {:background-color "yellow"}]
+         {:background-color "rgba(255, 255, 0, 0.5)"}]
+       [:&.is-moveable
+         {:border "3px solid rgba(0, 200, 0, 0.5)"}]
        [:&.as-closed
          {:background-color "#ffaaaa"
           :background-image "linear-gradient(90deg, rgba(200,0,0,.5) 50%, transparent 50%), linear-gradient(rgba(200,0,0,.5) 50%, transparent 50%)"
@@ -148,18 +156,27 @@
   [:.l-piles-container {
     :background "#ccc"}]
 
-  [:.m-piles {
-    :list-style-type "none"}]
+  [:.m-piles
+    {:padding (px 0)
+     :list-style-type "none"}]
 
   [:.m-pile {
-    :float "left"}]
+    :float "left"
+    :margin-right (rem 1)
+    :width (rem 10)}]
 
   [:.m-pile--placeholder
-    {}
+    {:background "#fafafa"
+     :text-align "center"
+     :border-radius (px 3)}
     [:&.red {
-      :color "red"}]
+      :color "rgba(255, 0, 0, 0.5)"}]
     [:&.black {
-      :color "black"}]]
+      :color "rgba(0, 0, 0, 0.5)"}]]
+
+  [:.m-pile--cards
+   {:list-style-type "none"
+    :padding (px 0)}]
 
   [:.l-debug
     {:background "#C1D1F7"}]
