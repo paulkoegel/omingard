@@ -93,7 +93,7 @@
         (apply dom/ul #js {:className "m-columns cf"}
         (om/build-all column-view columns {:init-state {:channel channel}}))))))
 
-(defn navigation-view [app owner]
+(defn navigation-view [appl owner]
   (reify
     om/IRender
     (render [this]
@@ -104,14 +104,14 @@
               "Omingard"))
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--hit-me"
-                             :onClick (fn [_] (om/transact! app h/serve-new-cards))}
+                             :onClick (fn [_] (om/transact! appl h/serve-new-cards))}
                         "Hit me!"))
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--undo"
-                             :onClick (fn [_] (om/transact! app h/undo))}
+                             :onClick (fn [_] (om/transact! appl h/undo))}
                         "↶ Undo")))))))
 
-(defn omingard-view [app owner]
+(defn omingard-view [appl owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -121,7 +121,7 @@
        (let [channel (om/get-state owner :channel)]
          (go (loop []
            (let [[func & attrs] (<! channel)]
-             (om/transact! app (fn [xs] (apply func xs attrs))))
+             (om/transact! appl (fn [xs] (apply func xs attrs))))
            (recur)))))
     om/IDidMount
     (did-mount [this]
@@ -133,11 +133,11 @@
                     :onKeyDown (fn [event]
                       ;; do not `(.preventDefault event)` as that'd disable ctrl+r and other browser keyboard shortcuts
                       (when (= 13 (.-keyCode event))
-                            (om/transact! app h/serve-new-cards)))}
-        (om/build navigation-view app)
+                            (om/transact! appl h/serve-new-cards)))}
+        (om/build navigation-view appl)
         (dom/div #js {:className "l-game-container"}
-          (om/build columns-view (:columns app) {:init-state {:channel channel}})
-          (om/build pile-views/collection-view (:piles app) {:init-state {:channel channel}}))
+          (om/build columns-view (:columns appl) {:init-state {:channel channel}})
+          (om/build pile-views/collection-view (:piles appl) {:init-state {:channel channel}}))
       ))))
 
 (om/root

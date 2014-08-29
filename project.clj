@@ -3,8 +3,8 @@
   :url "https://github.com/paulwittmann/omingard"
 
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2277"]
-                 [org.clojure/core.async "0.1.319.0-6b1aca-alpha"]
+                 [org.clojure/clojurescript "0.0-2322"]
+                 [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
                  [om "0.7.1"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]

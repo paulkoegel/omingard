@@ -115,22 +115,22 @@
          (filter
            (fn [column] (some #{card} (:cards column)))))))
 
-(defn discardable? [app card]
-  (let [column (column-for (:columns app) card)]
+(defn discardable? [appl card]
+  (let [column (column-for (:columns appl) card)]
     (and (moveable? (:cards column) card)
-         (free-pile-for (:piles app) card))))
+         (free-pile-for (:piles appl) card))))
 
 ;; only a column's last card is discardable
 ;; idea for improvement: clicking on the highest sorted card on
 ;; a pile discards all sorted cards below it automatically as well.
-(defn discard-card [app card]
-  (let [column (column-for (:columns app) card)]
+(defn discard-card [appl card]
+  (let [column (column-for (:columns appl) card)]
     (cond
-      (discardable? app card)
-        (-> app
+      (discardable? appl card)
+        (-> appl
           (update-in [:columns (:index column) :cards]
                      pop)
-          (update-in [:piles (:index (free-pile-for (:piles app) card)) :cards]
+          (update-in [:piles (:index (free-pile-for (:piles appl) card)) :cards]
                      conj (unmark-card card))
           ;; open new last card of column
           (update-in [:columns (:index column) :cards]
@@ -140,14 +140,14 @@
                           (assoc-in cards [(dec (count cards)) :open] true)
                         :else []))))
       :else
-        (-> app
+        (-> appl
           (update-in [:columns (:index column) :cards (index-for (:cards column) card)]
                      unmark-card)) ;; do nothing if card cannot be discarded
     )))
 
-(defn path-vector-for-card [app card]
-  (let [column (column-for (:columns app) card)
-        pile (pile-for (:piles app) card)]
+(defn path-vector-for-card [appl card]
+  (let [column (column-for (:columns appl) card)
+        pile (pile-for (:piles appl) card)]
     (cond
       column
         [:columns (:index column) :cards (index-for (:cards column) card)]
@@ -156,11 +156,11 @@
       ;; else: the card's still in the stack and a path vector of nil is fine
   )))
 
-#_(defn first-path [app card]
-  (first (path-vector-for-card app card)))
+#_(defn first-path [appl card]
+  (first (path-vector-for-card appl card)))
 
-#_(defn where-am-i? [app card]
-  (let [path (first-path app card)]
+#_(defn where-am-i? [appl card]
+  (let [path (first-path appl card)]
     (cond
       (= :columns first-path)
         :column
@@ -169,64 +169,64 @@
       :else
         :stack)))
 
-#_(defn in-columns? [app card]
-  (let [first-path (first (path-vector-for-card app card))]
+#_(defn in-columns? [appl card]
+  (let [first-path (first (path-vector-for-card appl card))]
     (= :columns first-path)))
 
-#_(defn in-piles? [app card]
-  (let [first-path (first (path-vector-for-card app card))]
+#_(defn in-piles? [appl card]
+  (let [first-path (first (path-vector-for-card appl card))]
     (= :piles first-path)))
 
-#_(defn in-stack? [app card]
-  (let [first-path (first (path-vector-for-card app card))]
+#_(defn in-stack? [appl card]
+  (let [first-path (first (path-vector-for-card appl card))]
     (nil? first-path)))
 
-(defn mark-card-for-moving [app card]
+(defn mark-card-for-moving [appl card]
   "Find and mark a certain card for moving."
-  (assoc-in app (conj (path-vector-for-card app card) :moving) true))
+  (assoc-in appl (conj (path-vector-for-card appl card) :moving) true))
 
-(defn mark-column-card-for-moving [app column-index card-index]
+(defn mark-column-card-for-moving [appl column-index card-index]
   "Mark a card in a column for moving and find it via its column- and card-index."
-  (assoc-in app [:columns column-index :cards card-index :moving] true))
+  (assoc-in appl [:columns column-index :cards card-index :moving] true))
 
-(defn mark-card-and-children-for-moving [app card]
-  (let [column (column-for (:columns app) card)
+(defn mark-card-and-children-for-moving [appl card]
+  (let [column (column-for (:columns appl) card)
         column-cards (:cards column)]
     (reduce
       (fn [memo idx] (mark-column-card-for-moving memo (:index column) idx))
-      app
+      appl
       (range (index-for column-cards card) (count column-cards)))))
 
-(defn all-column-cards [app]
+(defn all-column-cards [appl]
   "Returns a vector of all column cards."
   (reduce
     (fn [memo el]
       (apply conj memo (:cards el)))
     []
-    (:columns app)))
+    (:columns appl)))
 
-(defn all-pile-cards [app]
+(defn all-pile-cards [appl]
   "Returns a vector of all cards in piles."
-  (reduce #(apply conj %1 (:cards %2)) [] (:piles app)))
+  (reduce #(apply conj %1 (:cards %2)) [] (:piles appl)))
 
-(defn all-column-and-pile-cards [app]
-  (concat (all-column-cards app) (all-pile-cards app)))
+(defn all-column-and-pile-cards [appl]
+  (concat (all-column-cards appl) (all-pile-cards appl)))
 
-(defn cards-marked-for-moving [app]
+(defn cards-marked-for-moving [appl]
   (filter
     :moving
-    (all-column-and-pile-cards app)))
+    (all-column-and-pile-cards appl)))
 
-(defn unmark-all-column-cards [app]
-  (let [cards-to-unmark (cards-marked-for-moving app)
-        columns (:columns app)]
+(defn unmark-all-column-cards [appl]
+  (let [cards-to-unmark (cards-marked-for-moving appl)
+        columns (:columns appl)]
     (reduce
       (fn [memo card]
         (let [column (column-for columns card)]
           (update-in memo
                      [:columns (:index column) :cards (index-for (:cards column) card)]
                      #(unmark-card %))))
-      app
+      appl
       cards-to-unmark)))
 
 (defn can-be-appended-to? [card column]
@@ -236,13 +236,13 @@
     (and (= (:value upper-card) (inc (:value lower-card)))
          (not= (card-colour upper-card) (card-colour lower-card)))))
 
-(defn move-marked-cards-to [app new-column]
-  (let [columns (:columns app)
-        cards-to-move (cards-marked-for-moving app)
+(defn move-marked-cards-to [appl new-column]
+  (let [columns (:columns appl)
+        cards-to-move (cards-marked-for-moving appl)
         top-card-to-move (first cards-to-move)
         ;; all cards to be moved are in the same column
         old-column (column-for columns top-card-to-move)
-        pile (pile-for (:piles app) top-card-to-move)]
+        pile (pile-for (:piles appl) top-card-to-move)]
     (cond
       ;; moving a card from one column to another
       old-column
@@ -256,13 +256,13 @@
                           []))
              (update-in [:columns (:index new-column) :cards] conj card)
              (unmark-all-column-cards)))
-         app
+         appl
          cards-to-move)
        ;; moving a card from a pile to a column
        pile
          ;;(reduce
          ;;  (fn [memo card]
-         (-> app
+         (-> appl
            (update-in [:piles (:index pile) :cards] pop)
            (update-in [:columns (:index new-column) :cards] conj top-card-to-move)
            (unmark-all-column-cards));;)
@@ -277,26 +277,26 @@
 ;; (move-marked-cards-to @app/app-state ((:columns @app/app-state) 5))
 
 
-(defn serve-new-cards [app]
+(defn serve-new-cards [appl]
   "When there are no more moves, append a new open card to each column."
-  (let [app (unmark-all-column-cards app)]
+  (let [appl (unmark-all-column-cards appl)]
     (reduce
       (fn [memo i]
         (setup/serve-card-to-column memo i true))
-      app
+      appl
       (range setup/columns#))))
 
 
 ;; : : : V I E W S : : : : : : : : : :
 
-(defn handle-column-placeholder-click [app column-index]
+(defn handle-column-placeholder-click [appl column-index]
   (cond
-    (= 13 (:value (first (cards-marked-for-moving app))))
-      (move-marked-cards-to app ((:columns app) (:index column-index)))
+    (= 13 (:value (first (cards-marked-for-moving appl))))
+      (move-marked-cards-to appl ((:columns appl) (:index column-index)))
     :else
-      app))
+      appl))
 
-(defn undo [app]
+(defn undo [appl]
   (when (> (count @app/app-history) 1)
     (swap! app/app-history pop)
     (reset! app/app-state (last @app/app-history))))
