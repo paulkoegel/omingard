@@ -43,8 +43,7 @@
   appl)
 
 (defn handle-card-unhover [appl hovered-card target]
-  (when (helpers/moveable? (:cards (helpers/column-for (:columns appl) hovered-card)) hovered-card)
-    (.remove (.-classList target) "is-moveable"))
+  (.remove (.-classList target) "is-moveable")
   appl)
 
 (defn item-view [card owner]
