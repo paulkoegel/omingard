@@ -3,17 +3,16 @@ Port of Better Solitaire [Irmingard](http://irmingard.herokuapp.com) to [Clojure
 Original implementation with [CoffeeScript](http://coffeescript.org) and [Backbone Marionette](http://marionettejs.com):
 [irmingard-backbone](https://github.com/paulwittmann/irmingard-backbone).
 
-### Demo (not yet playable)
-[![screenshot of Omingard](/screenshot_omingard.png)](https://dl.dropboxusercontent.com/u/15321563/omingard/index.html)
+### Demo
+[![screenshot of Omingard](/screenshot_omingard.png)](https://omingard.5apps.com)
 
-At the moment, Omingard is an early proof of concept.
-You can discard open (slightly brighter background) aces by double clicking on them - and after them 2s, 3s etc. - as well as serve new cards ("Hit me").
-For a fully functional version - not written in Om - check out the
+Omingard is still work in progress.  
+For a more fleshed out version - not written in Om - check out the
 [original implementation](http://irmingard.herokuapp.com):
 
 [![screenshot of Irmingard](/screenshot_irmingard.png)](http://irmingard.herokuapp.com)
 
-Found a bug? Please create a new [issue](https://github.com/paulwittmann/omingard/issues) - thank you!
+Found a bug? Please create a new [issue](https://github.com/paulwittmann/omingard/issues) - thanks!
 
 ### Planned Features
 Planned features that go beyond the original version's capabilities:
