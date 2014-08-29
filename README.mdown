@@ -1,4 +1,4 @@
-![Omingard Logo](/omingard-favicon-512x512px.png)
+![Omingard Logo](/omingard-logo.png)
 
 # Omingard
 Port of Better Solitaire [Irmingard](http://irmingard.herokuapp.com) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).
