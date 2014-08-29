@@ -1,7 +1,7 @@
 ![Omingard Logo](/omingard-logo.png)
 
 # Omingard
-Port of Better Solitaire [Irmingard](http://irmingard.herokuapp.com) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).
+Port of Better Solitaire [Irmingard](http://irmingard.herokuapp.com) to [ClojureScript](https://github.com/clojure/clojurescript) and [Om](https://github.com/swannodette/om).  
 Original implementation with [CoffeeScript](http://coffeescript.org) and [Backbone Marionette](http://marionettejs.com):
 [irmingard-backbone](https://github.com/paulwittmann/irmingard-backbone).
 
