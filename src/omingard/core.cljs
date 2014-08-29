@@ -109,7 +109,7 @@
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--undo"
                              :onClick (fn [_] (om/transact! appl h/undo))}
-                        "↶ Undo")))))))
+                        "↩ Undo")))))))
 
 (defn omingard-view [appl owner]
   (reify
