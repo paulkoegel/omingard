@@ -5,7 +5,7 @@ Port of Better Solitaire [Irmingard](http://irmingard.herokuapp.com) to [Clojure
 Original implementation with [CoffeeScript](http://coffeescript.org) and [Backbone Marionette](http://marionettejs.com):
 [irmingard-backbone](https://github.com/paulwittmann/irmingard-backbone).
 
-<span style='color: #c00000'>NOTE:</span> This is my first ClojureScript project.  
+<b color='#c00000'>NOTE:</b> This is my first ClojureScript project.  
 Please bear with some of the code. I focussed on building a working prototype and made compromises at some points.  
 I look forward to hearing your feedback, and receiving new pull requests!
 
