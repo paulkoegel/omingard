@@ -67,7 +67,7 @@
       (dom/li #js {:className "m-column--placeholder"
                    :onClick (fn [event]
                      (.preventDefault event)
-                     (put! channel [helpers/handle-column-placeholder-click column-index]))} "Put a king here"
+                     (put! channel [helpers/handle-column-placeholder-click column-index]))} "Put a king here."
                   ))))
 
 (defn column-view [column owner]
@@ -137,6 +137,24 @@
         (om/build navigation-view appl)
         (dom/div #js {:className "l-game-container"}
           (om/build columns-view (:columns appl) {:init-state {:channel channel}})
+          (dom/div #js {:id "js-howto"
+                        :className "l-howto is-visible"
+                        :onClick (fn [e]
+                          (.remove (.-classList (.-currentTarget e)) "is-visible"))}
+            (dom/h1 nil "How to play")
+            (dom/ol nil
+              (dom/li nil
+                "Move cards:"(dom/br nil)
+                "Red goes below black (and vice versa). Descending values."(dom/br nil)
+                "A "(dom/span #js {:className "m-card_small red"} "♥Q")
+                " can go below a " (dom/span #js {:className "m-card_small black"} "♠K")
+                " or " (dom/span #js {:className "m-card_small black"} "♣K")
+                "."(dom/br nil)
+                "First click on the queen, then on the king.")
+              (dom/li nil
+                "Discard aces with a double clicking.")
+              (dom/li nil
+                "Serve new cards by clicking on \"Hit me\" when there are no more moves.")))
           (om/build pile-views/collection-view (:piles appl) {:init-state {:channel channel}}))
       ))))
 

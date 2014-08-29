@@ -1,18 +1,19 @@
-<html>
+<html manifest='omingard.appcache'>
   <head>
+    <title>Omingard</title>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans" type="text/css">
-    <link rel="stylesheet" href="resources/public/normalize.css" type="text/css">
-    <link rel="stylesheet" href="resources/public/application.css" type="text/css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Droid+Sans' type='text/css'>
+    <link rel='stylesheet' href='resources/public/normalize.css' type='text/css'>
+    <link rel='stylesheet' href='resources/public/application.css' type='text/css'>
     <link href='favicon.png' rel='shortcut icon'>
   </head>
   <body>
     <script type='text/javascript' id='lt_ws' src='http://localhost:49448/socket.io/lighttable/ws.js'></script>
-    <div id="omingard"></div>
-    <script src="javascript/react-0.11.1.js"></script>
-    <script src="out/goog/base.js" type="text/javascript"></script>
-    <script src="omingard.js" type="text/javascript"></script>
-    <script type="text/javascript">goog.require("omingard.core");</script>
+    <div id='omingard'></div>
+    <script src='javascript/react-0.11.1.js'></script>
+    <script src='out/goog/base.js' type='text/javascript'></script>
+    <script src='omingard.js' type='text/javascript'></script>
+    <script type='text/javascript'>goog.require('omingard.core');</script>
   </body>
 </html>

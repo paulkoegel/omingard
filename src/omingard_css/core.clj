@@ -53,6 +53,11 @@
     :outline "0"
    }]
 
+  [:.black
+    {:color "black"}]
+  [:.red
+    {:color "red"}]
+
   [:.l-navigation-container {
     :width "100%"
     :padding "0.8rem 1rem 0.8rem"
@@ -107,16 +112,14 @@
   [:.m-column-wrapper {
     :float "left"
     :width (rem 10)
-    :margin-right (rem 1)
-    :min-height (px 1)
-    :border-top "1px solid black"}]
+    :margin-right (rem 1)}]
 
    [:.m-column {
      :list-style "none"
      :padding 0}]
 
    [:.m-column--placeholder {
-     :height (px 21)
+     :height (px 25)
      :border-radius (px 3)
      :border "1px dashed #ddd"
      :margin "2px auto"
@@ -134,31 +137,46 @@
       :text-align "center"
       :border-radius (px 3)
       :height (px 25)
-      :border "3px solid transparent"
+      :border "1px solid #bbb"
      }
-       [:.black
-         {:color "black"}]
-       [:.red
-         {:color "red"}]
        [:&.as-open
          {:background-color "#fafafa"
-          :border "3px solid #fafafa"
           :cursor "pointer"}]
        [:&.as-moving
          {:background-color "rgba(255, 255, 0, 0.5)"}]
        [:&.is-moveable
-         {:border "3px solid rgba(0, 200, 0, 0.5)"}]
+         {:border "1px solid rgba(0, 200, 0, 0.5)"
+          :box-shadow "0px 0px 3px rgba(0, 200, 0, 1)"}]
        [:&.as-closed
-         {:background-color "#ffaaaa"
-          :background-image "linear-gradient(90deg, rgba(200,0,0,.5) 50%, transparent 50%), linear-gradient(rgba(200,0,0,.5) 50%, transparent 50%)"
-          :background-size "7px 7px"}]]
+         {:background-color "#444"
+          :background-image "url(card_back.png)"
+          :background-position "center 72px"}]]
 
-  [:.l-piles-container {
-    :background "#ccc"}]
+  [:.m-card_small
+    {:background "#fafafa"
+     :padding "0 3px"
+     :border "1px solid #bbb"
+     :border-radius (px 3)}]
+
+  [:.l-piles-container
+    {:position "fixed"
+     :bottom 0
+     :width (rem 100)}]
+
+  [:.l-piles-container--headline
+    {:float "left"
+     :margin "0"}]
+
+  [:.l-piles-container--note
+    {:font-size (rem 1.2)
+     :font-weight "normal"
+     :margin-left (rem 1)
+     :color "#555"}]
 
   [:.m-piles
     {:padding (px 0)
-     :list-style-type "none"}]
+     :list-style-type "none"
+     :float "left"}]
 
   [:.m-pile {
     :float "left"
@@ -167,17 +185,42 @@
 
   [:.m-pile--placeholder
     {:background "#fafafa"
-     :text-align "center"
-     :border-radius (px 3)}
+      :line-height (rem 1)
+      :margin "2px 0"
+      :padding "5px"
+      :text-align "center"
+      :border-radius (px 3)
+      :height (px 25)
+      :border "1px solid #bbb"}
     [:&.red {
       :color "rgba(255, 0, 0, 0.5)"}]
     [:&.black {
       :color "rgba(0, 0, 0, 0.5)"}]]
 
-  [:.m-pile--cards
-   {:list-style-type "none"
-    :padding (px 0)}]
+  [:.l-piles-container--new-cards
+    {:float "left"
+     :color "white"
+     :padding "11px 30px"
+     :background "#234892"
+     :border-radius (px 3)
+     :border "1px solid #234892"}]
 
-  [:.l-debug
-    {:background "#C1D1F7"}]
+  [:.l-howto
+    (let [width 600
+          height 280]
+      {:display "none"
+       :background "#ccc"
+       :color "#333"
+       :position "fixed"
+       :left "50%"
+       :top "50%"
+       :height (px height)
+       :width (px width)
+       :margin (str (- (/ height 2)) "px 0 0 " (- (/ width 2)) "px")
+       :padding (px 20)
+       :border-radius (px 3)
+       :box-shadow "2px 2px 5px rgba(0, 0, 0, 0.4)"})
+    [:&.is-visible
+      {:display "block"}]
+   ]
 )

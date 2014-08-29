@@ -76,6 +76,14 @@ body {
   outline: 0;
 }
 
+.black {
+  color: black;
+}
+
+.red {
+  color: red;
+}
+
 .l-navigation-container {
   height: 4.5rem;
   padding: 0.8rem 1rem 0.8rem;
@@ -138,8 +146,6 @@ body {
 }
 
 .m-column-wrapper {
-  border-top: 1px solid black;
-  min-height: 1px;
   margin-right: 1rem;
   width: 10rem;
   float: left;
@@ -152,7 +158,7 @@ body {
 
 .m-column--placeholder {
   margin: 2px auto;
-  height: 21px;
+  height: 25px;
   border-radius: 3px;
   border: 1px dashed #ddd;
   background-color: #fafafa;
@@ -163,7 +169,7 @@ body {
 }
 
 .m-card {
-  border: 3px solid transparent;
+  border: 1px solid #bbb;
   height: 25px;
   border-radius: 3px;
   text-align: center;
@@ -173,16 +179,7 @@ body {
   background: #ddd;
 }
 
-.m-card .black {
-  color: black;
-}
-
-.m-card .red {
-  color: red;
-}
-
 .m-card.as-open {
-  border: 3px solid #fafafa;
   cursor: pointer;
   background-color: #fafafa;
 }
@@ -192,20 +189,43 @@ body {
 }
 
 .m-card.is-moveable {
-  border: 3px solid rgba(0, 200, 0, 0.5);
+  border: 1px solid rgba(0, 200, 0, 0.5);
+  box-shadow: 0px 0px 3px rgba(0, 200, 0, 1);
 }
 
 .m-card.as-closed {
-  background-size: 7px 7px;
-  background-image: linear-gradient(90deg, rgba(200,0,0,.5) 50%, transparent 50%), linear-gradient(rgba(200,0,0,.5) 50%, transparent 50%);
-  background-color: #ffaaaa;
+  background-position: center 72px;
+  background-image: url(card_back.png);
+  background-color: #444;
+}
+
+.m-card_small {
+  border-radius: 3px;
+  border: 1px solid #bbb;
+  padding: 0 3px;
+  background: #fafafa;
 }
 
 .l-piles-container {
-  background: #ccc;
+  width: 100rem;
+  bottom: 0;
+  position: fixed;
+}
+
+.l-piles-container--headline {
+  margin: 0;
+  float: left;
+}
+
+.l-piles-container--note {
+  color: #555;
+  margin-left: 1rem;
+  font-weight: normal;
+  font-size: 1.2rem;
 }
 
 .m-piles {
+  float: left;
   list-style-type: none;
   padding: 0px;
 }
@@ -217,8 +237,13 @@ body {
 }
 
 .m-pile--placeholder {
+  border: 1px solid #bbb;
+  height: 25px;
   border-radius: 3px;
   text-align: center;
+  padding: 5px;
+  margin: 2px 0;
+  line-height: 1rem;
   background: #fafafa;
 }
 
@@ -230,11 +255,30 @@ body {
   color: rgba(0, 0, 0, 0.5);
 }
 
-.m-pile--cards {
-  padding: 0px;
-  list-style-type: none;
+.l-piles-container--new-cards {
+  border: 1px solid #234892;
+  border-radius: 3px;
+  background: #234892;
+  padding: 11px 30px;
+  color: white;
+  float: left;
 }
 
-.l-debug {
-  background: #C1D1F7;
+.l-howto {
+  width: 600px;
+  top: 50%;
+  height: 280px;
+  margin: -140px 0 0 -300px;
+  padding: 20px;
+  position: fixed;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  display: none;
+  background: #ccc;
+  color: #333;
+  left: 50%;
+}
+
+.l-howto.is-visible {
+  display: block;
 }
