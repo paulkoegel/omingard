@@ -87,7 +87,8 @@
 
   {:name "label-for"
    :expectations [
-     ["King of Hearts, deck A" (= "♥ K (1)" (h/label-for {:value 13 :suit :hearts :deck 1}))]]}
+     ["King of Hearts, deck A"
+      (= "♥ K" (h/label-for {:value 13 :suit :hearts :deck 1}))]]}
 
   {:name "children-of"
    :expectations
