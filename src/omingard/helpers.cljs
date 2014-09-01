@@ -97,7 +97,7 @@
          (filter
            (fn [pile] (some #{card} (:cards pile)))))))
 
-;; TODO: consider should simply returning a pile index here - after all that's all we need in discardable?
+;; TODO: consider simply returning a pile index here - after all that's all we need in discardable?
 (defn free-pile-for [piles card]
   "Takes a vector of piles and a card and returns a pile where the card can be discarded."
   (first
