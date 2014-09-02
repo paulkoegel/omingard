@@ -27,7 +27,7 @@
       (dom/div #js {:className "l-piles-container"}
         (dom/div #js {:className "cf"}
           (dom/h3 #js {:className "l-piles-container--headline"}
-            "Piles"
+            "Discard Piles"
             (dom/span #js {:className "l-piles-container--note"} "Start discarding aces here with a double click - then twos, threes, etc.")))
         (dom/div #js {:className "cf"}
           (apply dom/ul #js {:className "m-piles cf"}
