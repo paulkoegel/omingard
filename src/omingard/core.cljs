@@ -111,7 +111,7 @@
                              :onClick (fn [_] (om/transact! appl helpers/undo))}
                         "↩ Undo"))
           (dom/li #js {:className "m-navigation--item as-right"}
-            (dom/a #js {:href "https://github.com/paulwittmann/omingard"} "Github")))))))
+            (dom/a #js {:href "https://github.com/paulwittmann/omingard" :target "_blank"} "Github")))))))
 
 (defn omingard-view [appl owner]
   (reify
