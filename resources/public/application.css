@@ -108,6 +108,11 @@ body {
   float: right;
 }
 
+.m-navigation--item a {
+  text-decoration: none;
+  color: white;
+}
+
 .m-navigation--title {
   margin: 0;
   font-size: 2rem;

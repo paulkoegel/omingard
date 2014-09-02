@@ -71,11 +71,16 @@
     :width (rem 100)
     :margin "0 auto"}]
 
-  [:.m-navigation--item {
-    :float "left"
-    :margin-right (rem 2)}
-    [:&.as-right {
-      :float "right"}]]
+  [:.m-navigation--item
+    {:float "left"
+     :margin-right (rem 2)}
+
+    [:&.as-right
+      {:float "right"}]
+    [:a
+      {:color "white"
+       :text-decoration "none"}]
+  ]
 
   [:.m-navigation--title {
     :font-size "2rem"

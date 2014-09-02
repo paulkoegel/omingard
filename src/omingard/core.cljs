@@ -109,7 +109,9 @@
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--undo"
                              :onClick (fn [_] (om/transact! appl helpers/undo))}
-                        "↩ Undo")))))))
+                        "↩ Undo"))
+          (dom/li #js {:className "m-navigation--item as-right"}
+            (dom/a #js {:href "https://github.com/paulwittmann/omingard"} "Github")))))))
 
 (defn omingard-view [appl owner]
   (reify
