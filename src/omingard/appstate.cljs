@@ -5,7 +5,7 @@
 (def app-state
   (atom
     {:stack (setup/shuffled-stack)
-     :piles (setup/piles-for-suits (mapcat (fn [suit] [suit suit]) setup/suits))
+     :piles (setup/piles-for-suits setup/double-suits)
      :columns (vec (map-indexed (fn [idx _] {:index idx :cards []}) (range setup/columns#)))
     }))
 

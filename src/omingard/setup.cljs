@@ -3,6 +3,7 @@
 ;; : : : GLOBAL CONSTANTS : : : : : : : : :
 (def columns# 9)
 (def suits [:hearts :diamonds :spades :clubs])
+(def double-suits (mapcat (fn [suit] [suit suit]) suits))
 
 (defn cards-for-suit [suit]
   "Takes a suit and creates all the cards for it.
