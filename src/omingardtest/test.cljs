@@ -225,12 +225,28 @@
      ]}
 
   ;; TODO: pending
-  ;;{:name "free-pile-for"
-  ;; :expectations []}
-
-  ;; TODO: pending
   ;;{:name "column-for"
   ;; :expectations []}
+  {:name "free-pile-for"
+   :expectations
+   (let [piles (setup/piles-for-suits setup/double-suits)]
+     [
+       ["no free pile"
+        (= nil
+           (helpers/free-pile-for piles (make-card "h.2")))]
+       ["return first pile when both piles are empty"
+        (= (piles 0)
+           (helpers/free-pile-for piles (make-card "h.A")))]
+       (let [piles (update-in piles [0 :cards] conj (make-card "h.A"))]
+         ["return second pile when first pile is not free"
+          (= (piles 1)
+             (helpers/free-pile-for piles (make-card "h.A")))])
+       (let [piles (update-in piles [1 :cards] conj (make-card "h.A"))]
+         ["return first pile when second pile is not free - this can happen, e.g., after an ace has been put back tot a column form the first pile."
+          (= (piles 0)
+             (helpers/free-pile-for piles (make-card "h.A")))])
+      ])}
+
 
   ;; TODO: pending
   ;;{:name "discardable?"
