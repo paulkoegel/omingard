@@ -5,9 +5,11 @@
             [garden.units :as u :refer [px pt rem px+ px* px- px-div]])
   (:refer-clojure :exclude [rem])) ;; `rem` is Clojure core's remainder function
 
+(def content-width (rem 100))
+(def card-width (rem 10))
+
 (defstylesheet application
   {:output-to "resources/public/application.css"}
-
 
   ;; http://nicolasgallagher.com/micro-clearfix-hack/ */
   (comment
@@ -68,7 +70,7 @@
     :list-style "none"
     :padding "0"
     :color "#eee"
-    :width (rem 100)
+    :width content-width
     :margin "0 auto"}]
 
   [:.m-navigation--item
@@ -97,7 +99,7 @@
     :border "1px solid #234892"}]
 
   [:.l-game-container
-    {:width "100rem"
+    {:width content-width
      :margin "0 auto"
      :-webkit-touch-callout "none"
      :-webkit-user-select "none"
@@ -116,7 +118,7 @@
 
   [:.m-column-wrapper {
     :float "left"
-    :width (rem 10)
+    :width card-width
     :margin-right (rem 1)}]
 
    [:.m-column {
@@ -166,7 +168,7 @@
   [:.l-piles-container
     {:position "fixed"
      :bottom 0
-     :width (rem 100)}]
+     :width content-width}]
 
   [:.l-piles-container--headline
     {:float "left"
@@ -186,7 +188,7 @@
   [:.m-pile {
     :float "left"
     :margin-right (rem 1)
-    :width (rem 10)}]
+    :width card-width}]
 
   [:.m-pile--placeholder
     {:background "#fafafa"
