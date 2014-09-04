@@ -16,41 +16,11 @@
             [omingard.setup :as setup]
             [omingard.appstate :as app]
             [omingard.helpers :as helpers]
-            [omingard.views.card-views :as card-views]
-            [omingard.views.pile-views :as pile-views]))
+            [omingard.components.card :as card-components]
+            [omingard.components.pile :as pile-components]))
 
 (enable-console-print!)
 (js/React.initializeTouchEvents true)
-
-;; : : : DEBUGGING HELPERS : : : : : : : : :
-
-      ;; transforms "J" etc. back to 11 etc.
-      (defn value-from-literal-value [literal-value]
-        (let [literal-value (string/lower-case literal-value)]
-          (cond
-            (= literal-value "a") 1
-            (= literal-value "j") 11
-            (= literal-value "q") 12
-            (= literal-value "k") 13
-            :else (js/parseInt literal-value))))
-
-      (defn make-card [card-string]
-        "Builds a card map from a string - \"d.12.a\", e.g., creates a queen of diamonds (with deck \"a\")."
-        (let [card-components (string/split card-string #"\.")
-              suit  (keyword (first card-components))
-              value (second card-components)
-              option (when (= 3 (count card-components)) (keyword (last card-components)))
-              deck   (when (some #{option} [:a :b]) option)
-              open   (when (= :o option) true)
-              card {:suit
-                    (cond (= suit :s) :spades
-                          (= suit :c) :clubs
-                          (= suit :h) :hearts
-                          (= suit :d) :diamonds)
-              :value (value-from-literal-value value)
-              :deck (or deck :a)}]
-          (if open (assoc card :open true) card)))
-;; - - END -- DEBUGGING HELPERS : : : : : :
 
 ;; : INITIAL APP STATE : : : : : : : :
 (swap! app/app-state setup/serve-cards)
@@ -60,7 +30,7 @@
     (when-not (= (last @app/app-history) n)
       (swap! app/app-history conj n))))
 
-(defn column-placeholder-view [column-index owner]
+(defn column-placeholder-component [column-index owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
@@ -70,7 +40,7 @@
                      (put! channel [helpers/handle-column-placeholder-click column-index]))} "Put a king here."
                   ))))
 
-(defn column-view [column owner]
+(defn column-component [column owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
@@ -79,21 +49,21 @@
           (cond
             (seq column-cards)
               (apply dom/ul #js {:className "m-column"}
-                (om/build-all card-views/item-view column-cards {:init-state {:channel channel}}))
+                (om/build-all card-components/item column-cards {:init-state {:channel channel}}))
             :else
               (dom/ul #js {:className "m-column"}
-                (om/build column-placeholder-view {:index (:index column)} {:init-state {:channel channel}}))))))))
+                (om/build column-placeholder-component {:index (:index column)} {:init-state {:channel channel}}))))))))
 
 
-(defn columns-view [columns owner]
+(defn columns-component [columns owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
       (dom/div #js {:className "m-columns-wrapper"}
         (apply dom/ul #js {:className "m-columns cf"}
-        (om/build-all column-view columns {:init-state {:channel channel}}))))))
+        (om/build-all column-component columns {:init-state {:channel channel}}))))))
 
-(defn navigation-view [appl owner]
+(defn navigation-component [appl owner]
   (reify
     om/IRender
     (render [this]
@@ -113,7 +83,7 @@
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/a #js {:href "https://github.com/paulwittmann/omingard" :target "_blank"} "Github")))))))
 
-(defn omingard-view [appl owner]
+(defn omingard-component [appl owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -136,9 +106,9 @@
                       ;; do not `(.preventDefault event)` as that'd disable ctrl+r and other browser keyboard shortcuts
                       (when (= 13 (.-keyCode event))
                             (om/transact! appl helpers/serve-new-cards)))}
-        (om/build navigation-view appl)
+        (om/build navigation-component appl)
         (dom/div #js {:className "l-game-container"}
-          (om/build columns-view (:columns appl) {:init-state {:channel channel}})
+          (om/build columns-component (:columns appl) {:init-state {:channel channel}})
           (dom/div #js {:id "js-howto"
                         :className "l-howto is-visible"
                         :onClick (fn [e]
@@ -157,10 +127,10 @@
                 "Discard aces with a double clicking.")
               (dom/li nil
                 "Serve new cards by clicking on \"Hit me\" when there are no more moves.")))
-          (om/build pile-views/collection-view (:piles appl) {:init-state {:channel channel}}))
+          (om/build pile-components/collection (:piles appl) {:init-state {:channel channel}}))
       ))))
 
 (om/root
-  omingard-view
+  omingard-component
   app/app-state
   {:target (. js/document (getElementById "omingard"))})

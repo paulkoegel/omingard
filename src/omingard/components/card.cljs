@@ -1,4 +1,4 @@
-(ns omingard.views.card-views
+(ns omingard.components.card
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -46,7 +46,7 @@
   (.remove (.-classList target) "is-moveable")
   appl)
 
-(defn item-view [card owner]
+(defn item [card owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
