@@ -48,8 +48,12 @@
        ["1600px" "83.03%"]])]
 
   [:body {
-    :font-family "'Droid Sans', sans-serif"
+    :font-family "VT323, sans-serif"
     :font-size (rem 1.6)}]
+
+  [:h1 {
+    :font-weight "normal"
+        }]
 
   [:.omingard-wrapper {
     :outline "0"
@@ -58,7 +62,7 @@
   [:.black
     {:color "black"}]
   [:.red
-    {:color "red"}]
+    {:color "#666"}]
 
   [:.l-navigation-container {
     :width "100%"
@@ -69,7 +73,7 @@
   [:.m-navigation {
     :list-style "none"
     :padding "0"
-    :color "#eee"
+    :color "#fff"
     :width content-width
     :margin "0 auto"}]
 
@@ -89,14 +93,13 @@
     :margin "0"}]
 
   [:.m-navigation--undo {
-    :background "#444"
-    :border "1px solid #444"
-    :border-radius (px 3)}]
+    :background "#000"
+    :border "1px solid #fff"
+    }]
 
   [:.m-navigation--hit-me {
-    :background "#234892"
-    :border-radius (px 3)
-    :border "1px solid #234892"}]
+    :background "#000"
+    :border "1px solid #fff"}]
 
   [:.l-game-container
     {:width content-width
@@ -127,43 +130,37 @@
 
    [:.m-column--placeholder {
      :height (px 25)
-     :border-radius (px 3)
-     :border "1px dashed #ddd"
+     :border "1px dashed #000"
      :margin "2px auto"
-     :background-color "#fafafa"
-     :color "#999"
+     :color "#000"
      :font-size (px 13)
      :text-align "center"
      :line-height (rem 2)}]
 
    [:.m-card
-     {:background "#ddd"
+     {:background "#fff"
       :line-height (rem 1)
       :margin "2px 0"
       :padding "5px"
       :text-align "center"
-      :border-radius (px 3)
       :height (px 25)
-      :border "1px solid #bbb"
+      :border "1px solid #000"
      }
        [:&.as-open
-         {:background-color "#fafafa"
-          :cursor "pointer"}]
+          {:cursor "pointer"
+           }]
        [:&.as-moving
-         {:background-color "rgba(255, 255, 0, 0.5)"}]
+         {:background-color "#666"}]
        [:&.is-moveable
-         {:border "1px solid rgba(0, 200, 0, 0.5)"
-          :box-shadow "0px 0px 3px rgba(0, 200, 0, 1)"}]
+         {:border "1px solid #666"}]
        [:&.as-closed
-         {:background-color "#444"
-          :background-image "url(card_back.png)"
-          :background-position "center 72px"}]]
+         {:background-color "#000"}]]
 
   [:.m-card_small
-    {:background "#fafafa"
+    {:background "#fff"
      :padding "0 3px"
-     :border "1px solid #bbb"
-     :border-radius (px 3)}]
+     :border "1px solid #000"
+     }]
 
   [:.l-piles-container
     {:position "fixed"
@@ -178,7 +175,7 @@
     {:font-size (rem 1.2)
      :font-weight "normal"
      :margin-left (rem 1)
-     :color "#555"}]
+     :color "#666"}]
 
   [:.m-piles
     {:padding (px 0)
@@ -191,33 +188,31 @@
     :width card-width}]
 
   [:.m-pile--placeholder
-    {:background "#fafafa"
+    {:background "#fff"
       :line-height (rem 1)
       :margin "2px 0"
       :padding "5px"
       :text-align "center"
-      :border-radius (px 3)
       :height (px 25)
-      :border "1px solid #bbb"}
+      :border "1px solid #000"}
     [:&.red {
-      :color "rgba(255, 0, 0, 0.5)"}]
+      :color "#666"}]
     [:&.black {
-      :color "rgba(0, 0, 0, 0.5)"}]]
+      :color "#000"}]]
 
   [:.l-piles-container--new-cards
     {:float "left"
-     :color "white"
+     :color "#000"
      :padding "11px 30px"
-     :background "#234892"
-     :border-radius (px 3)
-     :border "1px solid #234892"}]
+     :background "#fff"
+     :border "1px solid #000"}]
 
   [:.l-howto
     (let [width 600
           height 280]
       {:display "none"
-       :background "#ccc"
-       :color "#333"
+       :background "#000"
+       :color "#fff"
        :position "fixed"
        :left "50%"
        :top "50%"
@@ -225,8 +220,7 @@
        :width (px width)
        :margin (str (- (/ height 2)) "px 0 0 " (- (/ width 2)) "px")
        :padding (px 20)
-       :border-radius (px 3)
-       :box-shadow "2px 2px 5px rgba(0, 0, 0, 0.4)"})
+       })
     [:&.is-visible
       {:display "block"}]
    ]

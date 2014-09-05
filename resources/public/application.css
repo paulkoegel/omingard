@@ -69,7 +69,11 @@ html {
 
 body {
   font-size: 1.6rem;
-  font-family: 'Droid Sans', sans-serif;
+  font-family: VT323, sans-serif;
+}
+
+h1 {
+  font-weight: normal;
 }
 
 .omingard-wrapper {
@@ -81,7 +85,7 @@ body {
 }
 
 .red {
-  color: red;
+  color: #666;
 }
 
 .l-navigation-container {
@@ -94,7 +98,7 @@ body {
 .m-navigation {
   margin: 0 auto;
   width: 100rem;
-  color: #eee;
+  color: #fff;
   padding: 0;
   list-style: none;
 }
@@ -119,15 +123,13 @@ body {
 }
 
 .m-navigation--undo {
-  border-radius: 3px;
-  border: 1px solid #444;
-  background: #444;
+  border: 1px solid #fff;
+  background: #000;
 }
 
 .m-navigation--hit-me {
-  border: 1px solid #234892;
-  border-radius: 3px;
-  background: #234892;
+  border: 1px solid #fff;
+  background: #000;
 }
 
 .l-game-container {
@@ -162,53 +164,45 @@ body {
 }
 
 .m-column--placeholder {
-  margin: 2px auto;
-  height: 25px;
-  border-radius: 3px;
-  border: 1px dashed #ddd;
-  background-color: #fafafa;
-  font-size: 13px;
-  text-align: center;
-  color: #999;
   line-height: 2rem;
+  text-align: center;
+  font-size: 13px;
+  color: #000;
+  margin: 2px auto;
+  border: 1px dashed #000;
+  height: 25px;
 }
 
 .m-card {
-  border: 1px solid #bbb;
+  border: 1px solid #000;
   height: 25px;
-  border-radius: 3px;
   text-align: center;
   padding: 5px;
   margin: 2px 0;
   line-height: 1rem;
-  background: #ddd;
+  background: #fff;
 }
 
 .m-card.as-open {
   cursor: pointer;
-  background-color: #fafafa;
 }
 
 .m-card.as-moving {
-  background-color: rgba(255, 255, 0, 0.5);
+  background-color: #666;
 }
 
 .m-card.is-moveable {
-  border: 1px solid rgba(0, 200, 0, 0.5);
-  box-shadow: 0px 0px 3px rgba(0, 200, 0, 1);
+  border: 1px solid #666;
 }
 
 .m-card.as-closed {
-  background-position: center 72px;
-  background-image: url(card_back.png);
-  background-color: #444;
+  background-color: #000;
 }
 
 .m-card_small {
-  border-radius: 3px;
-  border: 1px solid #bbb;
+  border: 1px solid #000;
   padding: 0 3px;
-  background: #fafafa;
+  background: #fff;
 }
 
 .l-piles-container {
@@ -223,7 +217,7 @@ body {
 }
 
 .l-piles-container--note {
-  color: #555;
+  color: #666;
   margin-left: 1rem;
   font-weight: normal;
   font-size: 1.2rem;
@@ -242,31 +236,29 @@ body {
 }
 
 .m-pile--placeholder {
-  border: 1px solid #bbb;
+  border: 1px solid #000;
   height: 25px;
-  border-radius: 3px;
   text-align: center;
   padding: 5px;
   margin: 2px 0;
   line-height: 1rem;
-  background: #fafafa;
+  background: #fff;
 }
 
 .m-pile--placeholder.red {
-  color: rgba(255, 0, 0, 0.5);
+  color: #666;
 }
 
 .m-pile--placeholder.black {
-  color: rgba(0, 0, 0, 0.5);
+  color: #000;
 }
 
 .l-piles-container--new-cards {
-  border: 1px solid #234892;
-  border-radius: 3px;
-  background: #234892;
+  border: 1px solid #000;
   padding: 11px 30px;
-  color: white;
+  background: #fff;
   float: left;
+  color: #000;
 }
 
 .l-howto {
@@ -276,11 +268,9 @@ body {
   margin: -140px 0 0 -300px;
   padding: 20px;
   position: fixed;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
-  border-radius: 3px;
   display: none;
-  background: #ccc;
-  color: #333;
+  background: #000;
+  color: #fff;
   left: 50%;
 }
 
