@@ -168,7 +168,14 @@
   [:.l-piles-container
     {:position "fixed"
      :bottom 0
-     :width content-width}]
+     :width content-width
+     :-webkit-touch-callout "none"
+     :-webkit-user-select "none"
+     :-khtml-user-select "none"
+     :-moz-user-select "none"
+     :-ms-user-select "none"
+     :user-select "none" ;; disable text selection on cards
+    }]
 
   [:.l-piles-container--headline
     {:float "left"

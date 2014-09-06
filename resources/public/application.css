@@ -212,9 +212,15 @@ body {
 }
 
 .l-piles-container {
-  width: 100rem;
-  bottom: 0;
+  user-select: none;
+  -khtml-user-select: none;
   position: fixed;
+  -webkit-touch-callout: none;
+  width: 100rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  bottom: 0;
+  -ms-user-select: none;
 }
 
 .l-piles-container--headline {
