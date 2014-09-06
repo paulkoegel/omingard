@@ -264,9 +264,10 @@
   ;;{:name "mark-for-moving"
   ;; :expectations []}
 
-  {:name "unmark-all-column-cards"
+  {:name "unmark-all-cards"
    :expectations [
-      ["it works"
+      ;; TODO: unmark pile cards
+      ["unmark column cards"
         (=
           {:columns
               [{:index 0, :cards [{:suit :clubs, :open true, :deck :a, :value 12}]}
@@ -308,7 +309,7 @@
                 [{:suit :clubs, :deck :b, :value 8}
                  {:suit :spades, :open true, :deck :b, :value 8}]}
                {:index 8, :cards [{:suit :hearts, :open true, :deck :a, :value 1}]}]}
-          (helpers/unmark-all-column-cards
+          (helpers/unmark-all-cards
             {:columns
               [{:index 0, :cards [{:suit :clubs, :open true, :deck :a, :value 12}]}
                {:index 1,

@@ -217,17 +217,14 @@
     :moving
     (all-column-and-pile-cards appl)))
 
-(defn unmark-all-column-cards [appl]
-  (let [cards-to-unmark (cards-marked-for-moving appl)
-        columns (:columns appl)]
-    (reduce
-      (fn [memo card]
-        (let [column (column-for columns card)]
-          (update-in memo
-                     [:columns (:index column) :cards (index-for (:cards column) card)]
-                     #(unmark-card %))))
-      appl
-      cards-to-unmark)))
+(defn unmark-all-cards [appl]
+  (reduce
+    (fn [memo card]
+      (update-in memo
+                 (path-vector-for-card appl card)
+                 #(unmark-card %)))
+    appl
+    (cards-marked-for-moving appl)))
 
 (defn can-be-appended-to? [card column]
   "Takes a card and a column and checks whether the card can be appended to the column."
@@ -255,7 +252,7 @@
                           (assoc-in % [(dec (count %)) :open] true)
                           []))
              (update-in [:columns (:index new-column) :cards] conj card)
-             (unmark-all-column-cards)))
+             (unmark-all-cards)))
          appl
          cards-to-move)
        ;; moving a card from a pile to a column
@@ -265,7 +262,7 @@
          (-> appl
            (update-in [:piles (:index pile) :cards] pop)
            (update-in [:columns (:index new-column) :cards] conj top-card-to-move)
-           (unmark-all-column-cards));;)
+           (unmark-all-cards));;)
          ;;  app
          ;;  cards-to-move)
 
@@ -279,7 +276,7 @@
 
 (defn serve-new-cards [appl]
   "When there are no more moves, append a new open card to each column."
-  (let [appl (unmark-all-column-cards appl)]
+  (let [appl (unmark-all-cards appl)]
     (reduce
       (fn [memo i]
         (setup/serve-card-to-column memo i true))

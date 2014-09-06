@@ -10,7 +10,9 @@
     (cond
       ;; card's on top of a pile - maybe write a function for this with a better check
       (and (not column) (helpers/open? clicked-card))
-        (helpers/mark-card-for-moving appl clicked-card)
+        (-> appl
+            (helpers/unmark-all-cards)
+            (helpers/mark-card-for-moving clicked-card))
       (helpers/moveable? (:cards column) clicked-card)
         (cond
           ;; double click
@@ -25,10 +27,10 @@
                   (helpers/can-be-appended-to? (first (helpers/cards-marked-for-moving appl)) column)
                     (-> appl
                       (helpers/move-marked-cards-to (helpers/column-for (:columns appl) clicked-card))
-                      (helpers/unmark-all-column-cards))
+                      (helpers/unmark-all-cards))
                   :else
                     (-> appl
-                      (helpers/unmark-all-column-cards)
+                      (helpers/unmark-all-cards)
                       (helpers/mark-card-and-children-for-moving clicked-card)))
               ;; there are no cards marked for moving yet -> mark this one.
               :else

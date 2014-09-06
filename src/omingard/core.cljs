@@ -22,7 +22,7 @@
 (enable-console-print!)
 (js/React.initializeTouchEvents true)
 
-;; : INITIAL APP STATE : : : : : : : :
+;; initialize app state
 (swap! app/app-state setup/serve-cards)
 
 (add-watch app/app-state :history
