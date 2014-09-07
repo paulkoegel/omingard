@@ -205,7 +205,8 @@
       :text-align "center"
       :border-radius (px 3)
       :height (px 25)
-      :border "1px solid #bbb"}
+      :border "1px solid #bbb"
+      :cursor "pointer"}
     [:&.red {
       :color "rgba(255, 0, 0, 0.5)"}]
     [:&.black {

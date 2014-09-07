@@ -248,14 +248,15 @@ body {
 }
 
 .m-pile--placeholder {
-  border: 1px solid #bbb;
+  margin: 2px 0;
   height: 25px;
   border-radius: 3px;
-  text-align: center;
+  border: 1px solid #bbb;
   padding: 5px;
-  margin: 2px 0;
-  line-height: 1rem;
+  cursor: pointer;
   background: #fafafa;
+  text-align: center;
+  line-height: 1rem;
 }
 
 .m-pile--placeholder.red {
