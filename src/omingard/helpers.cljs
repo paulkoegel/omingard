@@ -117,7 +117,7 @@
 
 (defn discardable? [appl card]
   (let [column (column-for (:columns appl) card)]
-    (and (moveable? (:cards column) card)
+    (and (= card (last (:cards column)))
          (free-pile-for (:piles appl) card))))
 
 ;; only a column's last card is discardable
