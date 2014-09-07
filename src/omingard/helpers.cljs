@@ -121,8 +121,6 @@
          (free-pile-for (:piles appl) card))))
 
 ;; only a column's last card is discardable
-;; idea for improvement: clicking on the highest sorted card on
-;; a pile discards all sorted cards below it automatically as well.
 (defn discard-card [appl card]
   (let [column (column-for (:columns appl) card)]
     (cond
@@ -142,7 +140,7 @@
       :else
         (-> appl
           (update-in [:columns (:index column) :cards (index-for (:cards column) card)]
-                     unmark-card)) ;; do nothing if card cannot be discarded
+                     unmark-card))
     )))
 
 (defn path-vector-for-card [appl card]
