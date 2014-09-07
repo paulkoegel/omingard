@@ -215,7 +215,7 @@
   [:.l-piles-container--new-cards
     {:float "left"
      :color "white"
-     :padding "11px 30px"
+     :padding (px 10)
      :background "#234892"
      :border-radius (px 3)
      :border "1px solid #234892"}]

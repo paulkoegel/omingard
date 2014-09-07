@@ -127,7 +127,7 @@
                 "Discard aces with a double clicking.")
               (dom/li nil
                 "Serve new cards by clicking on \"Hit me\" when there are no more moves.")))
-          (om/build pile-components/collection (:piles appl) {:init-state {:channel channel}}))
+          (om/build pile-components/collection [(:piles appl) (:stack appl)] {:init-state {:channel channel}}))
       ))))
 
 (om/root

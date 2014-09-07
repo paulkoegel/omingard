@@ -20,7 +20,7 @@
               (dom/div #js {:className (str "m-pile--placeholder " (helpers/colour suit))}
                 (helpers/symbol-for-suit suit)))))))))
 
-(defn collection [piles owner]
+(defn collection [[piles stack] stack-count owner]
   (reify
     om/IRenderState
     (render-state [this {:keys [channel]}]
@@ -35,4 +35,4 @@
           (dom/button #js {:className "l-piles-container--new-cards"
                            :onClick (fn [e] (.preventDefault e)
                                             (put! channel [helpers/serve-new-cards]))}
-                      "Hit me!"))))))
+                      (str "Hit me! (" (count stack)) ")")))))))
