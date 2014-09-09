@@ -35,4 +35,4 @@
           (dom/button #js {:className "l-piles-container--new-cards"
                            :onClick (fn [e] (.preventDefault e)
                                             (put! channel [helpers/serve-new-cards]))}
-                      (str "Hit me! (" (count stack)) ")")))))))
+                      (str "Hit me! (" (count stack)) ")"))))))
