@@ -6,7 +6,7 @@
   (:refer-clojure :exclude [rem])) ;; `rem` is Clojure core's remainder function
 
 (def content-width (rem 100))
-(def card-width (rem 10))
+(def card-width "10%")
 
 (defstylesheet application
   {:output-to "resources/public/application.css"}
@@ -99,7 +99,7 @@
     :border "1px solid #234892"}]
 
   [:.l-game-container
-    {:width content-width
+    {:width "100%"
      :margin "0 auto"
      :-webkit-touch-callout "none"
      :-webkit-user-select "none"
@@ -107,7 +107,9 @@
      :-moz-user-select "none"
      :-ms-user-select "none"
      :user-select "none" ;; disable text selection on cards
-     }]
+     }
+     (at-media {:min-width (px 768)}
+       [:& {:width content-width}])]
 
   [:.m-columns-wrapper {
     :margin "2rem auto 0"}]
@@ -119,7 +121,7 @@
   [:.m-column-wrapper {
     :float "left"
     :width card-width
-    :margin-right (rem 1)}]
+    :margin-right "1%"}]
 
    [:.m-column {
      :list-style "none"
