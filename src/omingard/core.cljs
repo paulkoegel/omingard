@@ -83,6 +83,9 @@
           (dom/li #js {:className "m-navigation--item as-right"}
             (dom/a #js {:href "https://github.com/paulwittmann/omingard" :target "_blank"} "Github")))))))
 
+(defn hide-howto-popup [e]
+  (.remove (.-classList (.-currentTarget e)) "is-visible"))
+
 (defn omingard-component [appl owner]
   (reify
     om/IInitState
@@ -111,8 +114,8 @@
           (om/build columns-component (:columns appl) {:init-state {:channel channel}})
           (dom/div #js {:id "js-howto"
                         :className "l-howto is-visible"
-                        :onClick (fn [e]
-                          (.remove (.-classList (.-currentTarget e)) "is-visible"))}
+                        :onClick hide-howto-popup
+                        :onTouchStart hide-howto-popup}
             (dom/h1 nil "How to play")
             (dom/ol nil
               (dom/li nil
