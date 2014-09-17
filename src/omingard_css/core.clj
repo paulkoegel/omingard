@@ -71,7 +71,7 @@
     :padding "0"
     :color "#eee"
     :margin "0 auto"}
-    (at-media {:min-width (px 768)}
+    (at-media {:min-width content-width}
       [:& {:width content-width}])]
 
   [:.m-navigation--item
@@ -109,7 +109,7 @@
      :-ms-user-select "none"
      :user-select "none" ;; disable text selection on cards
      }
-     (at-media {:min-width (px 768)}
+     (at-media {:min-width content-width}
        [:& {:width content-width}])]
 
   [:.m-columns-wrapper {

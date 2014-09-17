@@ -98,7 +98,7 @@ body {
   color: #eee;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 100rem) {
 
   .m-navigation {
     width: 100rem;
@@ -148,7 +148,7 @@ body {
   -ms-user-select: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 100rem) {
 
   .l-game-container {
     width: 100rem;
