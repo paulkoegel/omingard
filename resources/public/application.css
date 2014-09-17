@@ -93,10 +93,17 @@ body {
 
 .m-navigation {
   margin: 0 auto;
-  width: 100rem;
-  color: #eee;
   padding: 0;
   list-style: none;
+  color: #eee;
+}
+
+@media (min-width: 768px) {
+
+  .m-navigation {
+    width: 100rem;
+  }
+
 }
 
 .m-navigation--item {

@@ -70,8 +70,9 @@
     :list-style "none"
     :padding "0"
     :color "#eee"
-    :width content-width
-    :margin "0 auto"}]
+    :margin "0 auto"}
+    (at-media {:min-width (px 768)}
+      [:& {:width content-width}])]
 
   [:.m-navigation--item
     {:float "left"
