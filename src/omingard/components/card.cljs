@@ -58,13 +58,15 @@
                        :onClick (fn [event]
                          (.preventDefault event)
                          (put! channel [handle-card-click @card]))
-                       :onTouchEnd (fn [event]
+                       :onTouchStart (fn [event]
                          (.preventDefault event)
                          (put! channel [handle-card-click @card]))
                        :onMouseOver (fn [event]
-                         (put! channel [handle-card-hover @card (.-currentTarget event)]))
+                         (if-not (helpers/is-touch-device?)
+                           (put! channel [handle-card-hover @card (.-currentTarget event)])))
                        :onMouseLeave (fn [event]
-                         (put! channel [handle-card-unhover @card (.-currentTarget event)]))
+                         (if-not (helpers/is-touch-device?)
+                           (put! channel [handle-card-unhover @card (.-currentTarget event)])))
                        :ref "card"}
             (dom/span #js {:className (helpers/card-colour card)}
               (helpers/label-for card)))
