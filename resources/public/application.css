@@ -98,10 +98,10 @@ body {
   color: #eee;
 }
 
-@media (min-width: 100rem) {
+@media (min-width: 1000px) {
 
   .m-navigation {
-    width: 100rem;
+    width: 1000px;
   }
 
 }
@@ -148,10 +148,10 @@ body {
   -ms-user-select: none;
 }
 
-@media (min-width: 100rem) {
+@media (min-width: 1000px) {
 
   .l-game-container {
-    width: 100rem;
+    width: 1000px;
   }
 
 }
@@ -231,7 +231,7 @@ body {
   -khtml-user-select: none;
   position: fixed;
   -webkit-touch-callout: none;
-  width: 100rem;
+  width: 1000px;
   -webkit-user-select: none;
   -moz-user-select: none;
   bottom: 0;

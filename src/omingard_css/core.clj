@@ -5,7 +5,7 @@
             [garden.units :as u :refer [px pt rem px+ px* px- px-div]])
   (:refer-clojure :exclude [rem])) ;; `rem` is Clojure core's remainder function
 
-(def content-width (rem 100))
+(def content-width (px 1000))
 (def card-width "10%")
 
 (defstylesheet application
