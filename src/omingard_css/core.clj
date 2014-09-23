@@ -22,8 +22,8 @@
        `:before` to contain the top-margins of child elements.)
 
   [:.cf:before :.cf:after
-     {:content (pr-str " ") ;; 1
-      :display "table"      ;; 2
+     {:content (pr-str " ")
+      :display "table"
      }]
 
   [:.cf:after {:clear "both"}]
