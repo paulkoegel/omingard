@@ -153,7 +153,7 @@
    [:.m-card
      {:background "#ddd"
       :line-height (px 11)
-      :font-size (rem 2.7)
+      :font-size (rem 2.5)
       :margin "2px 0"
       :padding "5px 0"
       :text-align "center"
@@ -247,11 +247,11 @@
   [:.l-howto
     (let [width 50]
       {:display "none"
-       :background "rgba(204, 204, 204, 0.7)"
+       :background "rgba(204, 204, 204, 0.9)"
        :color "#333"
        :position "fixed"
        :left "50%"
-       :top "50%"
+       :top "70%"
        :width (str width "%")
        :margin (str "-140px 0 0 " (- (/ width 2)) "%")
        :padding (px 10)
