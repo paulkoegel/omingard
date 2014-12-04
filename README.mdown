@@ -50,3 +50,10 @@ Or [Perfect ClojureScript Development Environment With Vim](https://astashov.git
 You should easily find similar tutorials for Emacs - e.g. [Austin](https://github.com/cemerick/austin).
 
 Also have a look at [Weasel](https://github.com/tomjakubowski/weasel) and [Figwheel](https://github.com/bhauman/lein-figwheel).
+
+### Production
++ run `lein cljsbuild once production`
++ open `http://localhost:8000/prod.html`
++ create a directory above the project directory named `deploy`
++ run `./build.sh` to copy relevant files to `../deploy`
++ deploy code from `../deploy` to 5apps
