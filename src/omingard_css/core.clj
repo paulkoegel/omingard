@@ -161,6 +161,8 @@
       :height (px 25)
       :border "1px solid #bbb"
      }
+    (at-media {:min-width (px 700)}
+      [:& {:font-size (rem 2)}])
        [:&.as-open
          {:background-color "#fafafa"
           :cursor "pointer"}]

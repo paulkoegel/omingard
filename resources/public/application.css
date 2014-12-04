@@ -208,6 +208,14 @@ body {
   line-height: 11px;
 }
 
+@media (min-width: 700px) {
+
+  .m-card {
+    font-size: 2rem;
+  }
+
+}
+
 .m-card.as-open {
   cursor: pointer;
   background-color: #fafafa;
