@@ -11,3 +11,5 @@ pom.xml
 /testout/
 /resources/public/out/
 /resources/public/omingard.js
+*.DS_Store
+*.swp
