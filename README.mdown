@@ -55,5 +55,5 @@ Also have a look at [Weasel](https://github.com/tomjakubowski/weasel) and [Figwh
 + run `lein cljsbuild once production`
 + open `http://localhost:8000/prod.html`
 + create a directory above the project directory named `deploy`
-+ run `./build.sh` to copy relevant files to `../deploy`
++ run `./build.sh` to copy relevant files to `../deploy` (ignore warnings about `public/out` not being included, we don't need it)
 + deploy code from `../deploy` to 5apps
