@@ -2,6 +2,8 @@
   (:require [omingard.setup :as setup]
             [omingard.appstate :as app]))
 
+(declare unmark-all-cards)
+
 ;; check taken from Modernizr here: https://github.com/Modernizr/Modernizr/blob/master/feature-detects/touchevents.js
 (defn is-touch-device? []
   (or (.hasOwnProperty js/window "ontouchstart")
