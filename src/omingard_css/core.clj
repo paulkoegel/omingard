@@ -2,11 +2,14 @@
   (:require [garden.def :refer [defstylesheet defstyles]]
             [garden.units :refer [px]]
             [garden.stylesheet :refer [at-media]]
-            [garden.units :as u :refer [px pt rem px+ px* px- px-div]])
+            [garden.units :as u :refer [px pt rem px+ px* px- px-div rem-div]])
   (:refer-clojure :exclude [rem])) ;; `rem` is Clojure core's remainder function
 
 (def content-width (px 1000))
 (def card-width "10%")
+(def padding-value 1)
+(def padding (rem padding-value))
+(def half-padding (rem (/ padding-value 2)))
 
 (defstylesheet application
   {:output-to "resources/public/application.css"}
@@ -62,7 +65,7 @@
 
   [:.l-navigation-container {
     :width "100%"
-    :padding "0.8rem 1rem 0.8rem"
+    :padding "0 1rem"
     :background "black"
     :height "4.5rem"}]
 
@@ -75,11 +78,11 @@
       [:& {:width content-width}])]
 
   [:.m-navigation--item
-    {:float "left"
-     :margin-right (rem 2)
-     :line-height (px 23)
-     :position "relative"
-     :top (px 2)}
+    {:height (rem 4.5)
+     :float "left"
+     :margin-right "1%"
+     :line-height (rem 4.5)
+     :width (rem 10)}
 
     [:&.as-right
       {:float "right"}]
@@ -96,25 +99,18 @@
     :color "#bbb"
     :background "#888"
     :border "1px solid #888"
-    :height (rem 4.5)
-    :margin-top (rem -0.8)}]
+    :height (rem 4.5)}]
 
   [:.m-navigation--undo {
     :background "#444"
     :border "1px solid #444"
     :height (rem 4.5)
-    :margin-top (rem -0.8)}]
-
-  [:.m-navigation--hit-me {
-    :background "#02641B"
-    :border "1px solid #02641B"
-    :height (rem 4.5)
-    :margin-top (rem -0.8)}]
+    :width "100%"}]
 
   [:.l-game-container
     {:width "100%"
-     :margin "1rem auto 0"
-     :padding "0 1rem"
+     :margin "0 auto"
+     :padding 0
      :-webkit-touch-callout "none"
      :-webkit-user-select "none"
      :-khtml-user-select "none"
@@ -126,7 +122,9 @@
        [:& {:width content-width}])]
 
   [:.m-columns-wrapper {
-    :margin "0 auto"}]
+    :margin "0 auto"
+    :padding-left padding
+    :padding-right padding}]
 
   [:.m-columns {
     :margin 0
@@ -154,9 +152,10 @@
 
    [:.m-card
      {:background "#ddd"
-      :line-height (rem 1)
+      :line-height (px 11)
+      :font-size (rem 2.7)
       :margin "2px 0"
-      :padding "5px"
+      :padding "5px 0"
       :text-align "center"
       :border-radius (px 3)
       :height (px 25)
@@ -182,8 +181,9 @@
      :border-radius (px 3)}]
 
   [:.l-piles-container
-    {:width "100%"
-     :margin-bottom (rem 1)
+    {:margin-bottom padding
+     :padding padding
+     :background-color "#dbdbdb"
      :-webkit-touch-callout "none"
      :-webkit-user-select "none"
      :-khtml-user-select "none"
@@ -191,8 +191,6 @@
      :-ms-user-select "none"
      :user-select "none" ;; disable text selection on cards
      }
-     (at-media {:min-width content-width}
-      [:& {:width content-width}])
     ]
 
   [:.l-piles-container--headline
@@ -211,7 +209,7 @@
       :border "1px solid #234892"
       :width "100%"
       :height (px 25)
-      :line-height (px 25)
+      :line-height (rem 1.4)
       :border-radius (px 3)
       :margin "2px 0"
       }]
@@ -220,7 +218,9 @@
     {:padding (px 0)
      :list-style-type "none"
      :float "left"
-     :width "100%" }]
+     :width "100%"
+     :margin-top half-padding
+     :margin-bottom half-padding}]
 
   [:.m-pile {
     :float "left"

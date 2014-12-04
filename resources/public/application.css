@@ -86,7 +86,7 @@ body {
 
 .l-navigation-container {
   height: 4.5rem;
-  padding: 0.8rem 1rem 0.8rem;
+  padding: 0 1rem;
   background: black;
   width: 100%;
 }
@@ -107,11 +107,11 @@ body {
 }
 
 .m-navigation--item {
-  top: 2px;
-  position: relative;
-  line-height: 23px;
-  margin-right: 2rem;
+  width: 10rem;
+  line-height: 4.5rem;
+  margin-right: 1%;
   float: left;
+  height: 4.5rem;
 }
 
 .m-navigation--item.as-right {
@@ -129,7 +129,6 @@ body {
 }
 
 .m-navigation--new-game {
-  margin-top: -0.8rem;
   height: 4.5rem;
   border: 1px solid #888;
   background: #888;
@@ -137,24 +136,17 @@ body {
 }
 
 .m-navigation--undo {
-  margin-top: -0.8rem;
+  width: 100%;
   height: 4.5rem;
   border: 1px solid #444;
   background: #444;
 }
 
-.m-navigation--hit-me {
-  margin-top: -0.8rem;
-  height: 4.5rem;
-  border: 1px solid #02641B;
-  background: #02641B;
-}
-
 .l-game-container {
-  margin: 1rem auto 0;
+  margin: 0 auto;
   user-select: none;
   -khtml-user-select: none;
-  padding: 0 1rem;
+  padding: 0;
   -webkit-touch-callout: none;
   width: 100%;
   -webkit-user-select: none;
@@ -171,6 +163,8 @@ body {
 }
 
 .m-columns-wrapper {
+  padding-right: 1rem;
+  padding-left: 1rem;
   margin: 0 auto;
 }
 
@@ -203,14 +197,15 @@ body {
 }
 
 .m-card {
-  border: 1px solid #bbb;
+  margin: 2px 0;
   height: 25px;
   border-radius: 3px;
-  text-align: center;
-  padding: 5px;
-  margin: 2px 0;
-  line-height: 1rem;
+  border: 1px solid #bbb;
+  padding: 5px 0;
   background: #ddd;
+  font-size: 2.7rem;
+  text-align: center;
+  line-height: 11px;
 }
 
 .m-card.as-open {
@@ -242,21 +237,14 @@ body {
 
 .l-piles-container {
   user-select: none;
-  -ms-user-select: none;
-  -moz-user-select: none;
   -khtml-user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
   margin-bottom: 1rem;
-  width: 100%;
-}
-
-@media (min-width: 1000px) {
-
-  .l-piles-container {
-    width: 1000px;
-  }
-
+  padding: 1rem;
+  -webkit-touch-callout: none;
+  background-color: #dbdbdb;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .l-piles-container--headline {
@@ -274,7 +262,7 @@ body {
 .l-piles-container--new-round {
   margin: 2px 0;
   border-radius: 3px;
-  line-height: 25px;
+  line-height: 1.4rem;
   height: 25px;
   width: 100%;
   border: 1px solid #234892;
@@ -283,6 +271,8 @@ body {
 }
 
 .m-piles {
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
   width: 100%;
   float: left;
   list-style-type: none;
