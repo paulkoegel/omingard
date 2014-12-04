@@ -3,7 +3,7 @@
             [omingard.appstate :as app]))
 
 ;; check taken from Modernizr here: https://github.com/Modernizr/Modernizr/blob/master/feature-detects/touchevents.js
-(def is-touch-device?
+(defn is-touch-device? []
   (or (.hasOwnProperty js/window "ontouchstart")
       (and (.-DocumentTouch js/window) (= (type js/document) js/DocumentTouch))))
 
