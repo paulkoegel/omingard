@@ -76,7 +76,10 @@
 
   [:.m-navigation--item
     {:float "left"
-     :margin-right (rem 2)}
+     :margin-right (rem 2)
+     :line-height (px 23)
+     :position "relative"
+     :top (px 2)}
 
     [:&.as-right
       {:float "right"}]
@@ -89,19 +92,29 @@
     :font-size "2rem"
     :margin "0"}]
 
+  [:.m-navigation--new-game {
+    :color "#bbb"
+    :background "#888"
+    :border "1px solid #888"
+    :height (rem 4.5)
+    :margin-top (rem -0.8)}]
+
   [:.m-navigation--undo {
     :background "#444"
     :border "1px solid #444"
-    :border-radius (px 3)}]
+    :height (rem 4.5)
+    :margin-top (rem -0.8)}]
 
   [:.m-navigation--hit-me {
-    :background "#234892"
-    :border-radius (px 3)
-    :border "1px solid #234892"}]
+    :background "#02641B"
+    :border "1px solid #02641B"
+    :height (rem 4.5)
+    :margin-top (rem -0.8)}]
 
   [:.l-game-container
     {:width "100%"
-     :margin "0 auto"
+     :margin "1rem auto 0"
+     :padding "0 1rem"
      :-webkit-touch-callout "none"
      :-webkit-user-select "none"
      :-khtml-user-select "none"
@@ -113,7 +126,7 @@
        [:& {:width content-width}])]
 
   [:.m-columns-wrapper {
-    :margin "2rem auto 0"}]
+    :margin "0 auto"}]
 
   [:.m-columns {
     :margin 0
@@ -169,16 +182,18 @@
      :border-radius (px 3)}]
 
   [:.l-piles-container
-    {:position "fixed"
-     :bottom 0
-     :width content-width
+    {:width "100%"
+     :margin-bottom (rem 1)
      :-webkit-touch-callout "none"
      :-webkit-user-select "none"
      :-khtml-user-select "none"
      :-moz-user-select "none"
      :-ms-user-select "none"
      :user-select "none" ;; disable text selection on cards
-    }]
+     }
+     (at-media {:min-width content-width}
+      [:& {:width content-width}])
+    ]
 
   [:.l-piles-container--headline
     {:float "left"
@@ -190,15 +205,27 @@
      :margin-left (rem 1)
      :color "#555"}]
 
+  [:.l-piles-container--new-round
+     {:background-color "#234892"
+      :color "#fff"
+      :border "1px solid #234892"
+      :width "100%"
+      :height (px 25)
+      :line-height (px 25)
+      :border-radius (px 3)
+      :margin "2px 0"
+      }]
+
   [:.m-piles
     {:padding (px 0)
      :list-style-type "none"
-     :float "left"}]
+     :float "left"
+     :width "100%" }]
 
   [:.m-pile {
     :float "left"
-    :margin-right (rem 1)
-    :width card-width}]
+    :margin-right "1%"
+    :width "10%"}]
 
   [:.m-pile--placeholder
     {:background "#fafafa"
@@ -215,30 +242,39 @@
     [:&.black {
       :color "rgba(0, 0, 0, 0.5)"}]]
 
-  [:.l-piles-container--new-cards
-    {:float "left"
-     :color "white"
-     :padding (px 10)
-     :background "#234892"
-     :border-radius (px 3)
-     :border "1px solid #234892"}]
-
   [:.l-howto
-    (let [width 600
-          height 280]
+    (let [width 50]
       {:display "none"
-       :background "#ccc"
+       :background "rgba(204, 204, 204, 0.7)"
        :color "#333"
        :position "fixed"
        :left "50%"
        :top "50%"
-       :height (px height)
-       :width (px width)
-       :margin (str (- (/ height 2)) "px 0 0 " (- (/ width 2)) "px")
-       :padding (px 20)
+       :width (str width "%")
+       :margin (str "-140px 0 0 " (- (/ width 2)) "%")
+       :padding (px 10)
        :border-radius (px 3)
        :box-shadow "2px 2px 5px rgba(0, 0, 0, 0.4)"})
     [:&.is-visible
       {:display "block"}]
+    [:&:after
+       {:content (pr-str "x")
+        :position "absolute"
+        :top (px 5)
+        :right (px 10)
+        :cursor "pointer"
+        :color "#eee"
+        :background-color "#333"
+        :border-radius "100%"
+        :width (px 20)
+        :height (px 20)
+        :text-align "center"
+        :font-size (px 15)
+        }]
+    [:h1
+      {:margin-top 0}]
+    [:ol
+      {:padding-left (px 20)}]
+
    ]
 )

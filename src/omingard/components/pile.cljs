@@ -31,8 +31,9 @@
             (dom/span #js {:className "l-piles-container--note"} "Start discarding aces here with a double click - then twos, threes, etc.")))
         (dom/div #js {:className "cf"}
           (apply dom/ul #js {:className "m-piles cf"}
-            (om/build-all item piles {:init-state {:channel channel}}))
-          (dom/button #js {:className "l-piles-container--new-cards"
-                           :onClick (fn [e] (.preventDefault e)
-                                            (put! channel [helpers/serve-new-cards]))}
-                      (str "Hit me! (" (count stack)) ")"))))))
+            (conj (vec (om/build-all item piles {:init-state {:channel channel}}))
+                  (dom/li #js {:className "m-pile"
+                               :onClick (fn [e] (.preventDefault e)
+                                          (put! channel [helpers/serve-new-cards]))}
+                    (dom/button #js {:className "l-piles-container--new-round"} "Next round")))
+          ))))))

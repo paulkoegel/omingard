@@ -73,15 +73,14 @@
             (dom/h1 #js {:className "m-navigation--title"}
               "Omingard"))
           (dom/li #js {:className "m-navigation--item as-right"}
-            (dom/button #js {:className "m-navigation--hit-me"
-                             :onClick (fn [_] (om/transact! appl helpers/serve-new-cards))}
-                        "Hit me!"))
-          (dom/li #js {:className "m-navigation--item as-right"}
             (dom/button #js {:className "m-navigation--undo"
                              :onClick (fn [_] (om/transact! appl helpers/undo))}
                         "↩ Undo"))
           (dom/li #js {:className "m-navigation--item as-right"}
-            (dom/a #js {:href "https://github.com/paulwittmann/omingard" :target "_blank"} "Github")))))))
+            (dom/button #js {:className "m-navigation--new-game"
+                             :onClick (fn [_] (swap! app/app-state app/new-app-state) (swap! app/app-state setup/serve-cards))} "New Game"))
+          (dom/li #js {:className "m-navigation--item as-right"}
+            (dom/a #js {:href "https://github.com/paulwittmann/omingard" :target "_blank"} "Source Code")))))))
 
 (defn hide-howto-popup [e]
   (.remove (.-classList (.-currentTarget e)) "is-visible"))
@@ -111,6 +110,9 @@
                             (om/transact! appl helpers/serve-new-cards)))}
         (om/build navigation-component appl)
         (dom/div #js {:className "l-game-container"}
+
+          (om/build pile-components/collection [(:piles appl) (:stack appl)] {:init-state {:channel channel}})
+
           (om/build columns-component (:columns appl) {:init-state {:channel channel}})
           (dom/div #js {:id "js-howto"
                         :className "l-howto is-visible"
@@ -129,8 +131,7 @@
               (dom/li nil
                 "Discard aces with a double clicking.")
               (dom/li nil
-                "Serve new cards by clicking on \"Hit me\" when there are no more moves.")))
-          (om/build pile-components/collection [(:piles appl) (:stack appl)] {:init-state {:channel channel}}))
+                "Serve new cards by clicking on \"Next round\" when there are no more moves."))))
       ))))
 
 (om/root
