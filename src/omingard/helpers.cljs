@@ -144,8 +144,7 @@
                         :else []))))
       :else
         (-> appl
-          (update-in [:columns (:index column) :cards (index-for (:cards column) card)]
-                     unmark-card))
+          (unmark-all-cards))
     )))
 
 (defn path-vector-for-card [appl card]
