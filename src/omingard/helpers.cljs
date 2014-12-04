@@ -126,7 +126,8 @@
          (free-pile-for (:piles appl) card))))
 
 ;; only a column's last card is discardable
-(defn discard-card [appl card]
+;; TODO: split into two functions
+(defn discard-or-unmark-card [appl card]
   (let [column (column-for (:columns appl) card)]
     (cond
       (discardable? appl card)

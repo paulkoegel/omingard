@@ -253,7 +253,7 @@
   ;; :expectations []}
 
   ;; TODO: pending
-  ;;{:name "discard-card"
+  ;;{:name "discard-or-unmark-card"
   ;; :expectations []}
 
   ;; TODO: pending

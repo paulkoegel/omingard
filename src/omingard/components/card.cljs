@@ -17,7 +17,7 @@
         (cond
           ;; double click
           (some #{clicked-card} (helpers/cards-marked-for-moving appl))
-            (helpers/discard-card appl clicked-card)
+            (helpers/discard-or-unmark-card appl clicked-card)
           ;; single click
           :else
             (cond
