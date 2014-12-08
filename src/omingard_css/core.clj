@@ -153,7 +153,7 @@
    [:.m-card
      {:background "#ddd"
       :line-height (px 11)
-      :font-size (rem 2.3)
+      :font-size (rem 2.1)
       :margin "2px 0"
       :padding "5px 0"
       :text-align "center"
