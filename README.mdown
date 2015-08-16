@@ -57,3 +57,5 @@ Also have a look at [Weasel](https://github.com/tomjakubowski/weasel) and [Figwh
 + create a directory above the project directory named `deploy`
 + run `./build.sh` to copy relevant files to `../deploy` (ignore warnings about `public/out` not being included, we don't need it)
 + deploy code from `../deploy` to 5apps
+
+### something difference
